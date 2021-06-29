@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "CommonJS",
+    "target": "ES6",
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "build" // More info https://stackoverflow.com/a/49687441/2085356
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/__tests__/*"]
+}

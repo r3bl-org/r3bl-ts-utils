@@ -1,0 +1,6 @@
+# The "files" array in `package.json` is bundled into the npm package by default.
+# https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
+
+# Best practices for what to include in a npm package.
+# https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
+.idea/
