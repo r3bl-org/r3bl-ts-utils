@@ -296,6 +296,8 @@ Here are the basic scripts that need to be used during development.
 
 ### Publish to npm
 
+> ⚠ Make sure that you are logged into your npmjs.org account using `npm login` before publishing.
+
 Run `npm publish` - This will publish your package to npm after running the following scripts.
 
 1.  `npm run prepare` - This builds the package. It is run after the package is packed, published,
@@ -319,6 +321,8 @@ Run `npm publish` - This will publish your package to npm after running the foll
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
 
 ### Bump a package version (patch)
+
+> ⚠ Make sure that you are logged into your npmjs.org account using `npm login` before publishing.
 
 1.  First run `npm version patch` - Make sure your git working directory is clean before running
     this. Run this in a package directory to bump the version and write the new data back to
