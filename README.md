@@ -39,6 +39,9 @@ To install the package, simply run the following in the top level folder of your
 npm i r3bl-ts-utils
 ```
 
+> For more information on how this package was created, or to facilitate a deep dive of the code
+> written here, please read the [Node.js w/ TypeScript handbook][o-5] on developerlife.com.
+
 Here are some important links for this package.
 
 1. [Github repo][o-1]
@@ -48,6 +51,7 @@ Here are some important links for this package.
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
 [o-3]: https://github.com/nazmulidris/color-console
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
+[o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 
 ## Colorized console
 
