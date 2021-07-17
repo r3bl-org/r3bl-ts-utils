@@ -25,6 +25,7 @@
  * TypeScript and handling `this` explicitly
  * https://www.typescriptlang.org/docs/handbook/functions.html#this-parameters
  * https://www.typescriptlang.org/docs/handbook/utility-types.html#thistypetype
+ * https://stackoverflow.com/a/50567437/2085356
  *
  * JavaScript `bind` and `call`
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call
