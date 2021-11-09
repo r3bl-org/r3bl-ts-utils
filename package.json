@@ -1,7 +1,7 @@
 {
   "name": "r3bl-ts-utils",
   "version": "1.0.2",
-  "description": "Typescript language utilities inspired by Kotlin stdlib, and color console",
+  "description": "TypeScript language utilities inspired by Kotlin stdlib, color console, React hook helpers, timer helpers, and other misc utilities",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -28,7 +28,13 @@
     "let",
     "with",
     "apply",
-    "also"
+    "also",
+    "React Hook",
+    "timer",
+    "setInterval",
+    "Kotlin scope functions",
+    "TypeScript",
+    "sleep"
   ],
   "author": "Nazmul Idris",
   "license": "Apache-2.0",

@@ -513,7 +513,7 @@ Run `npm publish` - This will publish your package to npm after running the foll
 1. First run `npm version patch` - Make sure your git working directory is clean before running
    this. Run this in a package directory to bump the version and write the new data back to
    `package.json`, `package-lock.json`. This will also kick off the following scripts in the given
-   order.
+   order. **⚠ Do not run the following scripts**.
 
    1. `npm run preversion` - This runs the tests.
    2. `npm run version` - This just reformats the code and adds any new to git.
