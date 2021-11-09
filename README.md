@@ -260,8 +260,8 @@ IDEs store their project information).
 
 Here are some good references for this:
 
-- [`files` array in `package.json`][b-1] - The `files` array in `package.json` is bundled into the
-  npm package by default.
+- [`files` array in `package.json`][b-1] - The files in this array are bundled into the npm package
+  by default.
 - [Best practices for what to include in a npm package][b-2].
 
 Additionally the `index.ts` just re-exports all the exports of the files that actually contain
@@ -282,9 +282,13 @@ Here are some good references for this:
 
 - [Module re-exports][b-3]
 
+<!-- prettier-ignore-start -->
+
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
+
+<!-- prettier-ignore-end -->
 
 ### Build, format, test
 
@@ -312,13 +316,17 @@ Run `npm publish` - This will publish your package to npm after running the foll
 >    file based on what you see here.
 > 2. Once a package is published w/ a given name and version, it can never be used again (even if
 >    its removed w/ `npm unpublish`). This has to be done from the command line. You can learn more
->    about unpublishing a version or an entire package [here][npm-3].
+>    about un-publishing a version or an entire package [here][npm-3].
 > 3. More info on [`npm publish`][npm-1].
+
+<!-- prettier-ignore-start -->
 
 [npm-1]: https://docs.npmjs.com/cli/v7/commands/npm-publish
 [npm-2]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/.npmignore
 [npm-3]: https://docs.npmjs.com/unpublishing-packages-from-the-registry
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
+
+<!-- prettier-ignore-end -->
 
 ### Bump a package version (patch)
 
