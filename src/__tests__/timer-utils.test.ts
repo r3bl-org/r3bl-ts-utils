@@ -15,7 +15,7 @@
  *
  */
 
-import { Animator, AnimatorErrorTypes, Counter } from "../index"
+import { Timer, TimerErrors, Counter } from "../index"
 import { waitFor } from "@testing-library/react"
 
 describe("Counter", () => {
@@ -37,46 +37,44 @@ describe("Counter", () => {
   })
 })
 
-describe("Animator", () => {
+describe("Timer", () => {
   test("Can start", () => {
     let count = 0
-    const animator = new Animator("test", 100, (animator) => {
+    const timer = new Timer("test", 100, (timer) => {
       count++
     })
-    animator.start()
-    expect(animator.isStarted).toBeTruthy()
-    animator.stop()
+    timer.start()
+    expect(timer.isStarted).toBeTruthy()
+    timer.stop()
   })
 
-  test("Can't stop a stopped animator", () => {
+  test("Can't stop a stopped timer", () => {
     let count = 0
-    const animator = new Animator("test", 100, (animator) => {
+    const timer = new Timer("test", 100, (timer) => {
       count++
     })
-    expect(() => animator.stop()).toThrow(new Error(AnimatorErrorTypes.TimerNotStarted))
+    expect(() => timer.stop()).toThrow(TimerErrors.NotStarted)
   })
 
-  test("Can't start a started animator", () => {
+  test("Can't start a started timer", () => {
     let count = 0
-    const animator = new Animator("test", 100, (animator) => {
+    const timer = new Timer("test", 100, (timer) => {
       count++
     })
-    animator.start()
-    expect(() => animator.start()).toThrow(new Error(AnimatorErrorTypes.TimerAlreadyStarted))
-    animator.stop()
+    timer.start()
+    expect(() => timer.start()).toThrow(TimerErrors.AlreadyStarted)
+    timer.stop()
   })
 
-  test("Animator calls tick() and counts up as expected", async () => {
+  test("Timer calls tick() and counts up as expected", async () => {
     let count = 0
-    const animator = new Animator("test", 100, (animator) => {
+    const timer = new Timer("test", 100, (timer) => {
       count++
     })
-    animator.start()
-    setTimeout(() => {
-      animator.stop()
-    }, 500)
+    timer.start()
+    setTimeout(() => timer.stop(), 500)
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(animator.counter.value).toEqual(4))
+    await waitFor(() => expect(timer.counter.value).toEqual(4))
     expect(count).toEqual(4)
   })
 })

@@ -19,5 +19,5 @@
 export * from "./color-console-utils"
 export * from "./kotlin-lang-utils"
 export * from "./misc-utils"
-export * from "./animator-utils"
+export * from "./timer-utils"
 export * from "./react-hook-utils"

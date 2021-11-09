@@ -17,13 +17,13 @@
 
 const DEBUG = false
 
-export class Animator {
+export class Timer {
   public timerId: NodeJS.Timeout | null = null
 
   constructor(
     readonly name: string,
     readonly delayMs: number,
-    readonly tickFn: AnimatorTickFn,
+    readonly tickFn: TimerTickFn,
     readonly counter: Counter = new Counter()
   ) {}
 
@@ -39,33 +39,35 @@ export class Animator {
   }
 
   start = () => {
-    DEBUG && console.log(this.name ?? "Animator", "start called, timerId = ", this.timerId)
+    DEBUG && console.log(this.name ?? "Timer", "start called, timerId = ", this.timerId)
 
-    if (this.isStarted) throw new Error(AnimatorErrorTypes.TimerAlreadyStarted)
+    if (this.isStarted) throw TimerErrors.AlreadyStarted
 
     this.timerId = setInterval(() => {
       this.tickFn(this)
       this.counter.increment()
     }, this.delayMs)
-    DEBUG && console.log(this.name ?? "Animator", "started, timerId = ", this.timerId)
+    DEBUG && console.log(this.name ?? "Timer", "started, timerId = ", this.timerId)
   }
 
   stop = () => {
-    DEBUG && console.log(this.name ?? "Animator", "stop called, timerId = ", this.timerId)
+    DEBUG && console.log(this.name ?? "Timer", "stop called, timerId = ", this.timerId)
 
-    if (!this.isStarted) throw new Error(AnimatorErrorTypes.TimerNotStarted)
+    if (!this.isStarted) throw TimerErrors.NotStarted
 
     clearInterval(this.timerId!!)
     this.timerId = null
-    DEBUG && console.log(this.name ?? "Animator", "stopped, timerId = ", this.timerId)
+    DEBUG && console.log(this.name ?? "Timer", "stopped, timerId = ", this.timerId)
   }
 }
 
-export type AnimatorTickFn = (animator: Animator) => void
+export type TimerTickFn = (timer: Timer) => void
 
-export const AnimatorErrorTypes = {
-  TimerAlreadyStarted: "Animator has already been started, can't restart it until after it stops",
-  TimerNotStarted: "Animator has not been started, can't be stopped",
+export const TimerErrors = {
+  AlreadyStarted: new Error(
+    "Timer has already been started, can't restart it until after it stops"
+  ),
+  NotStarted: new Error("Timer has not been started, can't be stopped"),
 } as const
 
 export class Counter {
