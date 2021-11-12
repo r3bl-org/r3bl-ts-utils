@@ -27,8 +27,9 @@ export class Timer {
     readonly counter: Counter = new Counter()
   ) {}
 
-  toString = (): string =>
-    `name: ${this.name}, delay: ${this.delayMs}ms, counter:${this.counter.value}`
+  toString(): string {
+    return `name: ${this.name}, delay: ${this.delayMs}ms, counter:${this.counter.value}`
+  }
 
   get isStarted(): boolean {
     return !!this.timerId
@@ -38,7 +39,7 @@ export class Timer {
     return this.counter.value
   }
 
-  start = () => {
+  start() {
     DEBUG && console.log(this.name ?? "Timer", "start called, timerId = ", this.timerId)
 
     if (this.isStarted) throw TimerErrors.AlreadyStarted
@@ -50,7 +51,7 @@ export class Timer {
     DEBUG && console.log(this.name ?? "Timer", "started, timerId = ", this.timerId)
   }
 
-  stop = () => {
+  stop() {
     DEBUG && console.log(this.name ?? "Timer", "stop called, timerId = ", this.timerId)
 
     if (!this.isStarted) throw TimerErrors.NotStarted

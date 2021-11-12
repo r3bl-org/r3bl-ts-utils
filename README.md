@@ -44,6 +44,13 @@ package.
 5. [Timer utilities](#timer-utils) that are easier and more robust to work w/ than `setInterval()`.
    These can be used to perform any recurring tasks that are on a fixed interval timer.
 
+This module is written entirely in TypeScript, and is configured to be a CommonJS module.
+
+> 💡 Here's more information on CommonJS, ESM, and hybrid modules.
+>
+> - [How to create dual modules](https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html).
+> - [Example of a dual module](https://github.com/sensedeep/dynamodb-onetable).
+
 To install the package, simply run the following in the top level folder of your project.
 
 ```shell
@@ -313,38 +320,44 @@ export const MyFunctionalComponent: FC = () => {
 The `_withRef()` function provides a slightly cleaner syntax to working w/
 [`React.useRef().current`](https://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#first-render-and-subsequent-re-renders-using-useref-and-useeffect).
 
-> The `current` property can be [nullish](https://developer.mozilla.org/en-US/docs/Glossary/Nullish)
-> and while you can use
-> [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
-> to access this property's value, it can be quite clunky to write this code. Here's a snippet.
->
-> ```tsx
-> const myTimerRef: ReactRef<Timer> = React.useRef<Timer>()
->
-> function showSkullIfTimerIsStopped() {
->   return !myTimerRef.current?.isStarted ? "💀" : null
-> }
-> ```
+The `current` property can be [nullish](https://developer.mozilla.org/en-US/docs/Glossary/Nullish)
+and while you can use
+[optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+to access this property's value, it can be quite clunky to write this code. Here's a snippet.
 
-In cases where you want to execute a lambda if the `current` property contains something (ie, it's
-[truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)), then you can write that code in
-the following way.
+```tsx
+const myTimerRef: ReactRef<Timer> = React.useRef<Timer>()
+
+function showSkullIfTimerIsStopped() {
+  return !myTimerRef.current?.isStarted ? "💀" : null
+}
+```
+
+When using `_withRef()` you have to think about 2 arguments, the ref itself, and a lambda that you
+want to execute that does something w/ the `current` property of the ref, if its
+[truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy).
+
+The following code snippet is an example of a lambda that operates on the `current` property of the
+`myTimerRef`, which holds a `Timer` object.
 
 ```tsx
 import { ReactRefReceiverFn, ReactRef, _withRef, useForceUpdateFn } from "./react-hook-utils"
+import * as React from "react"
 
 const myTimerRef: ReactRef<Timer> = React.useRef<Timer>()
 
-function checkToStopTimerEffect() {
-  const doSomethingWithCurrent: ReactRefReceiverFn<Timer> = (timer: Timer) => {
-    if (timer.isStarted) {
-      if (timer.counter.value >= TimerConfig.maxCounter) {
-        timer.stop()
-        forceUpdateFn() // Force a re-render after timer has stopped, to show the skull.
-      }
+function MyComponent() {
+  React.useEffect(() => _withRef(myTimerRef, checkIfTimerIsStopped))
+  return <h1>{!myTimerRef.current?.isStarted ? "✋" : "🏃"}</h1>
+}
+
+const checkIfTimerIsStopped: ReactRefReceiverFn<Timer> = (timer: Timer) => {
+  if (timer.isStarted) {
+    if (timer.counter.value >= TimerConfig.maxCounter) {
+      timer.stop()
+      forceUpdateFn() // Force a re-render after timer has stopped, to show the skull.
     }
   }
-  _withRef(myTimerRef, doSomethingWithCurrent)
 }
 ```
 

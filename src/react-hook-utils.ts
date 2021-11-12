@@ -15,7 +15,8 @@
  *
  */
 
-import React, { Dispatch, SetStateAction } from "react"
+import * as React from "react"
+import { Dispatch, SetStateAction } from "react"
 
 // State helpers.
 

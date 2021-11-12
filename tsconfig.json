@@ -2,11 +2,10 @@
   "compilerOptions": {
     "strict": true,
     "module": "CommonJS",
-    "target": "ES6",
+    "target": "ESNext",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "build", // More info https://stackoverflow.com/a/49687441/2085356
-    "allowSyntheticDefaultImports": true // More info: https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports
+    "outDir": "build" // More info https://stackoverflow.com/a/49687441/2085356
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules", "**/__tests__/*"]
