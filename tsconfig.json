@@ -5,7 +5,8 @@
     "target": "ESNext",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "build" // More info https://stackoverflow.com/a/49687441/2085356
+    "outDir": "build", // More info https://stackoverflow.com/a/49687441/2085356
+    "jsx": "react"
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules", "**/__tests__/*"]
