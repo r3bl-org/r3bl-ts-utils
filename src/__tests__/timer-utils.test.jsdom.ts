@@ -77,4 +77,17 @@ describe("Timer", () => {
     await waitFor(() => expect(timer.counter.value).toEqual(4))
     expect(count).toEqual(4)
   })
+
+  test("Timer calls supplied tickFn and counts up as expected", async () => {
+    let count = 0
+    const timer = new Timer("test", 100)
+    timer.tickFn = (timer) => {
+      count++
+    }
+    timer.start()
+    setTimeout(() => timer.stop(), 500)
+    // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
+    await waitFor(() => expect(timer.counter.value).toEqual(4))
+    expect(count).toEqual(4)
+  })
 })

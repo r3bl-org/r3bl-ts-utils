@@ -20,12 +20,16 @@ const DEBUG = false
 export class Timer {
   public timerId: NodeJS.Timeout | null = null
 
+  private _tickFn: TimerTickFn | undefined
+
   constructor(
     readonly name: string,
     readonly delayMs: number,
-    readonly tickFn: TimerTickFn,
+    tickFn?: TimerTickFn,
     readonly counter: Counter = new Counter()
-  ) {}
+  ) {
+    this._tickFn = tickFn
+  }
 
   toString(): string {
     return `name: ${this.name}, delay: ${this.delayMs}ms, counter:${this.counter.value}`
@@ -39,13 +43,17 @@ export class Timer {
     return this.counter.value
   }
 
+  set tickFn(value: TimerTickFn) {
+    this._tickFn = value
+  }
+
   start() {
     DEBUG && console.log(this.name ?? "Timer", "start called, timerId = ", this.timerId)
 
     if (this.isStarted) throw TimerErrors.AlreadyStarted
 
     this.timerId = setInterval(() => {
-      this.tickFn(this)
+      if (this._tickFn) this._tickFn(this)
       this.counter.increment()
     }, this.delayMs)
     DEBUG && console.log(this.name ?? "Timer", "started, timerId = ", this.timerId)
