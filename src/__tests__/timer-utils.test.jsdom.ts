@@ -15,7 +15,7 @@
  *
  */
 
-import { Timer, TimerErrors, Counter } from "../index"
+import { _also, Counter, Timer, TimerErrors } from "../index"
 import { waitFor } from "@testing-library/react"
 
 describe("Counter", () => {
@@ -68,11 +68,17 @@ describe("Timer", () => {
 
   test("Timer calls tick() and counts up as expected", async () => {
     let count = 0
-    const timer = new Timer("test", 100, (timer) => {
-      count++
+    const timer = _also(new Timer("test", 100), (it) => {
+      it.onTick = () => count++
     })
-    timer.start()
-    setTimeout(() => timer.stop(), 500)
+    _also(timer.startTicking(), (it) => {
+      expect(it).toBe(timer)
+    })
+    setTimeout(() => {
+      _also(timer.stopTicking(), (it) => {
+        expect(it).toBe(timer)
+      })
+    }, 500)
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
     await waitFor(() => expect(timer.counter.value).toEqual(4))
     expect(count).toEqual(4)
@@ -81,9 +87,7 @@ describe("Timer", () => {
   test("Timer calls supplied tickFn and counts up as expected", async () => {
     let count = 0
     const timer = new Timer("test", 100)
-    timer.tickFn = (timer) => {
-      count++
-    }
+    timer.tickFn = () => count++
     timer.start()
     setTimeout(() => timer.stop(), 500)
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor

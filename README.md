@@ -374,7 +374,7 @@ component that uses Hooks to generate a CLI interface using
 
 ```tsx
 import React, { FC } from "react"
-import { Timer, Counter } from "./timer-utils"
+import { Timer } from "./timer-utils"
 import { _also } from "./kotlin-lang-utils"
 import { _withRef, StateHook, useForceUpdateFn } from "./react-hook-utils"
 import { Text } from "ink"
@@ -386,39 +386,38 @@ export const ComponentUsingTimer: FC = () => {
   const [count, setCount]: StateHook<number> = React.useState<number>(0)
   const forceUpdateFn = useForceUpdateFn()
 
-  React.useEffect(startTimerEffect, [] /* componentDidMount */)
-  React.useEffect(checkToStopTimerEffect)
+  React.useEffect(effectToStartTimer, [] /* componentDidMount */)
+  React.useEffect(effectToCheckStoppingTimer)
 
   return render()
 
-  function startTimerEffect() {
-    const timer =
-      /* ⚡ From scope functions. */
-      _also(new Timer(TimerConfig.name, TimerConfig.updateIntervalMs, tick), (timer) => {
-        myTimerRef.current = timer
-        timer.start()
-      })
+  function tickFn(timer: Timer): void {
+    setCount(timer.counter.value)
+    DEBUG && console.log(`"${timer.name}"`, timer.isStarted, timer.counter.value)
+  }
+
+  function effectToStartTimer() {
+    /* ⚡ From scope functions. */
+    const timer = _also(new Timer(TimerConfig.name, TimerConfig.updateIntervalMs), (it) => {
+      myTimerRef.current = it
+      it.onTick = tickFn
+    }).startTicking()
 
     return () => {
-      if (timer.isStarted) timer.stop()
+      if (timer.isStarted) timer.stopTicking()
       DEBUG && console.log(`😵 unmount`, myTimerRef.current)
     }
   }
 
-  function checkToStopTimerEffect() {
+  function effectToCheckStoppingTimer() {
     _withRef(myTimerRef, (timer) => {
       if (timer.isStarted) {
         if (timer.counter.value >= TimerConfig.maxCounter) {
-          timer.stop()
+          timer.stopTicking()
           forceUpdateFn() // Force a re-render after timer has stopped, to show the skull.
         }
       }
     })
-  }
-
-  function tick(timer: Timer): void {
-    setCount(timer.counter.value)
-    DEBUG && console.log(`"${timer.name}"`, timer.isStarted, timer.counter.value)
   }
 
   function render() {

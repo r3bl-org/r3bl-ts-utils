@@ -47,6 +47,20 @@ export class Timer {
     this._tickFn = value
   }
 
+  set onTick(value: TimerTickFn) {
+    this._tickFn = value
+  }
+
+  startTicking(): this {
+    this.start()
+    return this
+  }
+
+  stopTicking(): this {
+    this.stop()
+    return this
+  }
+
   start() {
     DEBUG && console.log(this.name ?? "Timer", "start called, timerId = ", this.timerId)
 
