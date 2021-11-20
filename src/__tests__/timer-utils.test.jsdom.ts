@@ -40,8 +40,8 @@ describe("Counter", () => {
 describe("Timer", () => {
   test("Can start", () => {
     let count = 0
-    const timer = new Timer("test", 100, (timer) => {
-      count++
+    const timer = _also(new Timer("test", 100), (it) => {
+      it.onTick = () => count++
     })
     timer.start()
     expect(timer.isStarted).toBeTruthy()
@@ -50,48 +50,58 @@ describe("Timer", () => {
 
   test("Can't stop a stopped timer", () => {
     let count = 0
-    const timer = new Timer("test", 100, (timer) => {
-      count++
+    const timer = _also(new Timer("test", 100), (it) => {
+      it.onTick = () => count++
     })
     expect(() => timer.stop()).toThrow(TimerErrors.NotStarted)
   })
 
   test("Can't start a started timer", () => {
     let count = 0
-    const timer = new Timer("test", 100, (timer) => {
-      count++
+    const timer = _also(new Timer("test", 100), (it) => {
+      it.onTick = () => count++
     })
     timer.start()
     expect(() => timer.start()).toThrow(TimerErrors.AlreadyStarted)
     timer.stop()
   })
 
-  test("Timer calls tick() and counts up as expected", async () => {
+  const [delay, timeout, maxCount] = [5, 100, 5]
+
+  test("Started timer calls supplied _tickFn and counts up as expected", async () => {
     let count = 0
-    const timer = _also(new Timer("test", 100), (it) => {
-      it.onTick = () => count++
+
+    const timer: Timer = _also(new Timer("test", delay), (it) => {
+      it.onTick = () => (it.counterValue < maxCount ? count++ : undefined)
     })
-    _also(timer.startTicking(), (it) => {
-      expect(it).toBe(timer)
-    })
+
+    _also(timer.startTicking(), (it) => expect(it).toBe(timer))
+
     setTimeout(() => {
-      _also(timer.stopTicking(), (it) => {
-        expect(it).toBe(timer)
-      })
-    }, 500)
+      _also(timer.stopTicking(), (it) => expect(it).toBe(timer))
+    }, timeout)
+
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counter.value).toEqual(4))
-    expect(count).toEqual(4)
+    await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
+    expect(count).toEqual(maxCount)
   })
 
-  test("Timer calls supplied tickFn and counts up as expected", async () => {
+  test("Stopped Timer calls supplied _stopFn as expected", async () => {
     let count = 0
-    const timer = new Timer("test", 100)
-    timer.tickFn = () => count++
+    let stopped = false
+
+    const timer: Timer = _also(new Timer("test", delay), (it) => {
+      it.onTick = () => (it.counterValue < maxCount ? count++ : undefined)
+      it.stopFn = () => (stopped = true)
+    })
+
     timer.start()
-    setTimeout(() => timer.stop(), 500)
+
+    setTimeout(() => timer.stop(), timeout)
+
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counter.value).toEqual(4))
-    expect(count).toEqual(4)
+    await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
+    expect(count).toEqual(maxCount)
+    expect(stopped).toBeFalsy()
   })
 })

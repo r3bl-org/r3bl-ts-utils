@@ -9,7 +9,7 @@
     "src/**/*"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf build && tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "jest --config jestconfig.json",
     "test-watch": "jest --config jestconfig.json --watch",

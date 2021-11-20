@@ -18,29 +18,47 @@
 const DEBUG = false
 
 export class Timer {
-  public timerId: NodeJS.Timeout | null = null
-
+  public timerId: NodeJS.Timeout | undefined
   private _tickFn: TimerTickFn | undefined
+  private _stopFn: TimerTickFn | undefined
+  private _counter: Counter = new Counter()
 
-  constructor(
-    readonly name: string,
-    readonly delayMs: number,
-    tickFn?: TimerTickFn,
-    readonly counter: Counter = new Counter()
-  ) {
-    this._tickFn = tickFn
-  }
+  constructor(readonly name: string, readonly delayMs: number) {}
 
   toString(): string {
     return `name: ${this.name}, delay: ${this.delayMs}ms, counter:${this.counter.value}`
   }
 
   get isStarted(): boolean {
-    return !!this.timerId
+    return this.isTimerIdDefined
+  }
+
+  private get isTimerIdDefined(): boolean {
+    return !!this.timerId // true if timerId is defined.
   }
 
   get currentCount(): number {
+    return this.counterValue
+  }
+
+  get counterValue(): number {
     return this.counter.value
+  }
+
+  get counter(): Counter {
+    return this._counter
+  }
+
+  set counter(value: Counter) {
+    this._counter = value
+  }
+
+  set stopFn(value: TimerTickFn) {
+    this._stopFn = value
+  }
+
+  set onStop(value: TimerTickFn) {
+    this.stopFn = value
   }
 
   set tickFn(value: TimerTickFn) {
@@ -48,7 +66,7 @@ export class Timer {
   }
 
   set onTick(value: TimerTickFn) {
-    this._tickFn = value
+    this.tickFn = value
   }
 
   startTicking(): this {
@@ -70,16 +88,20 @@ export class Timer {
       if (this._tickFn) this._tickFn(this)
       this.counter.increment()
     }, this.delayMs)
+
     DEBUG && console.log(this.name ?? "Timer", "started, timerId = ", this.timerId)
   }
 
   stop() {
     DEBUG && console.log(this.name ?? "Timer", "stop called, timerId = ", this.timerId)
 
-    if (!this.isStarted) throw TimerErrors.NotStarted
+    if (!this.timerId) throw TimerErrors.NotStarted
 
-    clearInterval(this.timerId!!)
-    this.timerId = null
+    clearInterval(this.timerId)
+    this.timerId = undefined
+
+    if (this._stopFn) this._stopFn(this)
+
     DEBUG && console.log(this.name ?? "Timer", "stopped, timerId = ", this.timerId)
   }
 }
