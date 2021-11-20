@@ -97,11 +97,13 @@ describe("Timer", () => {
 
     timer.start()
 
-    setTimeout(() => timer.stop(), timeout)
+    setTimeout(() => {
+      timer.stop()
+      expect(stopped).toBeTruthy()
+    }, timeout)
 
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
     await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
-    expect(stopped).toBeFalsy()
   })
 })

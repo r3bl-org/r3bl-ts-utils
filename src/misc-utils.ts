@@ -16,6 +16,7 @@
  */
 
 import { ColorConsole, Styles } from "./color-console-utils"
+import * as React from "react"
 
 export const sleep = (ms: number = 500) => {
   const sprites = ["-", "\\", "-", "/"]
@@ -34,4 +35,20 @@ export const sleep = (ms: number = 500) => {
       resolveFn()
     }, ms)
   })
+}
+
+export type Nullable<T> = T | null | undefined
+export type TruthyReceiverFn<T> = (it: NonNullable<T>) => void
+
+/**
+ * @param ctxObject it can be null or undefined
+ * @param receiverFn lambda that accepts `it`; only runs if `ctxObject` property is truthy
+ * @return ctxObject the first argument
+ */
+export const _callIfTruthy = <T>(
+  ctxObject: Nullable<T>,
+  receiverFn: TruthyReceiverFn<T>
+): Nullable<T> => {
+  if (ctxObject) receiverFn(ctxObject!!)
+  return ctxObject
 }

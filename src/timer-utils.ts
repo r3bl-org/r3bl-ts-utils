@@ -15,6 +15,8 @@
  *
  */
 
+import { _callIfTruthy } from "./misc-utils"
+
 const DEBUG = false
 
 export class Timer {
@@ -85,7 +87,8 @@ export class Timer {
     if (this.isStarted) throw TimerErrors.AlreadyStarted
 
     this.timerId = setInterval(() => {
-      if (this._tickFn) this._tickFn(this)
+      // if (this._tickFn) this._tickFn(this)
+      _callIfTruthy(this._tickFn, (it) => it(this))
       this.counter.increment()
     }, this.delayMs)
 
@@ -100,7 +103,8 @@ export class Timer {
     clearInterval(this.timerId)
     this.timerId = undefined
 
-    if (this._stopFn) this._stopFn(this)
+    // if (this._stopFn) this._stopFn(this)
+    _callIfTruthy(this._stopFn, (it) => it(this))
 
     DEBUG && console.log(this.name ?? "Timer", "stopped, timerId = ", this.timerId)
   }
