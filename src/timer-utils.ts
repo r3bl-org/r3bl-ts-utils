@@ -24,11 +24,7 @@ export class Timer {
   private _tickFn: TimerTickFn | undefined
   private _stopFn: TimerTickFn | undefined
   private _counter: Counter = new Counter()
-  private timestampWhenStarted: number = 0
-  private timestampWhenStopped: number = 0
-
-  // TODO replace state transition logic (not-started -> start -> stop) w/ a reducer
-  // TODO throw exception that prevents timer from being started after its been stopped
+  private state: TimerReducer.State = TimerReducer.reducerFn(undefined, { type: "noop" }, this)
 
   constructor(readonly name: string, readonly delayMs: number, readonly durationMs: number = -1) {}
 
@@ -38,12 +34,12 @@ export class Timer {
 
   /** Once stop() is called, this is set and can't be reset. */
   get isStopped(): boolean {
-    return this.timestampWhenStopped != 0
+    return this.state.isStopped
   }
 
   /** Once start() is called, this is set and can't be reset. */
   get isStarted(): boolean {
-    return this.timestampWhenStarted != 0
+    return this.state.isStarted
   }
 
   private get isTimerIdDefined(): boolean {
@@ -87,35 +83,38 @@ export class Timer {
     return this
   }
 
+  start() {
+    this.state = TimerReducer.reducerFn(this.state, { type: "start", startTime: Date.now() }, this)
+  }
+
   stopTicking(): this {
     this.stop()
     return this
   }
 
-  start() {
+  stop() {
+    this.state = TimerReducer.reducerFn(this.state, { type: "stop", stopTime: Date.now() }, this)
+  }
+
+  _actuallyStartTimer() {
     DEBUG && console.log(this.name ?? "Timer", "start called, timerId = ", this.timerId)
 
-    if (this.isStarted) throw TimerErrors.AlreadyStarted
-
-    this.timerId = setInterval(() => {
-      if (this.durationMs > 0 && Date.now() - this.timestampWhenStarted >= this.durationMs) {
+    const doTickAndAutoStopCheck = () => {
+      if (this.durationMs > 0 && Date.now() - this.state.startTime >= this.durationMs) {
         this.stop()
+      } else {
+        _callIfTruthy(this._tickFn, (it) => it(this))
+        this.counter.increment()
       }
+    }
 
-      _callIfTruthy(this._tickFn, (it) => it(this))
-      this.counter.increment()
-    }, this.delayMs)
-
-    this.timestampWhenStarted = Date.now()
+    this.timerId = setInterval(doTickAndAutoStopCheck, this.delayMs)
 
     DEBUG && console.log(this.name ?? "Timer", "started, timerId = ", this.timerId)
   }
 
-  stop() {
+  _actuallyStopTimer() {
     DEBUG && console.log(this.name ?? "Timer", "stop called, timerId = ", this.timerId)
-
-    if (this.isStopped) throw TimerErrors.AlreadyStopped
-    if (!this.isStarted) throw TimerErrors.NotStarted
 
     if (this.timerId) {
       clearInterval(this.timerId)
@@ -124,8 +123,6 @@ export class Timer {
 
     _callIfTruthy(this._stopFn, (it) => it(this))
 
-    this.timestampWhenStopped = Date.now()
-
     DEBUG && console.log(this.name ?? "Timer", "stopped, timerId = ", this.timerId)
   }
 }
@@ -133,11 +130,9 @@ export class Timer {
 export type TimerTickFn = (timer: Timer) => void
 
 export const TimerErrors = {
-  AlreadyStarted: new Error(
-    "Timer has already been started, can't restart it until after it stops"
-  ),
-  NotStarted: new Error("Timer has not been started, can't be stopped"),
-  AlreadyStopped: new Error("Timer has already been stopped, can't be stopped again"),
+  AlreadyStarted: new Error("Timer has already been started"),
+  NotStarted: new Error("Timer has not been started & it can't be stopped"),
+  AlreadyStopped: new Error("Timer has already been stopped & can't be stopped again"),
 } as const
 
 export class Counter {
@@ -157,5 +152,66 @@ export class Counter {
     let retval = this.count
     this.count++
     return retval
+  }
+}
+
+namespace TimerReducer {
+  interface StartAction {
+    type: "start"
+    startTime: number
+  }
+  interface StopAction {
+    type: "stop"
+    stopTime: number
+  }
+  interface NoOpAction {
+    type: "noop"
+  }
+  export type Actions = StartAction | StopAction | NoOpAction
+
+  export interface State {
+    isStarted: boolean
+    isStopped: boolean
+    startTime: number
+    stopTime: number
+  }
+
+  /**
+   * @param currentState
+   * @param action
+   * @param timer
+   * @throws TimerErrors
+   */
+  export function reducerFn(currentState: State | undefined, action: Actions, timer: Timer): State {
+    if (!currentState)
+      return {
+        isStarted: false,
+        isStopped: false,
+        startTime: 0,
+        stopTime: 0,
+      }
+
+    switch (action.type) {
+      case "noop": {
+        return currentState
+      }
+      case "start":
+        if (currentState.isStarted) throw TimerErrors.AlreadyStarted
+        if (currentState.startTime == 0) {
+          timer._actuallyStartTimer()
+          return { ...currentState, isStarted: true, startTime: action.startTime }
+        }
+        break
+      case "stop":
+        if (!currentState.isStarted) throw TimerErrors.NotStarted
+        if (currentState.isStopped) throw TimerErrors.AlreadyStopped
+        if (currentState.stopTime == 0) {
+          timer._actuallyStopTimer()
+          return { ...currentState, isStopped: true, stopTime: action.stopTime }
+        }
+        break
+    }
+
+    return currentState
   }
 }
