@@ -113,9 +113,9 @@ export class ColorConsole {
 export const Styles = {
   Primary: chalk.bold.yellow.bgBlack,
   Secondary: chalk.underline.cyan.bgGray,
-} as const
+}
 
 export const StyledColorConsole = {
   Primary: ColorConsole.create(Styles.Primary),
   Secondary: ColorConsole.create(Styles.Secondary),
-} as const
+}

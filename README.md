@@ -438,7 +438,7 @@ const TimerConfig = {
   name: "Count to 5 timer",
   updateIntervalMs: 1000,
   maxCounter: 5,
-} as const
+}
 ```
 
 ## Build, test, and publish this package
