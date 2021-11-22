@@ -38,7 +38,7 @@ describe("Counter", () => {
 })
 
 describe("Timer", () => {
-  test("Can start", () => {
+  test("Can start a new timer", () => {
     let count = 0
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
@@ -66,7 +66,18 @@ describe("Timer", () => {
     timer.stop()
   })
 
-  const [delay, timeout, maxCount] = [5, 100, 5]
+  test("Can't restart a stopped timer (they aren't reusable)", () => {
+    let count = 0
+    const timer = _also(new Timer("test", 100), (it) => {
+      it.onTick = () => count++
+    })
+    timer.start()
+    timer.stop()
+    expect(() => timer.start()).toThrow(TimerErrors.AlreadyStarted)
+    expect(() => timer.stop()).toThrow(TimerErrors.AlreadyStopped)
+  })
+
+  const [delay, timeout, maxCount, duration] = [5, 100, 5, 50]
 
   test("Started timer calls supplied _tickFn and counts up as expected", async () => {
     let count = 0
@@ -105,5 +116,20 @@ describe("Timer", () => {
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
     await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
+  })
+
+  test("Started timer stops itself after duration has passed", async (done) => {
+    let count = 0
+
+    const timer: Timer = _also(new Timer("test", delay, duration), (it) => {
+      it.onTick = () => count++
+    })
+
+    timer.start()
+
+    setTimeout(() => {
+      expect(timer.isStopped).toBeTruthy()
+      done()
+    }, duration + delay)
   })
 })
