@@ -44,7 +44,7 @@ describe("Timer", () => {
       it.onTick = () => count++
     })
     timer.start()
-    expect(timer.isStarted).toBeTruthy()
+    expect(timer.isCreatedAndNotStarted).toBeFalsy()
     expect(timer.isRunning).toBeTruthy()
 
     await waitFor(() => expect(count).toBeGreaterThan(0))
@@ -59,7 +59,7 @@ describe("Timer", () => {
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
-    expect(() => timer.stop()).toThrow(TimerErrors.NotStarted)
+    expect(() => timer.stop()).toThrow(TimerErrors.CantStopSinceNotStarted)
   })
 
   test("Can't start a started timer", () => {
@@ -68,7 +68,7 @@ describe("Timer", () => {
       it.onTick = () => count++
     })
     timer.start()
-    expect(() => timer.start()).toThrow(TimerErrors.AlreadyStarted)
+    expect(() => timer.start()).toThrow(TimerErrors.CantStartAlreadyRunning)
     timer.stop()
   })
 
@@ -79,8 +79,8 @@ describe("Timer", () => {
     })
     timer.start()
     timer.stop()
-    expect(() => timer.start()).toThrow(TimerErrors.AlreadyStarted)
-    expect(() => timer.stop()).toThrow(TimerErrors.AlreadyStopped)
+    expect(() => timer.start()).toThrow(TimerErrors.CantStartSinceAlreadyStopped)
+    expect(() => timer.stop()).toThrow(TimerErrors.CantStopSinceAlreadyStopped)
   })
 
   const [delay, timeout, maxCount, duration] = [5, 100, 5, 50]

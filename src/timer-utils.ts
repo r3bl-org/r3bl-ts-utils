@@ -92,22 +92,16 @@ export class Timer {
     return `name: ${name}, delay: ${delayMs}ms, counter:${counter.value}`
   }
 
-  /** Once stop() is called, this is set and can't be reset. */
   get isStopped(): boolean {
-    return this.state.isStopped
-  }
-
-  /** Once start() is called, this is set and can't be reset. */
-  get isStarted(): boolean {
-    return this.state.isStarted
+    return this.state.runtimeStatus === "stopped"
   }
 
   get isRunning(): boolean {
-    return this.isStarted && !this.isStopped
+    return this.state.runtimeStatus === "running"
   }
 
-  private get isTimerIdDefined(): boolean {
-    return !!this.timerId // true if timerId is defined.
+  get isCreatedAndNotStarted(): boolean {
+    return this.state.runtimeStatus === "created_not_started"
   }
 
   get currentCount(): number {
@@ -156,9 +150,10 @@ export class Timer {
 export type TimerTickFn = (timer: Timer) => void
 
 export const TimerErrors = {
-  AlreadyStarted: new Error("Timer has already been started"),
-  NotStarted: new Error("Timer has not been started so it can't be stopped"),
-  AlreadyStopped: new Error("Timer has already been stopped so can't be stopped again"),
+  CantStartAlreadyRunning: new Error("Timer can't start since its already running"),
+  CantStopSinceNotStarted: new Error("Timer has been created, not started, can't be stopped"),
+  CantStartSinceAlreadyStopped: new Error("Timer can't start, already stopped, make a new one"),
+  CantStopSinceAlreadyStopped: new Error("Timer can't stopped, already stopped, make a new one"),
 }
 
 export class Counter {
@@ -193,53 +188,65 @@ namespace TimerReducer {
   export type Actions = StartAction | StopAction
 
   export interface State {
-    isStarted: boolean
-    isStopped: boolean
+    runtimeStatus: LifecycleStage
     startTime: number
     stopTime: number
   }
+  type LifecycleStage = "created_not_started" | "running" | "stopped"
 
-  type ReducerFnType = (
-    timer: Timer,
-    currentState?: TimerReducer.State,
-    action?: TimerReducer.Actions
-  ) => TimerReducer.State
+  type ReducerFnType = (timer: Timer, currentState?: State, action?: Actions) => State
 
   /**
    * @throws TimerErrors
    */
   export const reducerFn: ReducerFnType = (
     timer: Timer,
-    currentState?: TimerReducer.State,
-    action?: TimerReducer.Actions
-  ): TimerReducer.State => {
+    currentState?: State,
+    action?: Actions
+  ): State => {
     if (!currentState)
       return {
-        isStarted: false,
-        isStopped: false,
+        runtimeStatus: "created_not_started",
         startTime: 0,
         stopTime: 0,
       }
 
+    const { runtimeStatus } = currentState
+    const {
+      CantStartSinceAlreadyStopped: StartErr,
+      CantStartAlreadyRunning: StartErr2,
+      CantStopSinceAlreadyStopped: StopErr2,
+      CantStopSinceNotStarted: StopErr,
+    } = TimerErrors
+
     if (action)
       switch (action.type) {
         case "start":
-          if (currentState.isStarted) throw TimerErrors.AlreadyStarted
-          if (currentState.startTime == 0) {
-            timer._actuallyStartTimer()
-            return { ...currentState, isStarted: true, startTime: action.startTime }
-          }
+          if (runtimeStatus === "created_not_started") return startFn(timer, currentState, action)
+          if (runtimeStatus === "stopped") throw StartErr
+          if (runtimeStatus === "running") throw StartErr2
           break
         case "stop":
-          if (!currentState.isStarted) throw TimerErrors.NotStarted
-          if (currentState.isStopped) throw TimerErrors.AlreadyStopped
-          if (currentState.stopTime == 0) {
-            timer._actuallyStopTimer()
-            return { ...currentState, isStopped: true, stopTime: action.stopTime }
-          }
+          if (runtimeStatus === "created_not_started") throw StopErr
+          if (runtimeStatus === "stopped") throw StopErr2
+          if (runtimeStatus === "running") return stopFn(timer, currentState, action)
           break
       }
 
     return currentState
+  }
+
+  function stopFn(timer: Timer, currentState: State, action: StopAction): State {
+    timer._actuallyStopTimer()
+    return { ...currentState, runtimeStatus: "stopped", stopTime: action.stopTime }
+  }
+
+  function startFn(timer: Timer, currentState: State, action: StartAction): State {
+    timer._actuallyStartTimer()
+    return {
+      ...currentState,
+      runtimeStatus: "running",
+      startTime: action.startTime,
+    }
   }
 }

@@ -15,8 +15,6 @@
  *
  */
 
-// noinspection JSVoidFunctionReturnValueUsed
-
 import {
   _also,
   _apply,
