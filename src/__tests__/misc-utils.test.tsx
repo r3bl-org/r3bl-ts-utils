@@ -27,7 +27,7 @@ describe("misc-utils", () => {
     expect(ctxObject).toBeTruthy()
     expect(executed).toBeTruthy()
   })
-
+  
   test("_callIfFalsy", () => {
     let executedIfNull = false
     let executedIfUndefined = false
