@@ -374,7 +374,7 @@ component that uses Hooks to generate a CLI interface using
 
 ```tsx
 import React, { FC } from "react"
-import { Timer } from "./timer-utils"
+import { Timer, TimerImpl } from "./timer-utils"
 import { _also } from "./kotlin-lang-utils"
 import { _withRef, StateHook, useForceUpdateFn } from "./react-hook-utils"
 import { Text } from "ink"
@@ -398,7 +398,7 @@ export const ComponentUsingTimer: FC = () => {
 
   function effectToStartTimer() {
     /* ⚡ From scope functions. */
-    const timer = _also(new Timer(TimerConfig.name, TimerConfig.updateIntervalMs), (it) => {
+    const timer = _also(new TimerImpl(TimerConfig.name, TimerConfig.updateIntervalMs), (it) => {
       myTimerRef.current = it
       it.onTick = tickFn
     }).startTicking()

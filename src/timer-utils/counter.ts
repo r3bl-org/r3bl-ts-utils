@@ -15,9 +15,22 @@
  *
  */
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./color-console-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./react-hook-utils"
-export * from "./timer-utils"
+export class Counter {
+  private count: number
+
+  constructor(startCount = 0) {
+    this.count = startCount
+  }
+
+  get value(): number {
+    return this.count
+  }
+
+  increment = () => this.count++
+
+  getAndIncrement = () => {
+    const { count: oldCount } = this
+    this.count++
+    return oldCount
+  }
+}

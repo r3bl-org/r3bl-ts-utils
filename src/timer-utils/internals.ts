@@ -15,9 +15,10 @@
  *
  */
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./color-console-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./react-hook-utils"
-export * from "./timer-utils"
+import { Timer } from "./externals"
+
+/** Private interface for TimerReducer */
+export interface TimerInternal extends Timer {
+  actuallyStart(): void
+  actuallyStop(): void
+}
