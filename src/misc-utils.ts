@@ -37,9 +37,6 @@ export const sleep = (ms: number = 500) => {
   })
 }
 
-export type Nullable<T> = T | null | undefined
-export type TruthyReceiverFn<T> = (it: NonNullable<T>) => void
-
 /**
  * @param ctxObject it can be null or undefined
  * @param receiverFn lambda that accepts `it`; only runs if `ctxObject` property is truthy
@@ -52,3 +49,14 @@ export const _callIfTruthy = <T>(
   if (ctxObject) receiverFn(ctxObject!!)
   return ctxObject
 }
+export type Nullable<T> = T | null | undefined
+export type TruthyReceiverFn<T> = (it: NonNullable<T>) => void
+
+/**
+ * @param ctxObject it can be null or undefined
+ * @param receiverFn lambda that only runs if `ctxObject` property is falsy
+ */
+export const _callIfFalsy = (ctxObject: null | undefined, receiverFn: FalsyReceiverFn) =>
+  !ctxObject ? receiverFn() : undefined
+
+export type FalsyReceiverFn = () => void
