@@ -38,14 +38,20 @@ describe("Counter", () => {
 })
 
 describe("Timer", () => {
-  test("Can start a new timer", () => {
+  test("Can start & stop a new timer", async () => {
     let count = 0
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
     timer.start()
     expect(timer.isStarted).toBeTruthy()
+    expect(timer.isRunning).toBeTruthy()
+
+    await waitFor(() => expect(count).toBeGreaterThan(0))
+
     timer.stop()
+    expect(timer.isStopped).toBeTruthy()
+    expect(timer.isRunning).toBeFalsy()
   })
 
   test("Can't stop a stopped timer", () => {

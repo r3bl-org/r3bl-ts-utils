@@ -102,6 +102,10 @@ export class Timer {
     return this.state.isStarted
   }
 
+  get isRunning(): boolean {
+    return this.isStarted && !this.isStopped
+  }
+
   private get isTimerIdDefined(): boolean {
     return !!this.timerId // true if timerId is defined.
   }
