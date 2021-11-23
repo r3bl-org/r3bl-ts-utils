@@ -15,82 +15,56 @@
  *
  */
 
-import { _callIfTruthy } from "./misc-utils"
+import { _callIfTruthy, Nullable } from "./misc-utils"
 import { _also } from "./kotlin-lang-utils"
-
 const DEBUG = false
 
+// Constants.
+const DefaultDuration = -1
+
 export class Timer {
-  // Properties.
+  // Properties (simple).
 
-  private timerId?: NodeJS.Timeout
+  private timerHandle?: NodeJS.Timeout
 
-  // Backing fields for getter and/or setters.
+  // Properties (backing fields for getters, setters).
 
+  private _state: TimerReducer.State
   private _tickFn?: TimerTickFn
   private _stopFn?: TimerTickFn
   private _counter: Counter = new Counter()
 
-  constructor(readonly name: string, readonly delayMs: number, readonly durationMs: number = -1) {}
+  constructor(
+    readonly name: string,
+    readonly delayMs: number,
+    readonly durationMs: number = DefaultDuration
+  ) {
+    this._state = this.dispatch()
+  }
 
   // State management delegated to TimerReducer.
 
+  /**
+   * Computes the new state using `TimerReducer.reducerFn` and puts it `this.state` property.
+   * @param action if not provided compute initial state, else use it to get new state
+   * @return new state object
+   */
   private dispatch = (action?: TimerReducer.Actions): TimerReducer.State =>
     _also(TimerReducer.reducerFn(this, this.state, action), (newState) => {
-      this.state = newState
+      this._state = newState
     })
 
-  private state: TimerReducer.State = this.dispatch()
-
-  start() {
+  startTicking(): this {
     this.dispatch({ type: "start", startTime: Date.now() })
+    return this
   }
 
-  stop() {
+  stopTicking(): this {
     this.dispatch({ type: "stop", stopTime: Date.now() })
+    return this
   }
 
-  // Logic to start / stop the timer.
-
-  _actuallyStartTimer() {
-    const { name, durationMs, state, counter, delayMs } = this
-
-    DEBUG && console.log(name ?? "Timer", "start called, timerId = ", this.timerId)
-
-    const doTickAndAutoStopCheck = () => {
-      if (durationMs > 0 && Date.now() - state.startTime >= durationMs) {
-        this.stop()
-      } else {
-        _callIfTruthy(this._tickFn, (it) => it(this))
-        counter.increment()
-      }
-    }
-
-    this.timerId = setInterval(doTickAndAutoStopCheck, delayMs)
-
-    DEBUG && console.log(name ?? "Timer", "started, timerId = ", this.timerId)
-  }
-
-  _actuallyStopTimer() {
-    const { name } = this
-    DEBUG && console.log(name ?? "Timer", "stop called, timerId = ", this.timerId)
-
-    if (this.timerId) {
-      clearInterval(this.timerId)
-      this.timerId = undefined
-    }
-
-    _callIfTruthy(this._stopFn, (it) => it(this))
-
-    DEBUG && console.log(name ?? "Timer", "stopped, timerId = ", this.timerId)
-  }
-
-  // Misc methods.
-
-  toString(): string {
-    const { counter, delayMs, name } = this
-    return `name: ${name}, delay: ${delayMs}ms, counter:${counter.value}`
-  }
+  // Getters for state.
 
   get isStopped(): boolean {
     return this.state.runtimeStatus === "stopped"
@@ -104,13 +78,55 @@ export class Timer {
     return this.state.runtimeStatus === "created_not_started"
   }
 
-  get currentCount(): number {
-    return this.counterValue
+  get state(): TimerReducer.State {
+    return this._state
   }
 
-  get counterValue(): number {
-    return this.counter.value
+  // Logic to start / stop the timer.
+
+  _actuallyStart() {
+    const { name, durationMs, state, counter, delayMs } = this
+
+    DEBUG && console.log(name ?? "Timer", "start called, timerHandle = ", this.timerHandle)
+
+    const doTickAndAutoStopCheck = () => {
+      if (durationMs > 0 && Date.now() - state.startTime >= durationMs) {
+        this.stopTicking()
+      } else {
+        _callIfTruthy(this._tickFn, (it) => it(this))
+        counter.increment()
+      }
+    }
+
+    this.timerHandle = setInterval(doTickAndAutoStopCheck, delayMs)
+
+    DEBUG && console.log(name ?? "Timer", "started, timerHandle = ", this.timerHandle)
   }
+
+  _actuallyStop() {
+    const { name } = this
+    DEBUG && console.log(name ?? "Timer", "stop called, timerHandle = ", this.timerHandle)
+
+    if (this.timerHandle) {
+      clearInterval(this.timerHandle)
+      this.timerHandle = undefined
+    }
+
+    _callIfTruthy(this._stopFn, (it) => it(this))
+
+    DEBUG && console.log(name ?? "Timer", "stopped, timerHandle = ", this.timerHandle)
+  }
+
+  // Misc methods.
+
+  toString(): string {
+    const { counter, delayMs, name, state, durationMs } = this
+    return `name: '${name}', delay: ${delayMs}ms, ${
+      durationMs !== DefaultDuration ? "duration:" + durationMs + "ms" : ""
+    }counter:${counter.value}, state:${state.runtimeStatus}`
+  }
+
+  // Getter and setter for counter.
 
   get counter(): Counter {
     return this._counter
@@ -120,40 +136,37 @@ export class Timer {
     this._counter = value
   }
 
-  set stopFn(value: TimerTickFn) {
-    this._stopFn = value
+  // Getter and setter for onStop.
+
+  get onStop(): Nullable<TimerTickFn> {
+    return this._stopFn
   }
 
-  set onStop(value: TimerTickFn) {
-    this.stopFn = value
+  set onStop(value: Nullable<TimerTickFn>) {
+    _callIfTruthy(value, (it) => {
+      this._stopFn = it
+    })
   }
 
-  set tickFn(value: TimerTickFn) {
-    this._tickFn = value
-  }
+  // Getter and setter for onTick.
 
-  set onTick(value: TimerTickFn) {
-    this.tickFn = value
+  get onTick(): Nullable<TimerTickFn> {
+    return this._tickFn
   }
-
-  startTicking(): this {
-    this.start()
-    return this
-  }
-
-  stopTicking(): this {
-    this.stop()
-    return this
+  set onTick(value: Nullable<TimerTickFn>) {
+    _callIfTruthy(value, (it) => {
+      this._tickFn = it
+    })
   }
 }
 
 export type TimerTickFn = (timer: Timer) => void
 
 export const TimerErrors = {
-  CantStartAlreadyRunning: new Error("Timer can't start since its already running"),
-  CantStopSinceNotStarted: new Error("Timer has been created, not started, can't be stopped"),
-  CantStartSinceAlreadyStopped: new Error("Timer can't start, already stopped, make a new one"),
-  CantStopSinceAlreadyStopped: new Error("Timer can't stopped, already stopped, make a new one"),
+  CantStart_AlreadyRunning: new Error("Timer can't be started, its already running"),
+  CantStop_NotStarted: new Error("Timer can't be stopped, as it's created but not started"),
+  CantStart_AlreadyStopped: new Error("Stopped timer can't be started, please make a new one"),
+  CantStop_AlreadyStopped: new Error("Stopped timer can't be stopped, please make a new one"),
 }
 
 export class Counter {
@@ -213,22 +226,22 @@ namespace TimerReducer {
 
     const { runtimeStatus } = currentState
     const {
-      CantStartSinceAlreadyStopped: StartErr,
-      CantStartAlreadyRunning: StartErr2,
-      CantStopSinceAlreadyStopped: StopErr2,
-      CantStopSinceNotStarted: StopErr,
+      CantStart_AlreadyStopped,
+      CantStart_AlreadyRunning,
+      CantStop_AlreadyStopped,
+      CantStop_NotStarted,
     } = TimerErrors
 
     if (action)
       switch (action.type) {
         case "start":
           if (runtimeStatus === "created_not_started") return startFn(timer, currentState, action)
-          if (runtimeStatus === "stopped") throw StartErr
-          if (runtimeStatus === "running") throw StartErr2
+          if (runtimeStatus === "stopped") throw CantStart_AlreadyStopped
+          if (runtimeStatus === "running") throw CantStart_AlreadyRunning
           break
         case "stop":
-          if (runtimeStatus === "created_not_started") throw StopErr
-          if (runtimeStatus === "stopped") throw StopErr2
+          if (runtimeStatus === "created_not_started") throw CantStop_NotStarted
+          if (runtimeStatus === "stopped") throw CantStop_AlreadyStopped
           if (runtimeStatus === "running") return stopFn(timer, currentState, action)
           break
       }
@@ -237,12 +250,12 @@ namespace TimerReducer {
   }
 
   function stopFn(timer: Timer, currentState: State, action: StopAction): State {
-    timer._actuallyStopTimer()
+    timer._actuallyStop()
     return { ...currentState, runtimeStatus: "stopped", stopTime: action.stopTime }
   }
 
   function startFn(timer: Timer, currentState: State, action: StartAction): State {
-    timer._actuallyStartTimer()
+    timer._actuallyStart()
     return {
       ...currentState,
       runtimeStatus: "running",

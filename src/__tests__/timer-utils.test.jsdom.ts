@@ -43,13 +43,13 @@ describe("Timer", () => {
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
-    timer.start()
+    timer.startTicking()
     expect(timer.isCreatedAndNotStarted).toBeFalsy()
     expect(timer.isRunning).toBeTruthy()
 
     await waitFor(() => expect(count).toBeGreaterThan(0))
 
-    timer.stop()
+    timer.stopTicking()
     expect(timer.isStopped).toBeTruthy()
     expect(timer.isRunning).toBeFalsy()
   })
@@ -59,7 +59,7 @@ describe("Timer", () => {
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
-    expect(() => timer.stop()).toThrow(TimerErrors.CantStopSinceNotStarted)
+    expect(() => timer.stopTicking()).toThrow(TimerErrors.CantStop_NotStarted)
   })
 
   test("Can't start a started timer", () => {
@@ -67,9 +67,9 @@ describe("Timer", () => {
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
-    timer.start()
-    expect(() => timer.start()).toThrow(TimerErrors.CantStartAlreadyRunning)
-    timer.stop()
+    timer.startTicking()
+    expect(() => timer.startTicking()).toThrow(TimerErrors.CantStart_AlreadyRunning)
+    timer.stopTicking()
   })
 
   test("Can't restart a stopped timer (they aren't reusable)", () => {
@@ -77,10 +77,10 @@ describe("Timer", () => {
     const timer = _also(new Timer("test", 100), (it) => {
       it.onTick = () => count++
     })
-    timer.start()
-    timer.stop()
-    expect(() => timer.start()).toThrow(TimerErrors.CantStartSinceAlreadyStopped)
-    expect(() => timer.stop()).toThrow(TimerErrors.CantStopSinceAlreadyStopped)
+    timer.startTicking()
+    timer.stopTicking()
+    expect(() => timer.startTicking()).toThrow(TimerErrors.CantStart_AlreadyStopped)
+    expect(() => timer.stopTicking()).toThrow(TimerErrors.CantStop_AlreadyStopped)
   })
 
   const [delay, timeout, maxCount, duration] = [5, 100, 5, 50]
@@ -89,7 +89,7 @@ describe("Timer", () => {
     let count = 0
 
     const timer: Timer = _also(new Timer("test", delay), (it) => {
-      it.onTick = () => (it.counterValue < maxCount ? count++ : undefined)
+      it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
     })
 
     _also(timer.startTicking(), (it) => expect(it).toBe(timer))
@@ -99,7 +99,7 @@ describe("Timer", () => {
     }, timeout)
 
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
+    await waitFor(() => expect(timer.counter.value).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
   })
 
@@ -108,19 +108,19 @@ describe("Timer", () => {
     let stopped = false
 
     const timer: Timer = _also(new Timer("test", delay), (it) => {
-      it.onTick = () => (it.counterValue < maxCount ? count++ : undefined)
-      it.stopFn = () => (stopped = true)
+      it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
+      it.onStop = () => (stopped = true)
     })
 
-    timer.start()
+    timer.startTicking()
 
     setTimeout(() => {
-      timer.stop()
+      timer.stopTicking()
       expect(stopped).toBeTruthy()
     }, timeout)
 
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counterValue).toBeGreaterThanOrEqual(maxCount))
+    await waitFor(() => expect(timer.counter.value).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
   })
 
@@ -131,7 +131,7 @@ describe("Timer", () => {
       it.onTick = () => count++
     })
 
-    timer.start()
+    timer.startTicking()
 
     setTimeout(() => {
       expect(timer.isStopped).toBeTruthy()
