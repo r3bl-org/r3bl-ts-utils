@@ -59,13 +59,13 @@ const MyFC2: FC = () => {
 describe("_withRef", () => {
   test("lambda executes when current property is truthy", () => {
     render(React.createElement(MyFC, null))
-    expect(myGlobalState.myRef!!.current).toBeTruthy()
+    expect(myGlobalState.myRef?.current).toBeTruthy()
     expect(myGlobalState.myFlag).toBeTruthy()
   })
 
   test("lambda does not execute when current property is falsy", () => {
     render(React.createElement(MyFC2, null))
-    expect(myGlobalState.myRef!!.current).toBeFalsy()
+    expect(myGlobalState.myRef?.current).toBeFalsy()
     expect(myGlobalState.myFlag).toBeFalsy()
   })
 })

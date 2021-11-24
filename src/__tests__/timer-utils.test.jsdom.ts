@@ -15,7 +15,7 @@
  *
  */
 
-import { _also, Counter, createTimer, Timer, TimerErrors, TimerImpl } from "../index"
+import { _also, Counter, createTimer, Timer, TimerErrors } from "../index"
 import { waitFor } from "@testing-library/react"
 
 describe("Counter", () => {
@@ -136,7 +136,7 @@ describe("Timer", () => {
     expect(count).toEqual(maxCount)
   })
 
-  test("Started timer stops itself after duration has passed", async (done) => {
+  test("Started timer stops itself after duration has passed", (done) => {
     let count = 0
 
     const timer: Timer = _also(createTimer("test", delay, duration), (it) => {

@@ -15,7 +15,7 @@
  *
  */
 
-import { State, Timer, TimerTickFn } from "./externals"
+import { State, TimerTickFn } from "./externals"
 import { Actions, reducerFn } from "./timer-reducer"
 import { Counter } from "./counter"
 import { _also } from "../kotlin-lang-utils"
@@ -129,7 +129,7 @@ export class TimerImpl implements TimerInternal {
   toString(): string {
     const { counter, delayMs, name, state, durationMs } = this
     return `name: '${name}', delay: ${delayMs}ms, ${
-      durationMs !== NoDuration ? "duration:" + durationMs + "ms" : ""
+      durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
     }counter:${counter.value}, state:${state.runtimeStatus}`
   }
 

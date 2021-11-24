@@ -16,16 +16,14 @@
  */
 
 import { ColorConsole, Styles } from "./color-console-utils"
-import * as React from "react"
 
-export const sleep = (ms: number = 500) => {
+export const sleep = (ms = 500) => {
   const sprites = ["-", "\\", "-", "/"]
 
   let count = 0
   const printDotsInterval = setInterval(() => {
-    ColorConsole.create(Styles.Primary.cyan)(
-      "Sleep " + sprites[count++ % sprites.length]
-    ).consoleLogInPlace()
+    const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
+    ColorConsole.create(Styles.Primary.cyan)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
 
   return new Promise<void>((resolveFn) => {
@@ -46,17 +44,17 @@ export const _callIfTruthy = <T>(
   ctxObject: Nullable<T>,
   receiverFn: TruthyReceiverFn<T>
 ): Nullable<T> => {
-  if (ctxObject) receiverFn(ctxObject!!)
+  if (ctxObject) receiverFn(ctxObject)
   return ctxObject
 }
 export type Nullable<T> = T | null | undefined
-export type TruthyReceiverFn<T> = (it: NonNullable<T>) => void
+export type TruthyReceiverFn<T> = (it: T) => void
 
 /**
  * @param ctxObject it can be null or undefined
  * @param receiverFn lambda that only runs if `ctxObject` property is falsy
  */
-export const _callIfFalsy = (ctxObject: any, receiverFn: FalsyReceiverFn) =>
+export const _callIfFalsy = (ctxObject: unknown, receiverFn: FalsyReceiverFn) =>
   !ctxObject ? receiverFn() : undefined
 
 export type FalsyReceiverFn = () => void

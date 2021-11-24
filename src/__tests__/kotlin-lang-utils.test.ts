@@ -27,7 +27,7 @@ import {
 } from "../index"
 
 it("_also() takes a contextObject, passes it to the ReceiverFn, and returns the contextObject", () => {
-  const contextObject: string = "_also"
+  const contextObject = "_also"
 
   // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
   const myReceiverFn: ReceiverFn<string> = (it) => {
@@ -43,11 +43,11 @@ it("_also() takes a contextObject, passes it to the ReceiverFn, and returns the 
 })
 
 it("_let() takes a contextObject, passes it to the ReceiverFnWithReturn, and returns its return value", () => {
-  const contextObject: string = "_let"
-  const receiverFnReturnValue: Symbol = Symbol()
+  const contextObject = "_let"
+  const receiverFnReturnValue = Symbol()
 
   // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
-  const myReceiverFn: ReceiverFnWithReturn<string, Symbol> = (it) => {
+  const myReceiverFn: ReceiverFnWithReturn<string, symbol> = (it) => {
     expect(it).toEqual(contextObject)
     return receiverFnReturnValue
   }
@@ -63,7 +63,7 @@ it(
   "_apply() takes a contextObject, binds it to ImplicitReceiverObject's this, calls it, then" +
     " returns the contextObject",
   () => {
-    const contextObject: string = "_apply"
+    const contextObject = "_apply"
 
     // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
     const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
@@ -84,12 +84,12 @@ it(
   "_with() takes a contextObject, binds it to ImplicitReceiverObjectWithReturn's this, calls it," +
     " then returns the its return value",
   () => {
-    const contextObject: string = "_with"
-    const receiverReturnValue: Symbol = Symbol()
+    const contextObject = "_with"
+    const receiverReturnValue = Symbol()
 
     // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
-    const myImplicitReceiverObjectWithReturn: ImplicitReceiverObjectWithReturn<string, Symbol> = {
-      fnWithReboundThis: function (): Symbol {
+    const myImplicitReceiverObjectWithReturn: ImplicitReceiverObjectWithReturn<string, symbol> = {
+      fnWithReboundThis: function (): symbol {
         expect(this).toEqual(contextObject)
         return receiverReturnValue
       },

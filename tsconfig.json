@@ -1,13 +1,11 @@
 {
+  "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
-    "strict": true,
-    "module": "CommonJS",
-    "target": "ESNext",
-    "declaration": true,
+    "esModuleInterop": true,
+    "outDir": "build",
     "sourceMap": true,
-    "outDir": "build", // More info https://stackoverflow.com/a/49687441/2085356
-    "jsx": "react"
+    "target": "ESNext", // https://stackoverflow.com/a/62837086/2085356
+    "module": "CommonJS"
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "include": ["src"]
 }
