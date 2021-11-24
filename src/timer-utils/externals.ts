@@ -17,12 +17,15 @@
 
 // Exported types & errors.
 import { Counter } from "./counter"
+import { Nullable } from "../misc-utils"
 
 export interface State {
   runtimeStatus: LifecycleStage
   startTime: number
   stopTime: number
 }
+
+export type TimerTickFn = (timer: Timer) => void
 
 type LifecycleStage = "created_not_started" | "running" | "stopped"
 
@@ -35,15 +38,13 @@ export interface Timer {
   readonly isCreatedAndNotStarted: boolean
   readonly state: State
   counter: Counter
-  onStop: ((timer: Timer) => void) | null | undefined
-  onStart: ((timer: Timer) => void) | null | undefined
-  onTick: ((timer: Timer) => void) | null | undefined
+  onStop: Nullable<TimerTickFn>
+  onStart: Nullable<TimerTickFn>
+  onTick: Nullable<TimerTickFn>
   startTicking(): this
   stopTicking(): this
   toString(): string
 }
-
-export type TimerTickFn = (timer: Timer) => void
 
 export const TimerErrors = {
   CantStart_AlreadyRunning: new Error("Timer can't be started, its already running"),

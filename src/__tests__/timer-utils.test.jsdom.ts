@@ -15,7 +15,7 @@
  *
  */
 
-import { _also, Counter, Timer, TimerErrors, TimerImpl } from "../index"
+import { _also, Counter, createTimer, Timer, TimerErrors, TimerImpl } from "../index"
 import { waitFor } from "@testing-library/react"
 
 describe("Counter", () => {
@@ -43,7 +43,7 @@ describe("Timer", () => {
     let onStartCalled = false
     let onStopCalled = false
 
-    const timer: Timer = _also(new TimerImpl("test", 100), (it) => {
+    const timer: Timer = _also(createTimer("test", 100), (it) => {
       it.onTick = () => count++
       it.onStart = () => (onStartCalled = true)
       it.onStop = () => (onStopCalled = true)
@@ -68,7 +68,7 @@ describe("Timer", () => {
 
   test("Can't stop a stopped timer", () => {
     let count = 0
-    const timer: Timer = _also(new TimerImpl("test", 100), (it) => {
+    const timer: Timer = _also(createTimer("test", 100), (it) => {
       it.onTick = () => count++
     })
     expect(() => timer.stopTicking()).toThrow(TimerErrors.CantStop_NotStarted)
@@ -76,7 +76,7 @@ describe("Timer", () => {
 
   test("Can't start a started timer", () => {
     let count = 0
-    const timer: Timer = _also(new TimerImpl("test", 100), (it) => {
+    const timer: Timer = _also(createTimer("test", 100), (it) => {
       it.onTick = () => count++
     })
     timer.startTicking()
@@ -86,7 +86,7 @@ describe("Timer", () => {
 
   test("Can't restart a stopped timer (they aren't reusable)", () => {
     let count = 0
-    const timer: Timer = _also(new TimerImpl("test", 100), (it) => {
+    const timer: Timer = _also(createTimer("test", 100), (it) => {
       it.onTick = () => count++
     })
     timer.startTicking()
@@ -100,7 +100,7 @@ describe("Timer", () => {
   test("Started timer calls supplied _tickFn and counts up as expected", async () => {
     let count = 0
 
-    const timer: Timer = _also(new TimerImpl("test", delay), (it) => {
+    const timer: Timer = _also(createTimer("test", delay), (it) => {
       it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
     })
 
@@ -119,7 +119,7 @@ describe("Timer", () => {
     let count = 0
     let stopped = false
 
-    const timer: Timer = _also(new TimerImpl("test", delay), (it) => {
+    const timer: Timer = _also(createTimer("test", delay), (it) => {
       it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
       it.onStop = () => (stopped = true)
     })
@@ -139,7 +139,7 @@ describe("Timer", () => {
   test("Started timer stops itself after duration has passed", async (done) => {
     let count = 0
 
-    const timer: Timer = _also(new TimerImpl("test", delay, duration), (it) => {
+    const timer: Timer = _also(createTimer("test", delay, duration), (it) => {
       it.onTick = () => count++
     })
 
