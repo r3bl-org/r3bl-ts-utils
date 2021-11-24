@@ -367,14 +367,14 @@ const checkIfTimerIsStopped: ReactRefReceiverFn<Timer> = (timer: Timer) => {
 
 ## Timer utils
 
-To use the timer utils, here are the two main classes: `Timer` and `Counter`. The [tests][sf-2] are
-a great place to discover the API surface. Here's an example of using this in a React functional
-component that uses Hooks to generate a CLI interface using
+To use the timer utils, here is the main class: `TimerImpl` and its interface `Timer`. This
+interface and the [tests][sf-2] are a great place to discover the API surface. Here's an example of
+using this in a React functional component that uses Hooks to generate a CLI interface using
 [ink](https://github.com/vadimdemedes/ink).
 
 ```tsx
 import React, { FC } from "react"
-import { Timer, TimerImpl } from "./timer-utils"
+import { Timer, createTimer } from "./timer-utils"
 import { _also } from "./kotlin-lang-utils"
 import { _withRef, StateHook, useForceUpdateFn } from "./react-hook-utils"
 import { Text } from "ink"
@@ -391,14 +391,11 @@ export const ComponentUsingTimer: FC = () => {
 
   return render()
 
-  function tickFn(timer: Timer): void {
-    setCount(timer.counter.value)
-    DEBUG && console.log(`"${timer.name}"`, timer.isStarted, timer.counter.value)
-  }
+  // Define the functions used above.
 
   function effectToStartTimer() {
     /* ⚡ From scope functions. */
-    const timer = _also(new TimerImpl(TimerConfig.name, TimerConfig.updateIntervalMs), (it) => {
+    const timer = _also(createTimer(TimerConfig.name, TimerConfig.updateIntervalMs), (it) => {
       myTimerRef.current = it
       it.onTick = tickFn
     }).startTicking()
@@ -407,6 +404,11 @@ export const ComponentUsingTimer: FC = () => {
       if (timer.isStarted) timer.stopTicking()
       DEBUG && console.log(`😵 unmount`, myTimerRef.current)
     }
+  }
+
+  function tickFn(timer: Timer): void {
+    setCount(timer.counter.value)
+    DEBUG && console.log(`"${timer.name}"`, timer.isStarted, timer.counter.value)
   }
 
   function effectToCheckStoppingTimer() {

@@ -16,12 +16,12 @@
  */
 
 // Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-import { Timer } from "./externals"
-import { TimerImpl } from "./timer-impl"
-
 export * from "./counter"
 export * from "./externals"
 export * from "./timer-impl"
+
+import { Timer } from "./externals"
+import { TimerImpl } from "./timer-impl"
 
 /** Factory function to create an object that implements (external) Timer interface. */
 export const createTimer = (name: string, delay: number, duration?: number): Timer => {

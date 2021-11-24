@@ -17,7 +17,12 @@
 
 import { Timer } from "./externals"
 
-/** Private interface for TimerReducer */
+/**
+ * These types and interfaces are private to this timer-utils "module" and are not exported such
+ * that users of this API will not have access to them. The intention behind doing this is to hide
+ * the `actuallyStart()` and `actuallyStop()` methods from the public `Timer` interface.
+ */
+
 export interface TimerInternal extends Timer {
   actuallyStart(): void
   actuallyStop(): void

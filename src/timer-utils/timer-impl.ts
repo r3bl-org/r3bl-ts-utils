@@ -20,12 +20,13 @@ import { Actions, reducerFn } from "./timer-reducer"
 import { Counter } from "./counter"
 import { _also } from "../kotlin-lang-utils"
 import { _callIfTruthy, Nullable } from "../misc-utils"
+import { TimerInternal } from "./internals"
 
 // Constants.
 const DEBUG = false
 const NoDuration = -1
 
-export class TimerImpl implements Timer {
+export class TimerImpl implements TimerInternal {
   // Properties (simple).
 
   private timerHandle?: NodeJS.Timeout
