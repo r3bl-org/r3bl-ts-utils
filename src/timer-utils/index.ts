@@ -18,23 +18,39 @@
 // Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
 export * from "./counter"
 export * from "./externals"
-export * from "./timer-impl"
 
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
 
 /*
  * timer-utils is a module that exposes very little to the users of this module by defining a clear
- * boundary between external and internal facing interfaces.
+ * boundary between external and internal facing code. The trick is to create an `index.ts` inside
+ * the timer-utils folder that is used to expose only the symbols that are meant to be external. On
+ * the other side (code using this library) the folder itself is imported, not a specific file,
+ * using `import * as timer from "./timer-utils"`. Here, `timer-utils` is a folder, and not a file.
  *
+ * Internal
+ * --------
  * For code inside this module, everything is openly exposed and is considered internal. Inside the
- * module, there are no protections in place.
+ * module, there are no protections in place. Here are the files that are internal only.
  *
+ * 1. internals.ts      <- Internal interfaces, types
+ * 2. timer-reducer.ts  <- Internal functions, interfaces, types
+ * 3. timer-impl.ts     <- Internal classes, interfaces, functions
+ *
+ * External
+ * --------
  * For users of this module, who don't care about the internal details of this module (and they
- * shouldn't have to), the main file is `externals.ts`. This file exposes via `index.ts` all the
- * interfaces that need to be visible to (external) users of this (library) module. Additionally,
- * `index.ts` exposes a factory function that should be used to get instances of `Timer` instead of
- * directly calling the constructor on `TimerImpl`.
+ * shouldn't have to), the main file is `externals.ts`. This following symbols are
+ * exported by `index.ts`.
+ *
+ * 0. index.ts         <- Re-export all the external symbols (and factory function)
+ * 1. counter.ts       <- External class
+ * 2. timer-impl.ts    <- External class
+ * 3. externals.ts     <- External interfaces, types
+ *
+ * Additionally, `index.ts` exposes a factory function that should be used to get instances of
+ * `Timer` instead of directly calling the constructor on `TimerImpl`.
  */
 
 /* Factory function to create an object that implements (external) Timer interface. */
