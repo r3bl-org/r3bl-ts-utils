@@ -15,7 +15,7 @@
  *
  */
 
-/**
+/*
  * These types and interfaces are exported to the users of this API. They form the public facing
  * interface of timer-utils.
  */

@@ -16,11 +16,11 @@
  */
 
 import { State, TimerTickFn } from "./externals"
+import { TimerInternal } from "./internals"
 import { Actions, reducerFn } from "./timer-reducer"
 import { Counter } from "./counter"
 import { _also } from "../kotlin-lang-utils"
 import { _callIfTruthy, Nullable } from "../misc-utils"
-import { TimerInternal } from "./internals"
 
 // Constants.
 const DEBUG = false

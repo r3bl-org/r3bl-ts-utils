@@ -20,7 +20,7 @@ import { Dispatch, SetStateAction } from "react"
 
 // State helpers.
 
-/**
+/*
  * Useful type function to describe array returned by `React.useState()`.
  */
 export type StateHook<T> = [T, Dispatch<SetStateAction<T>>]
@@ -45,7 +45,7 @@ export const _withRef = <T>(
 
 // Other React hook helpers.
 
-/**
+/*
  * More info - https://stackoverflow.com/a/68602854/2085356.
  */
 export function useForceUpdateFn(): () => void {

@@ -71,7 +71,7 @@ export interface ImplicitReceiverObjectWithReturn<T, R> {
 /**
  * @param contextObject value of `this` (in the `blockWithReboundThis` function)
  * @param objectContainingFnWithReboundThis object containing function `blockWithReboundThis`
- * which accepts contextObject (aka `this`)
+ *        which accepts contextObject (aka `this`)
  * @return contextObject return the contextObject that is passed
  */
 export const _apply = <T>(
@@ -85,7 +85,7 @@ export const _apply = <T>(
 /**
  * @param contextObject value of `this` (in the `blockWithReboundThis` function)
  * @param objectContainingFnWithReboundThis object containing function `blockWithReboundThis`
- * which accepts contextObject (aka `this`)
+ *        which accepts contextObject (aka `this`)
  * @return contextObject return the result of the `blockWithReboundThis` function
  */
 export const _with = <T, R>(
