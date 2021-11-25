@@ -29,7 +29,8 @@ const NoDuration = -1
 export class TimerImpl implements TimerInternal {
   // Properties (simple).
 
-  private timerHandle?: NodeJS.Timeout
+  // https://stackoverflow.com/a/56970244/2085356
+  private timerHandle?: any
 
   // Properties (backing fields for getters, setters).
 
