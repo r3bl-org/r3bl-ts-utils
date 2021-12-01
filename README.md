@@ -68,9 +68,13 @@ Here are some important links for this package.
 <!-- prettier-ignore-start -->
 
 [o-1]: https://github.com/r3bl-org/r3bl-ts-utils
+
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
+
 [o-3]: https://github.com/nazmulidris/color-console
+
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
+
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 
 <!-- prettier-ignore-end -->
@@ -96,6 +100,7 @@ hood, so you can use all it's styling rules, objects, functions, and classes.
 <!-- prettier-ignore-start -->
 
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
+
 [cc-2]: https://www.npmjs.com/package/chalk
 
 <!-- prettier-ignore-end -->
@@ -158,6 +163,7 @@ one. So here are four examples of using them. You can browse the source [here][s
 <!-- prettier-ignore-start -->
 
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
+
 [sf-2]: https://github.com/r3bl-org/r3bl-ts-utils/tree/main/src/__tests
 
 <!-- prettier-ignore-end -->
@@ -206,7 +212,7 @@ expect(returnValue).toEqual(`my-string`)
 then returns the `contextObject`. Here's an example.
 
 ```typescript
-import { _apply, ImplicitReceiverObject } from "r3bl-ts-utils"
+import {_apply, ImplicitReceiverObject} from "r3bl-ts-utils"
 
 const contextObject: string = "string"
 const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
@@ -231,15 +237,17 @@ expect(returnValue).toEqual(contextObject)
 calls it then returns the its return value. Here's an example.
 
 ```typescript
-import { _with, ImplicitReceiverObjectWithReturn } from "r3bl-ts-utils"
+import {_with, ImplicitReceiverObjectWithReturn} from "r3bl-ts-utils"
 
 const contextObject: string = "some_data"
 const hardcodedReceiverReturnValue: Symbol = Symbol()
 const returnValue = _with(contextObject, {
-  fnWithReboundThis: Symbol {
-    expect(this).toEqual(contextObject)
-    return hardcodedReceiverReturnValue
-  },
+  fnWithReboundThis: Symbol
+{
+  expect(this).toEqual(contextObject)
+  return hardcodedReceiverReturnValue
+}
+,
 })
 expect(returnValue).toEqual(hardcodedReceiverReturnValue)
 ```
@@ -318,7 +326,8 @@ export const MyFunctionalComponent: FC = () => {
 ### `_withRef()`
 
 The `_withRef()` function provides a slightly cleaner syntax to working w/
-[`React.useRef().current`](https://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#first-render-and-subsequent-re-renders-using-useref-and-useeffect).
+[`React.useRef().current`](https://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#first-render-and-subsequent-re-renders-using-useref-and-useeffect)
+.
 
 The `current` property can be [nullish](https://developer.mozilla.org/en-US/docs/Glossary/Nullish)
 and while you can use
@@ -366,6 +375,25 @@ const checkIfTimerIsStopped: ReactRefReceiverFn<Timer> = (timer: Timer) => {
 > to type the function lambda that is passed as a 2nd argument to `_withRef()`.
 
 ## Timer utils
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant created_not_running
+  created_not_running ->> running: startTicking()
+  activate running
+  participant running
+  rect rgb(83, 82, 101, 0.25)
+    loop ticking
+      running ->> running: onTick()
+    end
+  end
+  running ->> stopped: stopTicking()
+  alt duration is set
+    running ->> stopped: duration has passed
+  end
+  deactivate running
+```
 
 To use the timer utils, here is the main class: `TimerImpl` and its interface `Timer`. This
 interface and the [tests][sf-2] are a great place to discover the API surface. Here's an example of
@@ -477,7 +505,9 @@ Here are some good references for this:
 <!-- prettier-ignore-start -->
 
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
+
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
+
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
 
 <!-- prettier-ignore-end -->
@@ -514,8 +544,11 @@ Run `npm publish` - This will publish your package to npm after running the foll
 <!-- prettier-ignore-start -->
 
 [npm-1]: https://docs.npmjs.com/cli/v7/commands/npm-publish
+
 [npm-2]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/.npmignore
+
 [npm-3]: https://docs.npmjs.com/unpublishing-packages-from-the-registry
+
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
 
 <!-- prettier-ignore-end -->
@@ -529,12 +562,12 @@ Run `npm publish` - This will publish your package to npm after running the foll
    `package.json`, `package-lock.json`. This will also kick off the following scripts in the given
    order. **⚠ Do not run the following scripts**.
 
-   1. `npm run preversion` - This runs the tests.
-   2. `npm run version` - This just reformats the code and adds any new to git.
-   3. After this step, npm automatically creates a git commit and a tag.
-   4. `npm run postversion` - This pushes all the new commit and tag.
+1. `npm run preversion` - This runs the tests.
+1. `npm run version` - This just reformats the code and adds any new to git.
+1. After this step, npm automatically creates a git commit and a tag.
+1. `npm run postversion` - This pushes all the new commit and tag.
 
-2. Finally run `npm publish` to publish it to npm, since all the changes that have been made so far
+1. Finally run `npm publish` to publish it to npm, since all the changes that have been made so far
    are just local.
 
 > Notes on `npm version`.
@@ -563,6 +596,7 @@ Run `npm publish` - This will publish your package to npm after running the foll
 <!-- prettier-ignore-start -->
 
 [r-1]: https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
+
 [r-2]: https://stackoverflow.com/a/41285281/2085356
 
 <!-- prettier-ignore-end -->
