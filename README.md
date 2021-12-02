@@ -376,6 +376,9 @@ const checkIfTimerIsStopped: ReactRefReceiverFn<Timer> = (timer: Timer) => {
 
 ## Timer utils
 
+![](https://mermaid.ink/img/eyJjb2RlIjoic2VxdWVuY2VEaWFncmFtXG4gIGF1dG9udW1iZXJcbiAgcGFydGljaXBhbnQgY3JlYXRlZF9ub3RfcnVubmluZ1xuICBjcmVhdGVkX25vdF9ydW5uaW5nIC0-PiBydW5uaW5nOiBzdGFydFRpY2tpbmcoKVxuICBhY3RpdmF0ZSBydW5uaW5nXG4gIHBhcnRpY2lwYW50IHJ1bm5pbmdcbiAgcmVjdCByZ2IoODMsIDgyLCAxMDEsIDAuMjUpXG4gICAgbG9vcCB0aWNraW5nXG4gICAgICBydW5uaW5nIC0-PiBydW5uaW5nOiBvblRpY2soKVxuICAgIGVuZFxuICBlbmRcbiAgcnVubmluZyAtPj4gc3RvcHBlZDogc3RvcFRpY2tpbmcoKVxuICBhbHQgZHVyYXRpb24gaXMgc2V0XG4gICAgcnVubmluZyAtPj4gc3RvcHBlZDogZHVyYXRpb24gaGFzIHBhc3NlZFxuICBlbmRcbiAgZGVhY3RpdmF0ZSBydW5uaW5nIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRhcmsifSwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ?bgColor=!black)
+
+<!--
 ```mermaid
 sequenceDiagram
   autonumber
@@ -394,6 +397,7 @@ sequenceDiagram
   end
   deactivate running
 ```
+-->
 
 To use the timer utils, here is the main class: `TimerImpl` and its interface `Timer`. This
 interface and the [tests][sf-2] are a great place to discover the API surface. Here's an example of
