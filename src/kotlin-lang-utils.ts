@@ -41,7 +41,7 @@ export type ReceiverFnWithReturn<T, R> = (it: T) => R
 /**
  * @param contextObject value of `it`
  * @param receiverFn lambda that accepts `it`
- * @return contextObject return the contextObject that is passed
+ * @return contextObject that is passed
  */
 export const _also = <T>(contextObject: T, receiverFn: ReceiverFn<T>): T => {
   receiverFn(contextObject)
@@ -51,7 +51,7 @@ export const _also = <T>(contextObject: T, receiverFn: ReceiverFn<T>): T => {
 /**
  * @param contextObject value of `it`
  * @param receiverFnWithReturn lambda that accepts `it`
- * @return contextObject return the result of the receiverFnWithReturn (lambda)
+ * @return result of the receiverFnWithReturn (lambda)
  */
 export const _let = <T, R>(
   contextObject: T,
@@ -72,7 +72,7 @@ export interface ImplicitReceiverObjectWithReturn<T, R> {
  * @param contextObject value of `this` (in the `blockWithReboundThis` function)
  * @param objectContainingFnWithReboundThis object containing function `blockWithReboundThis`
  *        which accepts contextObject (aka `this`)
- * @return contextObject return the contextObject that is passed
+ * @return contextObject that is passed
  */
 export const _apply = <T>(
   contextObject: T,
@@ -86,7 +86,7 @@ export const _apply = <T>(
  * @param contextObject value of `this` (in the `blockWithReboundThis` function)
  * @param objectContainingFnWithReboundThis object containing function `blockWithReboundThis`
  *        which accepts contextObject (aka `this`)
- * @return contextObject return the result of the `blockWithReboundThis` function
+ * @return result of the `blockWithReboundThis` function
  */
 export const _with = <T, R>(
   contextObject: T,
