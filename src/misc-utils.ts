@@ -58,3 +58,7 @@ export const _callIfFalsy = (ctxObject: unknown, receiverFn: FalsyReceiverFn) =>
   !ctxObject ? receiverFn() : undefined
 
 export type FalsyReceiverFn = () => void
+
+export const _repeat = (count: number, fun: () => void): void => {
+  for (let i = 0; i < count; i++) fun()
+}

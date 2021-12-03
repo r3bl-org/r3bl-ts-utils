@@ -16,6 +16,7 @@
   - [`useForceUpdateFn()`](#useforceupdatefn)
   - [`_withRef()`](#_withref)
 - [Timer utils](#timer-utils)
+- [Cache utils](#cache-utils)
 - [Build, test, and publish this package](#build-test-and-publish-this-package)
   - [Build, format, test](#build-format-test)
   - [Publish to npm](#publish-to-npm)
@@ -399,10 +400,10 @@ sequenceDiagram
 ```
 -->
 
-To use the timer utils, here is the main class: `TimerImpl` and its interface `Timer`. This
-interface and the [tests][sf-2] are a great place to discover the API surface. Here's an example of
-using this in a React functional component that uses Hooks to generate a CLI interface using
-[ink](https://github.com/vadimdemedes/ink).
+To use the timer utils, use the factory function `createTimer()` which returns an object that
+implements the `Timer` interface. This interface and the [tests][sf-2] are a great place to discover
+the API surface. Here's an example of using this in a React functional component that uses Hooks to
+generate a CLI interface using [ink](https://github.com/vadimdemedes/ink).
 
 ```tsx
 import React, { FC } from "react"
@@ -473,6 +474,45 @@ const TimerConfig = {
   updateIntervalMs: 1000,
   maxCounter: 5,
 }
+```
+
+## Cache utils
+
+Cache utils provides an object that implements the `Cache` interface, that is created by the
+`createCache()` factory function. You can specify the max size of the cache, and even declare which
+eviction policy it should use. You can also provide a function that generates a value for a given
+key if it doesn't exist in the cache. Here's an example of how to use this class.
+
+```tsx
+import { createCache, _repeat } from "../index"
+
+test("Cache eviction policy least-recently-used works", () => {
+  let populateFn = (arg: string): string => arg + "_test"
+  const cache = createCache<string, string>("test", 2, "least-recently-used")
+
+  cache.get("foo", populateFn)
+  cache.get("bar", populateFn)
+  cache.get("baz", populateFn)
+
+  expect(cache.size).toEqual(2)
+  expect(cache.contains("foo")).toBeFalsy()
+  expect(cache.contains("bar")).toBeTruthy()
+  expect(cache.contains("baz")).toBeTruthy()
+})
+
+test("Cache eviction policy least-frequently-used works", () => {
+  let populateFn = (arg: string): string => arg + "_test"
+  const cache = createCache<string, string>("test", 2, "least-frequently-used")
+
+  _repeat(3, () => cache.get("foo", populateFn))
+  _repeat(2, () => cache.get("bar", populateFn))
+  cache.get("baz", populateFn)
+
+  expect(cache.size).toEqual(2)
+  expect(cache.contains("foo")).toBeTruthy()
+  expect(cache.contains("bar")).toBeTruthy()
+  expect(cache.contains("baz")).toBeFalsy()
+})
 ```
 
 ## Build, test, and publish this package

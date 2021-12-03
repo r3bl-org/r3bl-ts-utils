@@ -15,7 +15,7 @@
  *
  */
 
-import { _callIfFalsy, _callIfTruthy } from "../misc-utils"
+import { _callIfFalsy, _callIfTruthy, _repeat } from "../misc-utils"
 
 describe("misc-utils", () => {
   test("_callIfTruthy", () => {
@@ -27,7 +27,7 @@ describe("misc-utils", () => {
     expect(ctxObject).toBeTruthy()
     expect(executed).toBeTruthy()
   })
-  
+
   test("_callIfFalsy", () => {
     let executedIfNull = false
     let executedIfUndefined = false
@@ -41,5 +41,11 @@ describe("misc-utils", () => {
 
     expect(executedIfUndefined).toBeTruthy()
     expect(executedIfNull).toBeTruthy()
+  })
+
+  test("_repeat", () => {
+    let count = 0
+    _repeat(5, () => count++)
+    expect(count).toEqual(5)
   })
 })
