@@ -22,12 +22,17 @@ export * from "./externals"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
 
-/*
+/**
  * timer-utils is a module that exposes very little to the users of this module by defining a clear
- * boundary between external and internal facing code. The trick is to create an `index.ts` inside
- * the timer-utils folder that is used to expose only the symbols that are meant to be external. On
- * the other side (code using this library) the folder itself is imported, not a specific file,
- * using `import * as timer from "./timer-utils"`. Here, `timer-utils` is a folder, and not a file.
+ * boundary between external and internal facing code.
+ *
+ * The trick that `index.ts` inside the timer-utils folder only exposes symbols that are defined
+ * in `externals.ts`. The factory function `createTimer()` eliminates the need to access the
+ * internal implementation `TimerImpl` class by any external code.
+ *
+ * On the other side (code using this library) the folder itself is imported, not a specific
+ * file, using `import * as timer from "./timer-utils"`. Here, `timer-utils` is a folder,
+ * and not a file.
  *
  * Internal
  * --------
@@ -48,12 +53,9 @@ import { TimerImpl } from "./timer-impl"
  * 1. counter.ts       <- External class
  * 2. timer-impl.ts    <- External class
  * 3. externals.ts     <- External interfaces, types
- *
- * Additionally, `index.ts` exposes a factory function that should be used to get instances of
- * `Timer` instead of directly calling the constructor on `TimerImpl`.
  */
 
-/* Factory function to create an object that implements (external) Timer interface. */
+/** Factory function to create an object that implements (external) Timer interface. */
 export const createTimer = (name: string, delay: number, duration?: number): Timer => {
   return new TimerImpl(name, delay, duration)
 }

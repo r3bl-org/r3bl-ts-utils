@@ -16,13 +16,13 @@
  */
 
 import { _also, _let } from "../kotlin-lang-utils"
-import { Cache, EvictionPolicy, PopulateFn } from "./index"
-
-const DEBUG = false
+import { Analytics } from "./analytics"
+import { DEBUG } from "./debug"
+import { Cache, ComputeValueForKeyFn, EvictionPolicy } from "./externals"
 
 export class CacheImpl<K, V> implements Cache<K, V> {
-  private readonly _map = new Map<K, V>()
-  private readonly analytics = new CacheAnalytics<K>()
+  readonly _map = new Map<K, V>()
+  readonly analytics: Analytics.KeyHistory<K> = Analytics.createInstance<K>()
 
   constructor(
     readonly name: string,
@@ -35,15 +35,30 @@ export class CacheImpl<K, V> implements Cache<K, V> {
     map.clear()
   }
 
-  get = (arg: K, keyNotFoundFn: PopulateFn<K, V>): V => {
+  get = (arg: K): V | undefined => {
+    const { _map: map, analytics } = this
+
+    analytics.update(arg)
+
+    return map.has(arg)
+      ? _let(map.get(arg), (value) => {
+          // eslint-disable-next-line
+          if (!value) throw Error(`Value could not be found for key: ${arg}`)
+          return value
+        })
+      : undefined
+  }
+
+  getAndComputeIfAbsent = (arg: K, keyNotFoundFn: ComputeValueForKeyFn<K, V>): V => {
     const { _map: map, analytics, cleanUp } = this
 
     analytics.update(arg)
 
     return map.has(arg)
       ? _let(map.get(arg), (value) => {
+          // eslint-disable-next-line
           if (!value) throw Error(`Value could not be found for key: ${arg}`)
-          return value!
+          return value
         })
       : _also(keyNotFoundFn(arg), (value) => {
           map.set(arg, value)
@@ -57,35 +72,19 @@ export class CacheImpl<K, V> implements Cache<K, V> {
 
     let keyToDelete: K | undefined = undefined
 
-    function lru() {
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/keys
-      keyToDelete = map.keys().next().value
-    }
-
-    function lfu() {
-      let minValue: number | undefined = undefined
-      DEBUG && console.log(analytics.heatmap)
-      for (const [key, value] of analytics.heatmap.entries()) {
-        if (!minValue) minValue = value
-        if (value <= minValue!) keyToDelete = key
-        DEBUG && console.log("❕", key, "|", value, "|", minValue, "|", keyToDelete)
-      }
-    }
-
     switch (policy) {
       case "least-recently-used":
-        lru()
+        keyToDelete = analytics.findLRUKey(this)
         break
       case "least-frequently-used":
-        lfu()
+        keyToDelete = analytics.findLFUKey()
         break
     }
 
     if (keyToDelete) {
       DEBUG && console.log("🪓 keyToDelete", keyToDelete)
       map.delete(keyToDelete)
-      analytics.heatmap.delete(keyToDelete)
-      analytics.evictions++
+      analytics.purge(keyToDelete)
     }
   }
 
@@ -98,17 +97,5 @@ export class CacheImpl<K, V> implements Cache<K, V> {
 
   get size(): number {
     return this._map.size
-  }
-}
-
-class CacheAnalytics<K> {
-  evictions: number = 0
-
-  constructor(readonly heatmap = new Map<K, number>()) {}
-
-  update(key: K) {
-    const { heatmap: hm } = this
-    const count = !hm.get(key) ? 1 : hm.get(key)! + 1
-    hm.set(key, count)
   }
 }

@@ -30,7 +30,8 @@ export class TimerImpl implements TimerInternal {
   // Properties (simple).
 
   // https://stackoverflow.com/a/56970244/2085356
-  private timerHandle?: any
+  // eslint-disable-next-line
+  private timerHandle?: any // Node.js uses Timeout and browser uses number.
 
   // Properties (backing fields for getters, setters).
 
@@ -52,7 +53,8 @@ export class TimerImpl implements TimerInternal {
 
   /**
    * Computes the new state using `TimerReducer.reducerFn` and puts it `this.state` property.
-   * @param action if not provided compute initial state, else use it to get new state
+   * @param action if not provided compute initial state, else use it to getAndComputeIfAbsent new
+   *   state
    * @return new state object
    */
   private dispatch = (action?: Actions): State =>
@@ -116,7 +118,8 @@ export class TimerImpl implements TimerInternal {
     DEBUG && console.log(name ?? "Timer", "stop called, timerHandle = ", this.timerHandle)
 
     if (this.timerHandle) {
-      clearInterval(this.timerHandle)
+      // eslint-disable-next-line
+      clearInterval(this.timerHandle) // Node.js uses Timeout and browser uses number.
       this.timerHandle = undefined
     }
 
@@ -131,7 +134,7 @@ export class TimerImpl implements TimerInternal {
     const { counter, delayMs, name, state, durationMs } = this
     return `name: '${name}', delay: ${delayMs}ms, ${
       durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
-    }counter:${counter.value}, state:${state.runtimeStatus}`
+    } counter:${counter.value}, state:${state.runtimeStatus}`
   }
 
   // Getter and setter for counter.
