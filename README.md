@@ -11,6 +11,8 @@
   - [`_apply`](#_apply)
   - [`_with`](#_with)
 - [Misc utils](#misc-utils)
+- [React Ink Hook utils](#react-ink-hook-utils)
+  - [`useTTYSize()`](#usettysize)
 - [React Hook utils](#react-hook-utils)
   - [`StateHook<T>`](#statehookt)
   - [`useForceUpdateFn()`](#useforceupdatefn)
@@ -49,8 +51,13 @@ This module is written entirely in TypeScript, and is configured to be a CommonJ
 
 > 💡 Here's more information on CommonJS, ESM, and hybrid modules.
 >
-> - [How to createCache dual modules](https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html).
-> - [Example of a dual module](https://github.com/sensedeep/dynamodb-onetable).
+> - [How to createCache dual modules][mod-1].
+> - [Example of a dual module][mod-2].
+
+<!-- prettier-ignore-start -->
+[mod-1]: https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+[mod-2]: https://github.com/sensedeep/dynamodb-onetable
+<!-- prettier-ignore-end -->
 
 To install the package, simply run the following in the top level folder of your project.
 
@@ -67,17 +74,11 @@ Here are some important links for this package.
 2. [npm package][o-2]
 
 <!-- prettier-ignore-start -->
-
 [o-1]: https://github.com/r3bl-org/r3bl-ts-utils
-
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
-
 [o-3]: https://github.com/nazmulidris/color-console
-
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
-
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
-
 <!-- prettier-ignore-end -->
 
 ## Colorized console
@@ -99,11 +100,8 @@ To override on the default styles, here's an example. The [`chalk`][cc-2] librar
 hood, so you can use all it's styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
-
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
-
 [cc-2]: https://www.npmjs.com/package/chalk
-
 <!-- prettier-ignore-end -->
 
 ```typescript
@@ -163,11 +161,8 @@ one. So here are four examples of using them. You can browse the source [here][s
 > how to use them.
 
 <!-- prettier-ignore-start -->
-
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
-
 [sf-2]: https://github.com/r3bl-org/r3bl-ts-utils/tree/main/src/__tests
-
 <!-- prettier-ignore-end -->
 
 ### `_also`
@@ -214,11 +209,11 @@ expect(returnValue).toEqual(`my-string`)
 then returns the `contextObject`. Here's an example.
 
 ```typescript
-import {_apply, ImplicitReceiverObject} from "r3bl-ts-utils"
+import { _apply, ImplicitReceiverObject } from "r3bl-ts-utils"
 
 const contextObject: string = "string"
 const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
-  fnWithReboundThis(): function (): string {
+  fnWithReboundThis: function (): string {
     expect(this).toEqual(contextObject)
     return contextObject
   },
@@ -239,17 +234,15 @@ expect(returnValue).toEqual(contextObject)
 calls it then returns the its return value. Here's an example.
 
 ```typescript
-import {_with, ImplicitReceiverObjectWithReturn} from "r3bl-ts-utils"
+import { _with, ImplicitReceiverObjectWithReturn } from "r3bl-ts-utils"
 
 const contextObject: string = "some_data"
 const hardcodedReceiverReturnValue: Symbol = Symbol()
 const returnValue = _with(contextObject, {
-  fnWithReboundThis: Symbol
-{
-  expect(this).toEqual(contextObject)
-  return hardcodedReceiverReturnValue
-}
-,
+  fnWithReboundThis: function (): symbol {
+    expect(this).toEqual(contextObject)
+    return hardcodedReceiverReturnValue
+  },
 })
 expect(returnValue).toEqual(hardcodedReceiverReturnValue)
 ```
@@ -306,7 +299,7 @@ the current terminal size.
 ```tsx
 import React from "react"
 import { render, Text } from "ink"
-import { useTTYSize, TTYSize } from "./index"
+import { useTTYSize, TTYSize } from "r3bl-ts-utils"
 
 function Application() {
   const size: TTYSize = useTTYSize()
@@ -579,13 +572,9 @@ Here are some good references for this:
 - [Module re-exports][b-3]
 
 <!-- prettier-ignore-start -->
-
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
-
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
-
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
-
 <!-- prettier-ignore-end -->
 
 ### Build, format, test
