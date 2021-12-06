@@ -118,22 +118,22 @@ Here's how you can use the `ColorConsole` class to do more powerful things.
 import { printHeader, Styles, ColorConsole } from "r3bl-ts-utils"
 
 printHeader(`Example 3`)
-const myColorConsole = ColorConsole.createCache(chalk.bold.yellow.bgBlack)
+const myColorConsole = ColorConsole.create(chalk.bold.yellow.bgBlack)
 myColorConsole(/* text: */ `Start log output...`).consoleLog()
 
 const count = 4
 while (count-- > 0) {
-  ColorConsole.createCache(Styles.Primary.red)(`While loop output: ${count}`).consoleLogInPlace()
+  ColorConsole.create(Styles.Primary.red)(`While loop output: ${count}`).consoleLogInPlace()
 }
 
-ColorConsole.createCache(Styles.Primary.blue)(/* text: */ `End log output...`).consoleLog(
+ColorConsole.create(Styles.Primary.blue)(/* text: */ `End log output...`).consoleLog(
   /* prefixWithNewLine: */ true
 )
 ```
 
-> Note that once created, using `createCache()`, you can simply call that instance w/out passing a
-> method. This happens because the `createCache()` factory method creates a new `ColorConsole`
-> object, which also implements the `ColorConsoleIF` interface, which is callable) by providing a
+> Note that once created, using `create()`, you can simply call that instance w/out passing a
+> method. This happens because the `create()` factory method creates a new `ColorConsole` object,
+> which also implements the `ColorConsoleIF` interface, which is callable) by providing a
 > `(text: string)` signature that binds to the `call(text: string)` method.
 
 If you don't deviate from the `Primary` and `Secondary` styles, then you can simply use some default
@@ -147,7 +147,7 @@ printHeader(`Example 4`)
 const data = { foo: "foo_value", bar: "bar_value" }
 for (const key in data) {
   StyledColorConsole.Primary(
-    Styles.Primary(key) + " -> " + Styles.Secondary(_.getAndComputeIfAbsent(data, key))
+    Styles.Primary(key) + " -> " + Styles.Secondary(_.get(data, key))
   ).consoleLog()
 }
 ```
@@ -157,8 +157,7 @@ for (const key in data) {
 The scope functions mimic Kotlin's `stdlib` scope functions (`also`, `let`, `apply`, `with`) one to
 one. So here are four examples of using them. You can browse the source [here][sf-1].
 
-> The [tests][sf-2] for this library are worth taking a look at to getAndComputeIfAbsent a sense of
-> how to use them.
+> The [tests][sf-2] for this library are worth taking a look at to get a sense of how to use them.
 
 <!-- prettier-ignore-start -->
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
@@ -209,7 +208,7 @@ expect(returnValue).toEqual(`my-string`)
 then returns the `contextObject`. Here's an example.
 
 ```typescript
-import { _apply, ImplicitReceiverObject } from "r3bl-ts-utils"
+import {_apply, ImplicitReceiverObject} from "r3bl-ts-utils"
 
 const contextObject: string = "string"
 const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
@@ -234,7 +233,7 @@ expect(returnValue).toEqual(contextObject)
 calls it then returns the its return value. Here's an example.
 
 ```typescript
-import { _with, ImplicitReceiverObjectWithReturn } from "r3bl-ts-utils"
+import {_with, ImplicitReceiverObjectWithReturn} from "r3bl-ts-utils"
 
 const contextObject: string = "some_data"
 const hardcodedReceiverReturnValue: Symbol = Symbol()
@@ -515,9 +514,9 @@ test("Cache eviction policy least-recently-used works", () => {
   let populateFn = (arg: string): string => arg + "_test"
   const cache = createCache<string, string>("test", 2, "least-recently-used")
 
-  cache.getAndComputeIfAbsent("foo", populateFn)
-  cache.getAndComputeIfAbsent("bar", populateFn)
-  cache.getAndComputeIfAbsent("baz", populateFn)
+  cache.get("foo", populateFn)
+  cache.get("bar", populateFn)
+  cache.get("baz", populateFn)
 
   expect(cache.size).toEqual(2)
   expect(cache.contains("foo")).toBeFalsy()
@@ -529,9 +528,9 @@ test("Cache eviction policy least-frequently-used works", () => {
   let populateFn = (arg: string): string => arg + "_test"
   const cache = createCache<string, string>("test", 2, "least-frequently-used")
 
-  _repeat(3, () => cache.getAndComputeIfAbsent("foo", populateFn))
-  _repeat(2, () => cache.getAndComputeIfAbsent("bar", populateFn))
-  cache.getAndComputeIfAbsent("baz", populateFn)
+  _repeat(3, () => cache.get("foo", populateFn))
+  _repeat(2, () => cache.get("bar", populateFn))
+  cache.get("baz", populateFn)
 
   expect(cache.size).toEqual(2)
   expect(cache.contains("foo")).toBeTruthy()
