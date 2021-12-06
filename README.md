@@ -291,6 +291,37 @@ const main = async (): Promise<void> => {
 main().catch(console.error)
 ```
 
+## React Ink Hook utils
+
+The following custom hooks make it easier to work w/ Ink and React function components.
+
+### `useTTYSize()`
+
+The `useTTYSize()` custom hook can be used to determine what the width and height of a TTY is, in
+CLI apps that use Ink. It uses Node.js stdout stream to get this information.
+
+Here's an example. When you resize the terminal window, it will re-render the component and display
+the current terminal size.
+
+```tsx
+import React from "react"
+import { render, Text } from "ink"
+import { useTTYSize, TTYSize } from "./index"
+
+function Application() {
+  const size: TTYSize = useTTYSize()
+  return (
+    <Text>
+      {size.rows}×{size.columns}
+    </Text>
+  )
+}
+
+const { unmount } = render(<Application />)
+
+setTimeout(() => unmount(), 30_000)
+```
+
 ## React Hook utils
 
 The following [utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html) and

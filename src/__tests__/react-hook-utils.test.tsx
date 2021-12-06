@@ -16,9 +16,9 @@
  */
 
 import * as React from "react"
+import { FC } from "react"
 import { _withRef, ReactRef } from "../index"
 import { render } from "ink-testing-library"
-import { FC } from "react"
 
 interface GlobalState {
   myRef: ReactRef<boolean> | null
