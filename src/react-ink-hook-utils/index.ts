@@ -15,7 +15,7 @@
  *
  */
 
-import { useStdout } from "ink"
+import { Key, useStdout } from "ink"
 import { _also, StateHook } from "../index"
 import { useEffect, useState } from "react"
 
@@ -23,7 +23,6 @@ import { useEffect, useState } from "react"
  * https://nodejs.org/api/process.html#processstdout
  * https://nodejs.org/api/tty.html#event-resize
  */
-
 export function useTTYSize(): TTYSize {
   // Get the Node.js stdout stream.
   const { stdout } = useStdout()
@@ -63,3 +62,5 @@ export class TTYSize {
     return `rows: ${this.rows}, columns: ${this.columns}`
   }
 }
+
+export type KeyboardInputHandler = (input: string, key: Key) => void
