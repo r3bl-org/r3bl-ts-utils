@@ -24,7 +24,7 @@ import { _callIfTruthy, Nullable } from "../misc-utils"
 
 // Constants.
 const DEBUG = false
-const NoDuration = -1
+export const NoDuration = -1
 
 export class TimerImpl implements TimerInternal {
   // Properties (simple).
@@ -39,12 +39,12 @@ export class TimerImpl implements TimerInternal {
   private _tickFn?: TimerTickFn
   private _stopFn?: TimerTickFn
   private _startFn?: TimerTickFn
-  private _counter: Counter = new Counter()
 
   constructor(
     readonly name: string,
     readonly delayMs: number,
-    readonly durationMs: number = NoDuration
+    readonly durationMs: number = NoDuration,
+    readonly counter?: Counter
   ) {
     this._state = this.dispatch()
   }
@@ -53,8 +53,7 @@ export class TimerImpl implements TimerInternal {
 
   /**
    * Computes the new state using `TimerReducer.reducerFn` and puts it `this.state` property.
-   * @param action if not provided compute initial state, else use it to getAndComputeIfAbsent new
-   *   state
+   * @param action if not provided compute initial state, else use it to get new state
    * @return new state object
    */
   private dispatch = (action?: Actions): State =>
@@ -102,7 +101,7 @@ export class TimerImpl implements TimerInternal {
         this.stopTicking()
       } else {
         _callIfTruthy(this._tickFn, (it) => it(this))
-        counter.increment()
+        counter?.increment()
       }
     }
 
@@ -134,17 +133,7 @@ export class TimerImpl implements TimerInternal {
     const { counter, delayMs, name, state, durationMs } = this
     return `name: '${name}', delay: ${delayMs}ms, ${
       durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
-    } counter:${counter.value}, state:${state.runtimeStatus}`
-  }
-
-  // Getter and setter for counter.
-
-  get counter(): Counter {
-    return this._counter
-  }
-
-  set counter(value: Counter) {
-    this._counter = value
+    } counter:${counter ? counter.value : "n/a"}, state:${state.runtimeStatus}`
   }
 
   // Getter and setter for onStop.

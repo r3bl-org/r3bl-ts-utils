@@ -41,7 +41,7 @@ export interface Timer {
   readonly isRunning: boolean
   readonly isCreatedAndNotStarted: boolean
   readonly state: State
-  counter: Counter
+  counter?: Counter
   onStop: Nullable<TimerTickFn>
   onStart: Nullable<TimerTickFn>
   onTick: Nullable<TimerTickFn>

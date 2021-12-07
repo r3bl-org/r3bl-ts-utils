@@ -15,8 +15,9 @@
  *
  */
 
-import { _also, Counter, createTimer, Timer, TimerErrors } from "../index"
+import { _also, _callIfTruthy, Counter, createTimer, Timer, TimerErrors } from "../index"
 import { waitFor } from "@testing-library/react"
+import { NoDuration } from "../timer-utils/timer-impl"
 
 describe("Counter", () => {
   test("Can be constructed with an initial value", () => {
@@ -100,8 +101,11 @@ describe("Timer", () => {
   test("Started timer calls supplied _tickFn and counts up as expected", async () => {
     let count = 0
 
-    const timer: Timer = _also(createTimer("test", delay), (it) => {
-      it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
+    const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (timer) => {
+      timer.onTick = () =>
+        _callIfTruthy(timer.counter, (counter) => {
+          counter.value < maxCount ? count++ : undefined
+        })
     })
 
     _also(timer.startTicking(), (it) => expect(it).toBe(timer))
@@ -111,7 +115,7 @@ describe("Timer", () => {
     }, timeout)
 
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counter.value).toBeGreaterThanOrEqual(maxCount))
+    await waitFor(() => expect(timer.counter?.value).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
   })
 
@@ -119,8 +123,11 @@ describe("Timer", () => {
     let count = 0
     let stopped = false
 
-    const timer: Timer = _also(createTimer("test", delay), (it) => {
-      it.onTick = () => (it.counter.value < maxCount ? count++ : undefined)
+    const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (it) => {
+      it.onTick = () =>
+        _callIfTruthy(it.counter, (counter) => {
+          counter.value < maxCount ? count++ : undefined
+        })
       it.onStop = () => (stopped = true)
     })
 
@@ -132,7 +139,7 @@ describe("Timer", () => {
     }, timeout)
 
     // More info: https://testing-library.com/docs/dom-testing-library/api-async/#waitfor
-    await waitFor(() => expect(timer.counter.value).toBeGreaterThanOrEqual(maxCount))
+    await waitFor(() => expect(timer.counter?.value).toBeGreaterThanOrEqual(maxCount))
     expect(count).toEqual(maxCount)
   })
 

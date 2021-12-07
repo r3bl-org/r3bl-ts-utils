@@ -16,11 +16,12 @@
  */
 
 // Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./counter"
-export * from "./externals"
-
+import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
+
+export * from "./counter"
+export * from "./externals"
 
 /**
  * timer-utils is a module that exposes very little to the users of this module by defining a clear
@@ -56,6 +57,11 @@ import { TimerImpl } from "./timer-impl"
  */
 
 /** Factory function to create an object that implements (external) Timer interface. */
-export const createTimer = (name: string, delay: number, duration?: number): Timer => {
-  return new TimerImpl(name, delay, duration)
+export function createTimer(
+  name: string,
+  delay: number,
+  duration?: number,
+  counter?: Counter
+): Timer {
+  return new TimerImpl(name, delay, duration, counter)
 }
