@@ -29,9 +29,15 @@ export const NoDuration = -1
 export class TimerImpl implements TimerInternal {
   // Properties (simple).
 
-  // https://stackoverflow.com/a/56970244/2085356
-  // eslint-disable-next-line
-  private timerHandle?: any // Node.js uses Timeout and browser uses number.
+  /**
+   * Node.js uses Timeout and browser uses number. ReturnType<typeof setTimeout> handles this 🎉.
+   *
+   * More info:
+   * - https://tinyurl.com/y2bssbfr
+   * - https://stackoverflow.com/a/56970244/2085356
+   * @private
+   */
+  private timerHandle?: ReturnType<typeof setTimeout>
 
   // Properties (backing fields for getters, setters).
 
@@ -46,7 +52,7 @@ export class TimerImpl implements TimerInternal {
     readonly durationMs: number = NoDuration,
     readonly counter?: Counter
   ) {
-    this._state = this.dispatch()
+    this._state = this.dispatch() // Initialize the state.
   }
 
   // State management delegated to TimerReducer.
