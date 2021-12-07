@@ -19,6 +19,7 @@
 import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
+import { _also } from "../kotlin-lang-utils"
 
 export * from "./counter"
 export * from "./externals"
@@ -57,11 +58,19 @@ export * from "./externals"
  */
 
 /** Factory function to create an object that implements (external) Timer interface. */
-export function createTimer(
+export const createTimer = (
   name: string,
   delay: number,
   duration?: number,
   counter?: Counter
-): Timer {
-  return new TimerImpl(name, delay, duration, counter)
+): Timer => _also(new TimerImpl(name, delay, duration, counter), (it) => TimerRegistry.add(it))
+
+export class TimerRegistry {
+  private static readonly timers = new Array<Timer>()
+  static killAll() {
+    TimerRegistry.timers.forEach((it) => (it.isRunning ? it.stopTicking() : undefined))
+  }
+  static add(timer: Timer) {
+    TimerRegistry.timers.push(timer)
+  }
 }

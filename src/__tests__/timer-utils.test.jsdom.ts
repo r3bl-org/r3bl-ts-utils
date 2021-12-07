@@ -15,7 +15,15 @@
  *
  */
 
-import { _also, _callIfTruthy, Counter, createTimer, Timer, TimerErrors } from "../index"
+import {
+  _also,
+  _callIfTruthy,
+  Counter,
+  createTimer,
+  Timer,
+  TimerErrors,
+  TimerRegistry,
+} from "../index"
 import { waitFor } from "@testing-library/react"
 import { NoDuration } from "../timer-utils/timer-impl"
 
@@ -156,5 +164,50 @@ describe("Timer", () => {
       expect(timer.isStopped).toBeTruthy()
       done()
     }, duration + delay)
+  })
+
+  test("All created timers can be killed", () => {
+    // Clear out TimerRegistry.
+    const array: Timer[] = TimerRegistry["timers"]
+    while (array.length) array.pop()
+
+    // Create 3 timers in different states.
+
+    _also(createTimer("isStopped", 0), (it) => {
+      it.startTicking()
+      it.stopTicking()
+    })
+
+    _also(createTimer("isRunning", 0), (it) => {
+      it.startTicking()
+    })
+
+    createTimer("isCreatedAndNotStarted", 0)
+
+    // Check that the states of the 3 timers are what is expected.
+
+    _also(
+      array.filter((it) => it.isRunning),
+      (it) => expect(it.length).toBe(1)
+    )
+
+    _also(
+      array.filter((it) => it.isStopped),
+      (it) => expect(it.length).toBe(1)
+    )
+
+    _also(
+      array.filter((it) => it.isCreatedAndNotStarted),
+      (it) => expect(it.length).toBe(1)
+    )
+
+    // Kill all the timers & make sure they're dead.
+
+    TimerRegistry.killAll()
+
+    _also(
+      array.filter((it) => it.isRunning),
+      (it) => expect(it.length).toBe(0)
+    )
   })
 })
