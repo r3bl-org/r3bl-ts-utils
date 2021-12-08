@@ -63,4 +63,4 @@ export class TTYSize {
   }
 }
 
-export type KeyboardInputHandler = (input: string, key: Key) => void
+export type KeyboardInputHandlerFn = (input: string, key: Key) => void
