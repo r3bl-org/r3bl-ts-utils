@@ -20,6 +20,7 @@ import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
 import { _also } from "../kotlin-lang-utils"
+import { _callIfTruthy } from "../misc-utils"
 
 export * from "./counter"
 export * from "./externals"
@@ -68,7 +69,12 @@ export const createTimer = (
 export class TimerRegistry {
   private static readonly timers = new Array<Timer>()
   static killAll() {
-    TimerRegistry.timers.forEach((it) => (it.isRunning ? it.stopTicking() : undefined))
+    TimerRegistry.timers.forEach((it) => {
+      _callIfTruthy(it.isRunning, () => {
+        it.stopTicking()
+        console.log("stop ticking!")
+      })
+    })
   }
   static add(timer: Timer) {
     TimerRegistry.timers.push(timer)
