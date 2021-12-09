@@ -72,7 +72,6 @@ export class TimerRegistry {
     TimerRegistry.timers.forEach((it) => {
       _callIfTruthy(it.isRunning, () => {
         it.stopTicking()
-        console.log("stop ticking!")
       })
     })
   }
