@@ -15,7 +15,7 @@
  *
  */
 
-import { _callIfFalsy, _callIfTruthy, _repeat } from "../misc-utils"
+import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../misc-utils"
 
 describe("misc-utils", () => {
   test("_callIfTruthy", () => {
@@ -47,5 +47,27 @@ describe("misc-utils", () => {
     let count = 0
     _repeat(5, () => count++)
     expect(count).toEqual(5)
+  })
+
+  test("_callIfTrue", () => {
+    let flag = false
+    const fun = () => {
+      flag = true
+    }
+    _callIfTrue(false, fun)
+    expect(flag).toBeFalsy()
+    _callIfTrue(true, fun)
+    expect(flag).toBeTruthy()
+  })
+
+  test("_callIfFalse", () => {
+    let flag = true
+    const fun = () => {
+      flag = false
+    }
+    _callIfFalse(true, fun)
+    expect(flag).toBeTruthy()
+    _callIfFalse(false, fun)
+    expect(flag).toBeFalsy()
   })
 })

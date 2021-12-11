@@ -62,3 +62,11 @@ export type FalsyReceiverFn = () => void
 export const _repeat = (count: number, fun: () => void): void => {
   for (let i = 0; i < count; i++) fun()
 }
+
+export const _callIfTrue = (ctxObject: boolean, receiverFn: SimpleReceiverFn): void => {
+  if (ctxObject) receiverFn()
+}
+export const _callIfFalse = (ctxObject: boolean, receiverFn: SimpleReceiverFn): void => {
+  if (!ctxObject) receiverFn()
+}
+export type SimpleReceiverFn = () => void
