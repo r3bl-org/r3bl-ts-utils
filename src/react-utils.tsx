@@ -15,12 +15,21 @@
  *
  */
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./color-console-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./react-hook-utils"
-export * from "./timer-utils"
-export * from "./cache-utils"
-export * from "./react-ink-hook-utils"
-export * from "./react-utils"
+import React from "react"
+
+// Misc React helpers.
+
+export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
+
+export type RenderEachInputFn<T> = (input: T, index: number) => JSX.Element
+
+export function makeReactElementFromArray<T>(
+  inputsArray: T[],
+  renderEachInputFn: RenderEachInputFn<T>
+): JSX.Element {
+  const outputArray = emptyArray()
+  inputsArray.forEach((input, index: number) => {
+    outputArray.push(renderEachInputFn(input, index))
+  })
+  return <>{outputArray}</>
+}

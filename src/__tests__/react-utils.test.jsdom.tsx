@@ -15,12 +15,18 @@
  *
  */
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./color-console-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./react-hook-utils"
-export * from "./timer-utils"
-export * from "./cache-utils"
-export * from "./react-ink-hook-utils"
-export * from "./react-utils"
+import React from "react"
+import { emptyArray, makeReactElementFromArray, RenderEachInputFn } from "../index"
+
+test("emptyArray works", () => {
+  expect(emptyArray()).toHaveLength(0)
+})
+
+test("makeReactElementFromArray works", () => {
+  const renderEachInput: RenderEachInputFn<string> = function (inputItem, index) {
+    return <li key={index}>{inputItem}</li>
+  }
+  const inputArray = ["one", "two", "three"]
+  const element = makeReactElementFromArray(inputArray, renderEachInput)
+  expect(element.props.children).toHaveLength(3) // eslint-disable-line
+})

@@ -11,6 +11,8 @@
   - [`_apply`](#_apply)
   - [`_with`](#_with)
 - [Misc utils](#misc-utils)
+- [React utils](#react-utils)
+  - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
   - [`useTTYSize()`](#usettysize)
 - [React Hook utils](#react-hook-utils)
@@ -208,7 +210,7 @@ expect(returnValue).toEqual(`my-string`)
 then returns the `contextObject`. Here's an example.
 
 ```typescript
-import {_apply, ImplicitReceiverObject} from "r3bl-ts-utils"
+import { _apply, ImplicitReceiverObject } from "r3bl-ts-utils"
 
 const contextObject: string = "string"
 const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
@@ -233,7 +235,7 @@ expect(returnValue).toEqual(contextObject)
 calls it then returns the its return value. Here's an example.
 
 ```typescript
-import {_with, ImplicitReceiverObjectWithReturn} from "r3bl-ts-utils"
+import { _with, ImplicitReceiverObjectWithReturn } from "r3bl-ts-utils"
 
 const contextObject: string = "some_data"
 const hardcodedReceiverReturnValue: Symbol = Symbol()
@@ -281,6 +283,41 @@ const main = async (): Promise<void> => {
 }
 
 main().catch(console.error)
+```
+
+## React utils
+
+The following utility functions make it easier to work w/ React in general.
+
+### `makeReactElementFromArray()`
+
+A common pattern in composing React elements is taking an array and converting into a list of JSX
+elements. This also requires that a key be inserted in each of the rendered items. This is code that
+has to written repeatedly and this function aims to eliminate the need for that. Here's an example.
+
+```tsx
+import { emptyArray, makeReactElementFromArray, RenderEachInputFn } from "r3bl-ts-utils"
+import { Text } from "ink"
+import React, { FC } from "react"
+
+const Row_Instructions: FC = function (): JSX.Element {
+  const inputs = [
+    ["blue", "Press Tab to focus next element"],
+    ["blue", "Shift+Tab to focus previous element"],
+    ["blue", "Esc to reset focus."],
+    ["red", "Press q to exit"],
+  ]
+
+  return makeReactElementFromArray(inputs, renderToText)
+
+  function renderToText(line: string[], id: number): JSX.Element {
+    return (
+      <Text color={line[0]} key={id}>
+        {line[1]}
+      </Text>
+    )
+  }
+}
 ```
 
 ## React Ink Hook utils
