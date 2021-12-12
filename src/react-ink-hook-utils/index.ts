@@ -18,6 +18,7 @@
 import { Key, useStdout } from "ink"
 import { _also, StateHook } from "../index"
 import { useEffect, useState } from "react"
+import * as readline from "readline"
 
 //#region TTYSize.
 /**
@@ -116,6 +117,28 @@ export function keyPressedToString(keyPressed: KeyPressed): string {
   }
 
   return "n/a"
+}
+
+//#endregion
+
+//#region Node.js keypress event handling.
+
+/**
+ * https://nodejs.org/api/readline.html#readlineemitkeypresseventsstream-interface
+ * https://www.npmjs.com/package/keypress
+ */
+export function useKeypress() {
+  useEffect(fun, [])
+  function fun() {
+    readline.emitKeypressEvents(process.stdin)
+    if (process.stdin.isTTY) process.stdin.setRawMode(true)
+    process.stdin.on("keypress", (chunk, key) => {
+      console.log("chunk", chunk)
+      console.log("key", key)
+      // Example of detecting a keypress:
+      // if (key && key.ctrl && key.name == 'c') process.exit();
+    })
+  }
 }
 
 //#endregion
