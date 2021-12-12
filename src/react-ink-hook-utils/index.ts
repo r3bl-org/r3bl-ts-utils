@@ -112,7 +112,7 @@ export function keyPressedToString(keyPressed: KeyPressed): string {
   }
 
   if (typeof keyPressed === "string") {
-    return keyPressed 
+    return keyPressed
   }
 
   return "n/a"
