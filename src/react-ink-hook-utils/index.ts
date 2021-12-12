@@ -95,21 +95,31 @@ export function isKeyType(param: any): param is Key {
 export function keyPressedToString(keyPressed: KeyPressed): string {
   if (!keyPressed) return "n/a"
 
+  // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
+  type OptionsFlags<T> = {
+    [Property in keyof T as string]: boolean
+  }
+
   if (isKeyType(keyPressed)) {
-    if (keyPressed.upArrow) return "upArrow"
-    if (keyPressed.downArrow) return "downArrow"
-    if (keyPressed.leftArrow) return "leftArrow"
-    if (keyPressed.rightArrow) return "rightArrow"
-    if (keyPressed.pageDown) return "pageDown"
-    if (keyPressed.pageUp) return "pageUp"
-    if (keyPressed.return) return "return"
-    if (keyPressed.escape) return "escape"
-    if (keyPressed.ctrl) return "ctrl"
-    if (keyPressed.shift) return "shift"
-    if (keyPressed.tab) return "tab"
-    if (keyPressed.backspace) return "backspace"
-    if (keyPressed.delete) return "delete"
-    if (keyPressed.meta) return "meta"
+    const opts: OptionsFlags<Key> = {
+      backspace: keyPressed.backspace,
+      ctrl: keyPressed.ctrl,
+      delete: keyPressed.delete,
+      downArrow: keyPressed.downArrow,
+      escape: keyPressed.escape,
+      leftArrow: keyPressed.leftArrow,
+      meta: keyPressed.meta,
+      pageDown: keyPressed.pageDown,
+      pageUp: keyPressed.pageUp,
+      return: keyPressed.return,
+      rightArrow: keyPressed.rightArrow,
+      shift: keyPressed.shift,
+      tab: keyPressed.tab,
+      upArrow: keyPressed.upArrow,
+    }
+    for (const key in opts) {
+      if (opts[key]) return key
+    }
   }
 
   if (typeof keyPressed === "string") {
