@@ -19,6 +19,7 @@ import { Key, useStdout } from "ink"
 import { _also, StateHook } from "../index"
 import { useEffect, useState } from "react"
 
+//#region TTYSize.
 /**
  * https://nodejs.org/api/process.html#processstdout
  * https://nodejs.org/api/tty.html#event-resize
@@ -62,5 +63,59 @@ export class TTYSize {
     return `rows: ${this.rows}, columns: ${this.columns}`
   }
 }
+//#endregion
 
+//#region Keyboard handling.
 export type KeyboardInputHandlerFn = (input: string, key: Key) => void
+
+export type KeyPressed = string | Key | undefined
+
+// https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
+export function isKeyType(param: any): param is Key {
+  const key = param as Key
+  return (
+    key.upArrow !== undefined &&
+    key.downArrow !== undefined &&
+    key.leftArrow !== undefined &&
+    key.rightArrow !== undefined &&
+    key.pageDown !== undefined &&
+    key.pageUp !== undefined &&
+    key.return !== undefined &&
+    key.escape !== undefined &&
+    key.ctrl !== undefined &&
+    key.shift !== undefined &&
+    key.tab !== undefined &&
+    key.backspace !== undefined &&
+    key.delete !== undefined &&
+    key.meta !== undefined
+  )
+}
+
+export function keyPressedToString(keyPressed: KeyPressed): string {
+  if (!keyPressed) return "n/a"
+
+  if (isKeyType(keyPressed)) {
+    if (keyPressed.upArrow) return "upArrow"
+    if (keyPressed.downArrow) return "downArrow"
+    if (keyPressed.leftArrow) return "leftArrow"
+    if (keyPressed.rightArrow) return "rightArrow"
+    if (keyPressed.pageDown) return "pageDown"
+    if (keyPressed.pageUp) return "pageUp"
+    if (keyPressed.return) return "return"
+    if (keyPressed.escape) return "escape"
+    if (keyPressed.ctrl) return "ctrl"
+    if (keyPressed.shift) return "shift"
+    if (keyPressed.tab) return "tab"
+    if (keyPressed.backspace) return "backspace"
+    if (keyPressed.delete) return "delete"
+    if (keyPressed.meta) return "meta"
+  }
+
+  if (typeof keyPressed === "string") {
+    return keyPressed 
+  }
+
+  return "n/a"
+}
+
+//#endregion
