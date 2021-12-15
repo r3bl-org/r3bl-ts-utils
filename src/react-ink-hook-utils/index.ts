@@ -15,7 +15,7 @@
  *
  */
 
-import { Key, useInput, useStdout } from "ink"
+import { Key, useInput, useStdin, useStdout } from "ink"
 import { useEffect, useState } from "react"
 import * as readline from "readline"
 import { _also, StateHook } from "../index"
@@ -67,8 +67,13 @@ export class TTYSize {
 //#endregion
 
 //#region Keyboard handling.
-export function useKeyboard(fun: KeyboardInputHandlerFn): StateHook<UserInputKeyPress | undefined> {
+/**
+ * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
+ * terminal. keyPress is the key that the user pressed (eg: "ctrl+a", "backspace").
+ */
+export function useKeyboard(fun: KeyboardInputHandlerFn): [UserInputKeyPress | undefined, boolean] {
   const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
+  const { isRawModeSupported: inRawMode } = useStdin()
 
   useInput((input, key) => {
     const userInputKeyPress = new UserInputKeyPress(input, key)
@@ -76,7 +81,7 @@ export function useKeyboard(fun: KeyboardInputHandlerFn): StateHook<UserInputKey
     fun(userInputKeyPress)
   })
 
-  return [keyPress, setKeyPress]
+  return [keyPress, inRawMode]
 }
 
 export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
