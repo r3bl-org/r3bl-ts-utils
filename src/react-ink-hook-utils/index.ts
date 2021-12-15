@@ -15,10 +15,10 @@
  *
  */
 
-import { Key, useStdout } from "ink"
-import { _also, StateHook } from "../index"
+import { Key, useInput, useStdout } from "ink"
 import { useEffect, useState } from "react"
 import * as readline from "readline"
+import { _also, StateHook } from "../index"
 
 //#region TTYSize.
 /**
@@ -67,66 +67,95 @@ export class TTYSize {
 //#endregion
 
 //#region Keyboard handling.
-export type KeyboardInputHandlerFn = (input: string, key: Key) => void
+export function useKeyboard(fun: KeyboardInputHandlerFn): StateHook<UserInputKeyPress | undefined> {
+  const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
 
-export type KeyPressed = string | Key | undefined
+  useInput((input, key) => {
+    const userInputKeyPress = new UserInputKeyPress(input, key)
+    setKeyPress(userInputKeyPress)
+    fun(userInputKeyPress)
+  })
 
-// https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
-export function isKeyType(param: any): param is Key {
-  const key = param as Key
-  return (
-    key.upArrow !== undefined &&
-    key.downArrow !== undefined &&
-    key.leftArrow !== undefined &&
-    key.rightArrow !== undefined &&
-    key.pageDown !== undefined &&
-    key.pageUp !== undefined &&
-    key.return !== undefined &&
-    key.escape !== undefined &&
-    key.ctrl !== undefined &&
-    key.shift !== undefined &&
-    key.tab !== undefined &&
-    key.backspace !== undefined &&
-    key.delete !== undefined &&
-    key.meta !== undefined
-  )
+  return [keyPress, setKeyPress]
 }
 
-export function keyPressedToString(keyPressed: KeyPressed): string {
-  if (!keyPressed) return "n/a"
+export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
 
-  // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
-  type OptionsFlags<T> = {
-    [Property in keyof T as string]: boolean
+export class UserInputKeyPress {
+  constructor(readonly _input: string | undefined, readonly _key: Key | undefined) {}
+
+  get input(): string {
+    return this._input ? this._input : ""
   }
 
-  if (isKeyType(keyPressed)) {
-    const opts: OptionsFlags<Key> = {
-      backspace: keyPressed.backspace,
-      ctrl: keyPressed.ctrl,
-      delete: keyPressed.delete,
-      downArrow: keyPressed.downArrow,
-      escape: keyPressed.escape,
-      leftArrow: keyPressed.leftArrow,
-      meta: keyPressed.meta,
-      pageDown: keyPressed.pageDown,
-      pageUp: keyPressed.pageUp,
-      return: keyPressed.return,
-      rightArrow: keyPressed.rightArrow,
-      shift: keyPressed.shift,
-      tab: keyPressed.tab,
-      upArrow: keyPressed.upArrow,
+  get key(): string | undefined {
+    return this._key ? this.convertKeyToString() : ""
+  }
+
+  toString = () => {
+    const { key, input } = this
+    if (key && input) return `${key}+${input}`
+    if (key && !input) return key
+    if (!key && input) return input
+    return ""
+  }
+
+  /**
+   * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
+   */
+  private convertKeyToString(): string {
+    const { _key: key } = this
+
+    if (!key) return ""
+
+    // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
+    type PropertyFlags<T> = {
+      [Property in keyof T as string]: boolean
     }
-    for (const key in opts) {
-      if (opts[key]) return key
+
+    const properties: PropertyFlags<Key> = {
+      backspace: key.backspace,
+      ctrl: key.ctrl,
+      delete: key.delete,
+      downArrow: key.downArrow,
+      escape: key.escape,
+      leftArrow: key.leftArrow,
+      meta: key.meta,
+      pageDown: key.pageDown,
+      pageUp: key.pageUp,
+      return: key.return,
+      rightArrow: key.rightArrow,
+      shift: key.shift,
+      tab: key.tab,
+      upArrow: key.upArrow,
     }
+    for (const key in properties) {
+      if (properties[key]) return key.toLowerCase()
+    }
+
+    return ""
   }
 
-  if (typeof keyPressed === "string") {
-    return keyPressed
+  // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
+  static isKeyType(param: any): param is Key {
+    const key = param as Key
+    return (
+      key.upArrow !== undefined &&
+      key.downArrow !== undefined &&
+      key.leftArrow !== undefined &&
+      key.rightArrow !== undefined &&
+      key.pageDown !== undefined &&
+      key.pageUp !== undefined &&
+      key.return !== undefined &&
+      key.escape !== undefined &&
+      key.ctrl !== undefined &&
+      key.shift !== undefined &&
+      key.tab !== undefined &&
+      key.backspace !== undefined &&
+      key.delete !== undefined &&
+      key.meta !== undefined
+    )
   }
-
-  return "n/a"
 }
 
 //#endregion
@@ -137,7 +166,7 @@ export function keyPressedToString(keyPressed: KeyPressed): string {
  * https://nodejs.org/api/readline.html#readlineemitkeypresseventsstream-interface
  * https://www.npmjs.com/package/keypress
  */
-export function useKeypress() {
+export function useNodeKeypress() {
   useEffect(fun, [])
   function fun() {
     readline.emitKeypressEvents(process.stdin)

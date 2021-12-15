@@ -14,6 +14,7 @@
 - [React utils](#react-utils)
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
+  - [`useKeyboard()`](#usekeyboard)
   - [`useTTYSize()`](#usettysize)
 - [React Hook utils](#react-hook-utils)
   - [`StateHook<T>`](#statehookt)
@@ -323,6 +324,54 @@ const Row_Instructions: FC = function (): JSX.Element {
 ## React Ink Hook utils
 
 The following custom hooks make it easier to work w/ Ink and React function components.
+
+### `useKeyboard()`
+
+The `useKeyboard()` custom hook can be used to attach a function that responds to key presses in the
+terminal.
+
+1. The `UserInputKeyPress` class represents a single keypress (eg: <kbd>a</kbd>,
+   <kbd>backspace</kbd>, or <kbd>ctrl+k</kbd>).
+2. The `KeyboardInputHandlerFn` is a function that does something meaningful w/ a
+   `UserInputKeyPress` object (as it comes in from the terminal when the user presses keys).
+
+Here's an example.
+
+```tsx
+import { Props as AppContextProps } from "ink/build/components/AppContext"
+import { Props as FocusContextProps } from "ink/build/components/FocusContext"
+import { UserInputKeyPress, KeyboardInputHandlerFn, UserInputKeyPress } from "r3bl-ts-utils"
+
+const UseFocusExample: FC = function (): JSX.Element {
+  const [keyPress] = useKeyboard(
+    onKeyPress.bind({ app: useApp(), focusManager: useFocusManager() })
+  )
+
+  return (
+    <Box flexDirection="column">
+      {keyPress && <Row_Debug keyPressed={keyPress?.key} inputPressed={keyPress?.input} />}
+      <Row_Instructions />
+      <Row_FocusableItems />
+    </Box>
+  )
+}
+
+const onKeyPress: KeyboardInputHandlerFn = function (
+  this: { app: AppContextProps; focusManager: FocusContextProps },
+  userInputKeyPress: UserInputKeyPress
+) {
+  const { app, focusManager } = this
+  const { exit } = app
+  const { focus } = focusManager
+  const { input, key } = userInputKeyPress
+
+  _callIfTrue(input === "q", exit)
+  _callIfTrue(key === "ctrl" && input === "q", exit)
+  _callIfTrue(input === "!", () => focus("1"))
+  _callIfTrue(input === "@", () => focus("2"))
+  _callIfTrue(input === "#", () => focus("3"))
+}
+```
 
 ### `useTTYSize()`
 

@@ -15,14 +15,14 @@
  *
  */
 
-import * as React from "react"
-import { useTTYSize } from "../index"
-import { render } from "ink-testing-library"
 import { Text } from "ink"
+import { render } from "ink-testing-library"
+import * as React from "react"
+import { _also, UserInputKeyPress, useTTYSize } from "../index"
 
 // https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
-describe("react-ink-hook-utils", () => {
-  test("useTTYSize hook works", () => {
+describe("useTTYSize", () => {
+  test("hook works", () => {
     const propsObj = { rows: -1, columns: -1 }
     const Test = () => {
       const ttySize = useTTYSize()
@@ -35,5 +35,67 @@ describe("react-ink-hook-utils", () => {
     expect(lastFrame()).toEqual("Test")
     expect(propsObj.rows).not.toEqual(-1)
     expect(propsObj.columns).not.toEqual(-1)
+  })
+})
+
+describe("useKeyboard", () => {
+  test("UserInputKeyPress works", () => {
+    _also(new UserInputKeyPress(undefined, undefined), (it) => {
+      expect(it.toString()).toEqual("")
+    })
+
+    _also(new UserInputKeyPress("a", undefined), (it) => {
+      expect(it.toString()).toEqual("a")
+      expect(it.input).toEqual("a")
+      expect(it.key).toEqual("")
+    })
+
+    _also(
+      new UserInputKeyPress("a", {
+        backspace: false,
+        ctrl: true,
+        delete: false,
+        downArrow: false,
+        escape: false,
+        leftArrow: false,
+        meta: false,
+        pageDown: false,
+        pageUp: false,
+        return: false,
+        rightArrow: false,
+        shift: false,
+        tab: false,
+        upArrow: false,
+      }),
+      (it) => {
+        expect(it.toString()).toEqual("ctrl+a")
+        expect(it.input).toEqual("a")
+        expect(it.key).toEqual("ctrl")
+      }
+    )
+
+    _also(
+      new UserInputKeyPress(undefined, {
+        backspace: false,
+        ctrl: false,
+        delete: false,
+        downArrow: false,
+        escape: true,
+        leftArrow: false,
+        meta: false,
+        pageDown: false,
+        pageUp: false,
+        return: false,
+        rightArrow: false,
+        shift: false,
+        tab: false,
+        upArrow: false,
+      }),
+      (it) => {
+        expect(it.toString()).toEqual("escape")
+        expect(it.input).toEqual("")
+        expect(it.key).toEqual("escape")
+      }
+    )
   })
 })
