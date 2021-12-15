@@ -16,9 +16,9 @@
  */
 
 import { Key, useInput, useStdin, useStdout } from "ink"
-import { useEffect, useState } from "react"
+import { EffectCallback, useEffect, useState } from "react"
 import * as readline from "readline"
-import { _also, StateHook } from "../index"
+import { _also, createTimer, StateHook } from "../index"
 
 //#region TTYSize.
 /**
@@ -161,6 +161,29 @@ export class UserInputKeyPress {
       key.meta !== undefined
     )
   }
+}
+
+/**
+ * If terminal is not in raw mode create a recurring task so that Node.js process won't exit.
+ * - https://nodejs.org/api/tty.html#readstreamisraw
+ */
+export const usePreventProcessExitDuringTesting = (delayMs = 1_000): void => {
+  const { isRawModeSupported: inRawMode } = useStdin()
+
+  if (inRawMode) return
+
+  const fun: EffectCallback = () => {
+    // Start a timer that doesn't have a tickFn (just puts an event in Node.js event queue).
+    const timer = _also(createTimer("usePreventProcessExitDuringTesting", delayMs), (it) => {
+      it.startTicking()
+    })
+    // Clean up this hook.
+    return () => {
+      timer.stopTicking()
+    }
+  }
+
+  useEffect(fun, [])
 }
 
 //#endregion
