@@ -75,6 +75,8 @@ export function useKeyboard(fun: KeyboardInputHandlerFn): [UserInputKeyPress | u
   const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
 
+  if (!inRawMode) return [undefined, false] // Can only call useInput in raw mode.
+
   useInput((input, key) => {
     const userInputKeyPress = new UserInputKeyPress(input, key)
     setKeyPress(userInputKeyPress)
