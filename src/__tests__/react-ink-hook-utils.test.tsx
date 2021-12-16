@@ -71,6 +71,7 @@ describe("useKeyboard", () => {
         expect(it.toString()).toEqual("ctrl+a")
         expect(it.input).toEqual("a")
         expect(it.key).toEqual("ctrl")
+        expect(it.matches("ctrl+a")).toBeTruthy()
       }
     )
 
@@ -95,6 +96,7 @@ describe("useKeyboard", () => {
         expect(it.toString()).toEqual("escape")
         expect(it.input).toEqual("")
         expect(it.key).toEqual("escape")
+        expect(it.matches("escape")).toBeTruthy()
       }
     )
   })

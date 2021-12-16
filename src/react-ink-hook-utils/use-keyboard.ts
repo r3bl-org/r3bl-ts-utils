@@ -59,6 +59,8 @@ export class UserInputKeyPress {
     return ""
   }
 
+  matches = (selector: string): boolean => this.toString() === selector
+
   /**
    * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
    */
