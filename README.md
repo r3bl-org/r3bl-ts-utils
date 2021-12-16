@@ -14,6 +14,7 @@
 - [React utils](#react-utils)
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
+  - ['useClock()'](#useclock)
   - [`useKeyboard()`](#usekeyboard)
   - [`useTTYSize()`](#usettysize)
 - [React Hook utils](#react-hook-utils)
@@ -324,6 +325,50 @@ const Row_Instructions: FC = function (): JSX.Element {
 ## React Ink Hook utils
 
 The following custom hooks make it easier to work w/ Ink and React function components.
+
+### 'useClock()'
+
+The `useClock()` custom hook can be used start a clock that ticks every 1 second and updates the
+state. The hook returns a `number` that can be used to render a UI in React.
+
+Here's an example.
+
+```tsx
+/** App functional component. */
+export const appFn: FC<{ name: string }> = ({ name }) => render(runHooks(name))
+
+function runHooks(name: string): LocalVars {
+  const time = useClock()
+  return {
+    time,
+  }
+}
+interface LocalVars {
+  time: number
+}
+
+function render(locals: LocalVars) {
+  const { time } = locals
+  return <Text>{new Date(time).toLocaleTimeString()}</Text>
+}
+```
+
+The hook does clean up after itself (it will kill its internal `Timer` when it's enclosing component
+is unmounted). You can also call `TimerRegistry.killAll()` when you exit your app to make sure.
+Here's an example of doing this for a command line interface app built using Ink.
+
+```tsx
+_also(render(createElement(appFn, { name: !name ? "Stranger" : name })), (ink) => {
+  ink
+    .waitUntilExit()
+    .then(() => {
+      TimerRegistry.killAll()
+    })
+    .catch(() => {
+      console.error("Problem with exiting ink")
+    })
+})
+```
 
 ### `useKeyboard()`
 

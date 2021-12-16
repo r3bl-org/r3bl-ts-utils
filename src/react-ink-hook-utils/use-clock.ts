@@ -15,8 +15,26 @@
  *
  */
 
-export * from "./node-keypress"
-export * from "./testing"
-export * from "./use-keyboard"
-export * from "./use-tty-size"
-export * from "./use-clock"
+import { EffectCallback, useEffect, useState } from "react"
+import { StateHook } from "../react-hook-utils"
+import { createTimer } from "../timer-utils"
+import { _also } from "../kotlin-lang-utils"
+
+export const useClock = (): number => {
+  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
+
+  const fun: EffectCallback = () => {
+    const timer = _also(createTimer("useTime", 1000), (it) => {
+      it.onTick = () => setTime(Date.now())
+      it.startTicking()
+    })
+    // Clean up this hook.
+    return () => {
+      timer.stopTicking()
+    }
+  }
+
+  useEffect(fun, [])
+
+  return time
+}
