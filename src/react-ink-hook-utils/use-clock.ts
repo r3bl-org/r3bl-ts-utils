@@ -24,7 +24,7 @@ export const useClock = (): number => {
   const [time, setTime]: StateHook<number> = useState<number>(Date.now())
 
   const fun: EffectCallback = () => {
-    const timer = _also(createTimer("useTime", 1000), (it) => {
+    const timer = _also(createTimer("useClock", 1000), (it) => {
       it.onTick = () => setTime(Date.now())
       it.startTicking()
     })
@@ -37,4 +37,27 @@ export const useClock = (): number => {
   useEffect(fun, [])
 
   return time
+}
+
+/**
+ * @param delayMs how often the clock should tick (timer resolution).
+ * @return [time formatted to the current locale, raw time in ms]
+ */
+export const useClockWithLocalTimeFormat = (delayMs: number): [string, number] => {
+  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
+
+  const fun: EffectCallback = () => {
+    const timer = _also(createTimer("useClockWithLocalTimeFormat", delayMs), (it) => {
+      it.onTick = () => setTime(Date.now())
+      it.startTicking()
+    })
+    // Clean up this hook.
+    return () => {
+      timer.stopTicking()
+    }
+  }
+
+  useEffect(fun, [])
+
+  return [new Date(time).toLocaleTimeString(), time]
 }
