@@ -16,6 +16,7 @@
 - [React Ink Hook utils](#react-ink-hook-utils)
   - ['useClock()'](#useclock)
   - [`useKeyboard()`](#usekeyboard)
+  - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useTTYSize()`](#usettysize)
 - [React Hook utils](#react-hook-utils)
   - [`StateHook<T>`](#statehookt)
@@ -416,6 +417,55 @@ const onKeyPress: KeyboardInputHandlerFn = function (
   _callIfTrue(input === "@", () => focus("2"))
   _callIfTrue(input === "#", () => focus("3"))
 }
+```
+
+### `useKeyboardWithMap()`
+
+This hook utilizes the `useKeyboard()` hook and makes it really easy to enable keyboard handling for
+CLI apps. Instead of providing the logic to match a "user typed keypress" to a function ("action"),
+this hook takes care of all that. Instead, you can provide a map that declares the key presses that
+should be matched in order to invoke an action. When combined w/ the
+[`useMemo()`](https://reactjs.org/docs/hooks-reference.html#usememo) React hook, this also caches
+this map which is expensive to re-create on every key press.
+
+Here's an example.
+
+```tsx
+//#region Main functional component.
+const useFocusExampleFn: FC = (): JSX.Element => render.call(useHooks())
+//#endregion
+
+//#region useHooks.
+interface RenderContext {
+  keyPress: UserInputKeyPress | undefined
+  inRawMode: boolean
+}
+function useHooks(): RenderContext {
+  const map: KeyBindingsForActions = useMemo(
+    createActionMap.bind({ app: useApp(), focusManager: useFocusManager() }),
+    []
+  )
+  const [keyPress, inRawMode] = useKeyboardWithMap(map)
+  return { keyPress, inRawMode }
+}
+//#endregion
+
+//#region handleKeyboard.
+type CreateActionMapContext = {
+  app: ReturnType<typeof useApp>
+  focusManager: ReturnType<typeof useFocusManager>
+}
+function createActionMap(this: CreateActionMapContext): KeyBindingsForActions {
+  console.log("createActionMap - cache miss!")
+  return _also(createNewKeyPressesToActionMap(), (map) => {
+    const { app, focusManager } = this
+    map.set(["q", "ctrl+q"], app.exit)
+    map.set(["!"], focusManager.focus.bind(undefined, "1"))
+    map.set(["@"], focusManager.focus.bind(undefined, "2"))
+    map.set(["#"], focusManager.focus.bind(undefined, "3"))
+  })
+}
+//#endregion
 ```
 
 ### `useTTYSize()`
