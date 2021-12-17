@@ -19,6 +19,8 @@ import { StateHook } from "../react-hook-utils"
 import { useState } from "react"
 import { Key, useInput, useStdin } from "ink"
 
+export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
+
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+a", "backspace").
@@ -37,8 +39,6 @@ export function useKeyboard(fun: KeyboardInputHandlerFn): [UserInputKeyPress | u
 
   return [keyPress, inRawMode]
 }
-
-export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
 
 export class UserInputKeyPress {
   constructor(readonly _input: string | undefined, readonly _key: Key | undefined) {}
@@ -118,3 +118,16 @@ export class UserInputKeyPress {
     )
   }
 }
+
+export function processKeyPress(
+  keyPress: UserInputKeyPress,
+  keyPressesToActionMap: Map<string[], () => void>
+) {
+  keyPressesToActionMap.forEach((fun: () => void, keyArray: string[]) => {
+    keyArray.forEach((key) => {
+      if (keyPress.matches(key)) fun()
+    })
+  })
+}
+
+export const createNewKeyPressesToActionMap = () => new Map<string[], () => void>()
