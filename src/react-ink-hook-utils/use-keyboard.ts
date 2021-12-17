@@ -40,6 +40,12 @@ export function useKeyboard(fun: KeyboardInputHandlerFn): [UserInputKeyPress | u
   return [keyPress, inRawMode]
 }
 
+export function useKeyboardWithMap(
+  map: KeyBindingsForActions
+): [UserInputKeyPress | undefined, boolean] {
+  return useKeyboard((keyPress) => processKeyPress(keyPress, map))
+}
+
 export class UserInputKeyPress {
   constructor(readonly _input: string | undefined, readonly _key: Key | undefined) {}
 
