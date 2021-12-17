@@ -119,9 +119,11 @@ export class UserInputKeyPress {
   }
 }
 
+export type KeyBindingsForActions = Map<string[], () => void>
+
 export function processKeyPress(
   keyPress: UserInputKeyPress,
-  keyPressesToActionMap: Map<string[], () => void>
+  keyPressesToActionMap: KeyBindingsForActions
 ) {
   keyPressesToActionMap.forEach((fun: () => void, keyArray: string[]) => {
     keyArray.forEach((key) => {
@@ -130,4 +132,4 @@ export function processKeyPress(
   })
 }
 
-export const createNewKeyPressesToActionMap = () => new Map<string[], () => void>()
+export const createNewKeyPressesToActionMap = (): KeyBindingsForActions => new Map()
