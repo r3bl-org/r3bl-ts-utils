@@ -23,7 +23,7 @@ export interface Cache<K, V> {
   get: (arg: K) => V | undefined
   getAndComputeIfAbsent: (arg: K, populateFn: ComputeValueForKeyFn<K, V>) => V
   put: (arg: K, value: V) => void
-  contains(arg: K): boolean
+  contains: (arg: K) => boolean
   clear: () => void
 }
 

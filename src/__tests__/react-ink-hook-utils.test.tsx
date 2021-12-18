@@ -19,25 +19,20 @@ import { Text } from "ink"
 import { render } from "ink-testing-library"
 import * as React from "react"
 import {
-  _also,
-  createNewKeyPressesToActionMap,
-  processKeyPress,
-  UserInputKeyPress,
-  useTTYSize,
+  _also, createNewKeyPressesToActionMap, processKeyPress, UserInputKeyPress, useTTYSize,
 } from "../index"
 
 // https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
 describe("useTTYSize", () => {
   test("hook works", () => {
     const propsObj = { rows: -1, columns: -1 }
-    const Test = () => {
+    const TestEl = () => {
       const ttySize = useTTYSize()
       propsObj.rows = ttySize.rows
       propsObj.columns = ttySize.columns
-
       return <Text>Test</Text>
     }
-    const { lastFrame } = render(<Test />)
+    const { lastFrame } = render(<TestEl/>)
     expect(lastFrame()).toEqual("Test")
     expect(propsObj.rows).not.toEqual(-1)
     expect(propsObj.columns).not.toEqual(-1)
@@ -46,63 +41,76 @@ describe("useTTYSize", () => {
 
 describe("useKeyboard", () => {
   test("UserInputKeyPress works", () => {
-    _also(new UserInputKeyPress(undefined, undefined), (it) => {
-      expect(it.toString()).toEqual("")
-    })
-
-    _also(new UserInputKeyPress("a", undefined), (it) => {
-      expect(it.toString()).toEqual("a")
-      expect(it.input).toEqual("a")
-      expect(it.key).toEqual("")
-    })
-
-    _also(new UserInputKeyPress("a", ctrlKey), (it) => {
-      expect(it.toString()).toEqual("ctrl+a")
-      expect(it.input).toEqual("a")
-      expect(it.key).toEqual("ctrl")
-      expect(it.matches("ctrl+a")).toBeTruthy()
-    })
-
-    _also(new UserInputKeyPress(undefined, escapeKey), (it) => {
-      expect(it.toString()).toEqual("escape")
-      expect(it.input).toEqual("")
-      expect(it.key).toEqual("escape")
-      expect(it.matches("escape")).toBeTruthy()
-    })
+    _also(
+      new UserInputKeyPress(undefined, undefined),
+      it => expect(it.toString()).toEqual("")
+    )
+    
+    _also(
+      new UserInputKeyPress("a", undefined),
+      it => {
+        expect(it.toString()).toEqual("a")
+        expect(it.input).toEqual("a")
+        expect(it.key).toEqual("")
+      }
+    )
+    
+    _also(
+      new UserInputKeyPress("a", ctrlKey),
+      it => {
+        expect(it.toString()).toEqual("ctrl+a")
+        expect(it.input).toEqual("a")
+        expect(it.key).toEqual("ctrl")
+        expect(it.matches("ctrl+a")).toBeTruthy()
+      }
+    )
+    
+    _also(
+      new UserInputKeyPress(undefined, escapeKey),
+      it => {
+        expect(it.toString()).toEqual("escape")
+        expect(it.input).toEqual("")
+        expect(it.key).toEqual("escape")
+        expect(it.matches("escape")).toBeTruthy()
+      }
+    )
   })
-
+  
   test("processKeyPress works", () => {
     let fun1Flag = false
     let fun2State = ""
-
+    
     function fun1() {
       fun1Flag = true
     }
+    
     function fun2(arg: string) {
       fun2State = arg
     }
-
-    const keyPressesToActionMap = _also(createNewKeyPressesToActionMap(), (map) => {
-      map.set(["q", "ctrl+q"], fun1)
-      map.set(["!"], fun2.bind(this, "1"))
-      map.set(["@"], fun2.bind(this, "2"))
-      map.set(["#"], fun2.bind(this, "3"))
-    })
-
-    processKeyPress(new UserInputKeyPress("q", undefined), keyPressesToActionMap)
+    
+    const shortcutsToActionMap = _also(
+      createNewKeyPressesToActionMap(),
+      map => map
+        .set([ "q", "ctrl+q" ], fun1)
+        .set([ "!" ], fun2.bind(this, "1"))
+        .set([ "@" ], fun2.bind(this, "2"))
+        .set([ "#" ], fun2.bind(this, "3"))
+    )
+    
+    processKeyPress(new UserInputKeyPress("q", undefined), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
-
+    
     fun1Flag = false
-    processKeyPress(new UserInputKeyPress("q", ctrlKey), keyPressesToActionMap)
+    processKeyPress(new UserInputKeyPress("q", ctrlKey), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
-
-    processKeyPress(new UserInputKeyPress("!", undefined), keyPressesToActionMap)
+    
+    processKeyPress(new UserInputKeyPress("!", undefined), shortcutsToActionMap)
     expect(fun2State).toEqual("1")
-
-    processKeyPress(new UserInputKeyPress("@", undefined), keyPressesToActionMap)
+    
+    processKeyPress(new UserInputKeyPress("@", undefined), shortcutsToActionMap)
     expect(fun2State).toEqual("2")
-
-    processKeyPress(new UserInputKeyPress("#", undefined), keyPressesToActionMap)
+    
+    processKeyPress(new UserInputKeyPress("#", undefined), shortcutsToActionMap)
     expect(fun2State).toEqual("3")
   })
 })

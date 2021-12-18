@@ -20,8 +20,8 @@
  * interface of timer-utils.
  */
 
-import { Counter } from "./counter"
 import { Nullable } from "../misc-utils"
+import { Counter } from "./counter"
 
 export interface State {
   runtimeStatus: LifecycleStage
@@ -45,9 +45,9 @@ export interface Timer {
   onStop: Nullable<TimerTickFn>
   onStart: Nullable<TimerTickFn>
   onTick: Nullable<TimerTickFn>
-  startTicking(): this
-  stopTicking(): this
-  toString(): string
+  startTicking: () => this
+  stopTicking: () => this
+  toString: () => string
 }
 
 export const TimerErrors = {

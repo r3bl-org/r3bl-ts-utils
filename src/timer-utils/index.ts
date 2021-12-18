@@ -15,13 +15,13 @@
  *
  */
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
+import { _also } from "../kotlin-lang-utils"
+import { _callIfTrue } from "../misc-utils"
 import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
-import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy } from "../misc-utils"
 
+/* Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html */
 export * from "./counter"
 export * from "./externals"
 
@@ -64,18 +64,18 @@ export const createTimer = (
   delay: number,
   duration?: number,
   counter?: Counter
-): Timer => _also(new TimerImpl(name, delay, duration, counter), (it) => TimerRegistry.add(it))
+): Timer => _also(
+  new TimerImpl(name, delay, duration, counter),
+  TimerRegistry.add
+)
 
 export class TimerRegistry {
-  private static readonly timers = new Array<Timer>()
-  static killAll() {
-    TimerRegistry.timers.forEach((it) => {
-      _callIfTruthy(it.isRunning, () => {
-        it.stopTicking()
-      })
-    })
-  }
-  static add(timer: Timer) {
-    TimerRegistry.timers.push(timer)
-  }
+  private static readonly timers: Timer[] = []
+  
+  static killAll = () => TimerRegistry.timers.forEach(TimerRegistry.killIfRunning)
+  
+  private static killIfRunning = (timer: Timer) => _callIfTrue(timer.isRunning, timer.stopTicking)
+  
+  static add = (timer: Timer) => TimerRegistry.timers.push(timer)
+  
 }

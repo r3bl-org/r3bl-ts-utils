@@ -16,14 +16,14 @@
  */
 
 import React from "react"
-import { emptyArray, makeReactElementFromArray, RenderEachInputFn } from "../index"
+import { emptyArray, makeReactElementFromArray, RenderItemFn } from "../index"
 
 test("emptyArray works", () => {
   expect(emptyArray()).toHaveLength(0)
 })
 
 test("makeReactElementFromArray works", () => {
-  const renderEachInput: RenderEachInputFn<string> = function (inputItem, index) {
+  const renderEachInput: RenderItemFn<string> = function (inputItem, index) {
     return <li key={index}>{inputItem}</li>
   }
   const inputArray = ["one", "two", "three"]

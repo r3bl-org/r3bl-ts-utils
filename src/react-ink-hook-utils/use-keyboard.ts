@@ -15,48 +15,74 @@
  *
  */
 
-import { StateHook } from "../react-hook-utils"
-import { useState } from "react"
 import { Key, useInput, useStdin } from "ink"
+import { useState } from "react"
+import { _callIfTrue } from "../misc-utils"
+import { StateHook } from "../react-hook-utils"
+
+//#region Types.
 
 export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
+export type UseKeyboardReturnType = [ UserInputKeyPress | undefined, boolean ]
+export type ActionFn = () => void
+export type Shortcuts = string[]
+export type KeyBindingsForActions = Map<Shortcuts, ActionFn>
+
+//#endregion
+
+//#region Custom hooks.
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
- * terminal. keyPress is the key that the user pressed (eg: "ctrl+a", "backspace").
+ * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
-export function useKeyboard(fun: KeyboardInputHandlerFn): [UserInputKeyPress | undefined, boolean] {
-  const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
+export const useKeyboard = (fun: KeyboardInputHandlerFn): UseKeyboardReturnType => {
+  const [ keyPress, setKeyPress ]: StateHook<UserInputKeyPress | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
-
-  if (!inRawMode) return [undefined, false] // Can only call useInput in raw mode.
-
+  
+  if (!inRawMode) return [ undefined, false ] // Can only call useInput in raw mode.
+  
   useInput((input, key) => {
     const userInputKeyPress = new UserInputKeyPress(input, key)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
-
-  return [keyPress, inRawMode]
+  
+  return [ keyPress, inRawMode ]
 }
 
-export function useKeyboardWithMap(
-  map: KeyBindingsForActions
-): [UserInputKeyPress | undefined, boolean] {
-  return useKeyboard((keyPress) => processKeyPress(keyPress, map))
+/**
+ * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
+ * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
+ */
+export const useKeyboardWithMap = (map: KeyBindingsForActions): UseKeyboardReturnType =>
+  useKeyboard(
+    (keyPress) => processKeyPress(keyPress, map)
+  )
+
+//#endregion
+
+//#region Handle user input key presses.
+
+export const processKeyPress = (userInput: UserInputKeyPress, map: KeyBindingsForActions): void => {
+  const _tryToMatchUserInputToEntry = (actionFn: ActionFn, shortcuts: Shortcuts) =>
+    shortcuts.forEach((shortcut) => _callIfTrue(userInput.matches(shortcut), actionFn))
+  map.forEach(_tryToMatchUserInputToEntry)
 }
+
+export const createNewKeyPressesToActionMap = (): KeyBindingsForActions => new Map()
 
 export class UserInputKeyPress {
   constructor(readonly _input: string | undefined, readonly _key: Key | undefined) {}
-
+  
   get input(): string {
     return this._input ? this._input : ""
   }
-
+  
   get key(): string | undefined {
     return this._key ? this.convertKeyToString() : ""
   }
-
+  
   toString = () => {
     const { key, input } = this
     if (key && input) return `${key}+${input}`
@@ -64,22 +90,22 @@ export class UserInputKeyPress {
     if (!key && input) return input
     return ""
   }
-
+  
   matches = (selector: string): boolean => this.toString() === selector
-
+  
   /**
    * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
    */
-  private convertKeyToString(): string {
+  private convertKeyToString = (): string => {
     const { _key: key } = this
-
+    
     if (!key) return ""
-
+    
     // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
     type PropertyFlags<T> = {
       [Property in keyof T as string]: boolean
     }
-
+    
     const properties: PropertyFlags<Key> = {
       backspace: key.backspace,
       ctrl: key.ctrl,
@@ -99,12 +125,12 @@ export class UserInputKeyPress {
     for (const key in properties) {
       if (properties[key]) return key.toLowerCase()
     }
-
+    
     return ""
   }
-
+  
   // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
-  static isKeyType(param: any): param is Key {
+  static isKeyType = (param: any): param is Key => {
     const key = param as Key
     return (
       key.upArrow !== undefined &&
@@ -125,17 +151,4 @@ export class UserInputKeyPress {
   }
 }
 
-export type KeyBindingsForActions = Map<string[], () => void>
-
-export function processKeyPress(
-  keyPress: UserInputKeyPress,
-  keyPressesToActionMap: KeyBindingsForActions
-) {
-  keyPressesToActionMap.forEach((fun: () => void, keyArray: string[]) => {
-    keyArray.forEach((key) => {
-      if (keyPress.matches(key)) fun()
-    })
-  })
-}
-
-export const createNewKeyPressesToActionMap = (): KeyBindingsForActions => new Map()
+//#endregion

@@ -21,15 +21,15 @@ import React from "react"
 
 export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
 
-export type RenderEachInputFn<T> = (input: T, index: number) => JSX.Element
+export type RenderItemFn<T> = (input: T, index: number) => JSX.Element
 
-export function makeReactElementFromArray<T>(
+export const makeReactElementFromArray = <T extends any>(
   inputsArray: T[],
-  renderEachInputFn: RenderEachInputFn<T>
-): JSX.Element {
+  itemRendererFn: RenderItemFn<T>
+): JSX.Element => {
   const outputArray = emptyArray()
-  inputsArray.forEach((input, index: number) => {
-    outputArray.push(renderEachInputFn(input, index))
-  })
+  inputsArray.forEach(
+    (input: T, index: number) => outputArray.push(itemRendererFn(input, index))
+  )
   return <>{outputArray}</>
 }

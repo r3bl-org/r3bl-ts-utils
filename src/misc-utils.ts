@@ -18,14 +18,14 @@
 import { ColorConsole, Styles } from "./color-console-utils"
 
 export const sleep = (ms = 500) => {
-  const sprites = ["-", "\\", "-", "/"]
-
+  const sprites = [ "-", "\\", "-", "/" ]
+  
   let count = 0
   const printDotsInterval = setInterval(() => {
     const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
     ColorConsole.create(Styles.Primary.cyan)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
-
+  
   return new Promise<void>((resolveFn) => {
     setTimeout(() => {
       clearInterval(printDotsInterval)
