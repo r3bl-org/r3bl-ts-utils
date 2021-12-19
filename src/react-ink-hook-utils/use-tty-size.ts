@@ -27,10 +27,10 @@ import { StateHook } from "../react-hook-utils"
 export const useTTYSize = (): TTYSize => {
   // Get the Node.js stdout stream.
   const { stdout } = useStdout()
-  
+
   // Initial size of the TTY window.
-  const [ dimensions, setDimensions ]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
-  
+  const [dimensions, setDimensions]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
+
   // Handle TTY resize events.
   useEffect(() => {
     if (!stdout) return
@@ -42,25 +42,22 @@ export const useTTYSize = (): TTYSize => {
     }
     stdout.on("resize", _resizeHandler)
     return removeEffectFn
-  }, [ stdout ])
-  
+  }, [stdout])
+
   return dimensions
 }
 
 export class TTYSize {
   rows = 0
   columns = 0
-  
+
   static getInstance = (stdout: NodeJS.WriteStream | undefined): TTYSize => {
     if (!stdout) return new TTYSize()
-    return _also(
-      new TTYSize(),
-      it => {
-        it.rows = stdout.rows
-        it.columns = stdout.columns
-      }
-    )
+    return _also(new TTYSize(), (it) => {
+      it.rows = stdout.rows
+      it.columns = stdout.columns
+    })
   }
-  
+
   toString = () => `rows: ${this.rows}, columns: ${this.columns}`
 }

@@ -64,18 +64,14 @@ export const createTimer = (
   delay: number,
   duration?: number,
   counter?: Counter
-): Timer => _also(
-  new TimerImpl(name, delay, duration, counter),
-  TimerRegistry.add
-)
+): Timer => _also(new TimerImpl(name, delay, duration, counter), TimerRegistry.add)
 
 export class TimerRegistry {
   private static readonly timers: Timer[] = []
-  
+
   static killAll = () => TimerRegistry.timers.forEach(TimerRegistry.killIfRunning)
-  
+
   private static killIfRunning = (timer: Timer) => _callIfTrue(timer.isRunning, timer.stopTicking)
-  
+
   static add = (timer: Timer) => TimerRegistry.timers.push(timer)
-  
 }

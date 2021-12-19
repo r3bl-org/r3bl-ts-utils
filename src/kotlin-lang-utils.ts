@@ -44,7 +44,7 @@ export type ReceiverFnWithReturn<T, R> = (it: T) => R
  * @return contextObject that is passed
  */
 export const _then = <T>(contextObject: T, ...receiverFns: ReceiverFn<T>[]): T => {
-  receiverFns.forEach(fun => fun(contextObject))
+  receiverFns.forEach((fun) => fun(contextObject))
   return contextObject
 }
 
