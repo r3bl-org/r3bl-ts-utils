@@ -37,6 +37,7 @@
 
 export type ReceiverFn<T> = (it: T) => void
 export type ReceiverFnWithReturn<T, R> = (it: T) => R
+export type ReceiverFnAsync<T, R> = (it: T) => Promise<R>
 
 /**
  * @param contextObject value of `it`
@@ -56,6 +57,19 @@ export const _then = <T>(contextObject: T, ...receiverFns: ReceiverFn<T>[]): T =
 export const _also = <T>(contextObject: T, receiverFn: ReceiverFn<T>): T => {
   receiverFn(contextObject)
   return contextObject
+}
+
+/**
+ * @param contextObject value of `it`
+ * @param receiverFn lambda that accepts `it`
+ * @return {contextObject that is passed, promise returned by receiverFn}
+ */
+export const _alsoAsync = <T, R>(
+  contextObject: T,
+  receiverFn: ReceiverFnAsync<T, R>
+): { contextObject: T; promiseFromReceiverFn: Promise<R> } => {
+  const promiseFromReceiverFn = receiverFn(contextObject)
+  return { contextObject, promiseFromReceiverFn }
 }
 
 /**
