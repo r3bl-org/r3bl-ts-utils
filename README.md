@@ -17,6 +17,7 @@
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
   - [`useClock()`](#useclock)
+  - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useTTYSize()`](#usettysize)
@@ -439,6 +440,12 @@ _also(render(createElement(appFn, { name: !name ? "Stranger" : name })), (ink) =
     })
 })
 ```
+
+### `useClockWithLocalTimeFormat()`
+
+This is very similar to `useClock()` except that it takes a `delayMs` argument that sets the delay
+that is used to tick the clock. It returns an object that contains both the locale formatted time
+string and the time in ms.
 
 ### `useKeyboard()`
 
