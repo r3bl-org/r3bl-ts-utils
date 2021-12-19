@@ -205,7 +205,7 @@ console.log(output)
 ### `_alsoAsync`
 
 [`_alsoAsync()`][sf-1] is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to
-`also()` except that it accepts an async receiver function (`ReceiverFnAsync`). And it returns the
+`_also()` except that it accepts an async receiver function (`ReceiverFnAsync`). And it returns the
 `contextObject` and a promise from the async receiver function. Here's an example.
 
 ```tsx
