@@ -7,6 +7,7 @@
 - [Colorized console](#colorized-console)
 - [Scope functions](#scope-functions)
   - [`_also`](#_also)
+  - [`_then`](#_then)
   - [`_let`](#_let)
   - [`_apply`](#_apply)
   - [`_with`](#_with)
@@ -60,7 +61,9 @@ This module is written entirely in TypeScript, and is configured to be a CommonJ
 > - [Example of a dual module][mod-2].
 
 <!-- prettier-ignore-start -->
+
 [mod-1]: https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+
 [mod-2]: https://github.com/sensedeep/dynamodb-onetable
 <!-- prettier-ignore-end -->
 
@@ -79,10 +82,15 @@ Here are some important links for this package.
 2. [npm package][o-2]
 
 <!-- prettier-ignore-start -->
+
 [o-1]: https://github.com/r3bl-org/r3bl-ts-utils
+
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
+
 [o-3]: https://github.com/nazmulidris/color-console
+
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
+
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 <!-- prettier-ignore-end -->
 
@@ -105,7 +113,9 @@ To override on the default styles, here's an example. The [`chalk`][cc-2] librar
 hood, so you can use all it's styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
+
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
+
 [cc-2]: https://www.npmjs.com/package/chalk
 <!-- prettier-ignore-end -->
 
@@ -165,7 +175,9 @@ one. So here are four examples of using them. You can browse the source [here][s
 > The [tests][sf-2] for this library are worth taking a look at to get a sense of how to use them.
 
 <!-- prettier-ignore-start -->
+
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
+
 [sf-2]: https://github.com/r3bl-org/r3bl-ts-utils/tree/main/src/__tests
 <!-- prettier-ignore-end -->
 
@@ -188,6 +200,24 @@ console.log(output)
 
 > You can name the argument to the `ReceiverFn` anything you like and not just `it` (which is the
 > common practice in Kotlin).
+
+### `_then`
+
+This is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to `_also()`, except
+that it takes an array of receiver functions (each of which accepts a `contextObject` argument), and
+runs them all sequentially. It returns `contextObject` just like `_also()`. Here's an example.
+
+```tsx
+import { _then } from "r3bl-ts-utils"
+
+const buffer = ""
+const fun1: ReceiverFn<string> = (it) => (buffer += it)
+const fun2: ReceiverFn<string> = (it) => (buffer += it)
+
+const returnValue = _then("foo", fun1, fun2)
+expect(returnValue).toEqual(contextObject)
+expect(buffer).toEqual("foofoo")
+```
 
 ### `_let`
 
@@ -344,6 +374,7 @@ function runHooks(name: string): LocalVars {
     time,
   }
 }
+
 interface LocalVars {
   time: number
 }
@@ -440,6 +471,7 @@ interface RenderContext {
   keyPress: UserInputKeyPress | undefined
   inRawMode: boolean
 }
+
 function useHooks(): RenderContext {
   const map: KeyBindingsForActions = useMemo(
     createActionMap.bind({ app: useApp(), focusManager: useFocusManager() }),
@@ -448,6 +480,7 @@ function useHooks(): RenderContext {
   const [keyPress, inRawMode] = useKeyboardWithMap(map)
   return { keyPress, inRawMode }
 }
+
 //#endregion
 
 //#region handleKeyboard.
@@ -455,6 +488,7 @@ type CreateActionMapContext = {
   app: ReturnType<typeof useApp>
   focusManager: ReturnType<typeof useFocusManager>
 }
+
 function createActionMap(this: CreateActionMapContext): KeyBindingsForActions {
   console.log("createActionMap - cache miss!")
   return _also(createNewKeyPressesToActionMap(), (map) => {
@@ -465,6 +499,7 @@ function createActionMap(this: CreateActionMapContext): KeyBindingsForActions {
     map.set(["#"], focusManager.focus.bind(undefined, "3"))
   })
 }
+
 //#endregion
 ```
 
@@ -752,8 +787,11 @@ Here are some good references for this:
 - [Module re-exports][b-3]
 
 <!-- prettier-ignore-start -->
+
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
+
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
+
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
 <!-- prettier-ignore-end -->
 

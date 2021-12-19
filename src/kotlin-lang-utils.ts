@@ -40,6 +40,16 @@ export type ReceiverFnWithReturn<T, R> = (it: T) => R
 
 /**
  * @param contextObject value of `it`
+ * @param receiverFns array of lambdas that accepts `it`
+ * @return contextObject that is passed
+ */
+export const _then = <T>(contextObject: T, ...receiverFns: ReceiverFn<T>[]): T => {
+  receiverFns.forEach(fun => fun(contextObject))
+  return contextObject
+}
+
+/**
+ * @param contextObject value of `it`
  * @param receiverFn lambda that accepts `it`
  * @return contextObject that is passed
  */

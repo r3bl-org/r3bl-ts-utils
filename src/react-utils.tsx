@@ -23,7 +23,7 @@ export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
 
 export type RenderItemFn<T> = (input: T, index: number) => JSX.Element
 
-export const makeReactElementFromArray = <T extends any>(
+export const makeReactElementFromArray = <T,>(
   inputsArray: T[],
   itemRendererFn: RenderItemFn<T>
 ): JSX.Element => {

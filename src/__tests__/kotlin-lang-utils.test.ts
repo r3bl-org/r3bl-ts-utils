@@ -16,55 +16,77 @@
  */
 
 import {
-  _also,
-  _apply,
-  _let,
-  _with,
-  ImplicitReceiverObject,
-  ImplicitReceiverObjectWithReturn,
-  ReceiverFn,
-  ReceiverFnWithReturn,
+  _also, _apply, _let, _then, _with, ImplicitReceiverObject, ImplicitReceiverObjectWithReturn,
+  ReceiverFn, ReceiverFnWithReturn,
 } from "../index"
 
-it("_also() takes a contextObject, passes it to the ReceiverFn, and returns the contextObject", () => {
-  const contextObject = "_also"
-
-  // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
-  const myReceiverFn: ReceiverFn<string> = (it) => {
-    expect(it).toEqual(contextObject)
-    return it
+it(
+  "_then() takes a contextObject, passes it to the ReceiverFn[], and returns the contextObject",
+  () => {
+    const contextObject = "_then"
+    
+    const flags = [ false, false ]
+    const fun1: ReceiverFn<string> = it => {
+      expect(it).toEqual(contextObject)
+      flags[0] = true
+    }
+    const fun2: ReceiverFn<string> = it => {
+      expect(it).toEqual(contextObject)
+      flags[1] = true
+    }
+    
+    const returnValue = _then(contextObject, fun1, fun2)
+    expect(returnValue).toEqual(contextObject)
+    expect(flags[0]).toBeTruthy()
+    expect(flags[1]).toBeTruthy()
   }
-  const spyObjectContainingFn = { myReceiverFn }
-  spyOn(spyObjectContainingFn, "myReceiverFn").and.callThrough()
+)
 
-  const returnValue = _also(contextObject, spyObjectContainingFn.myReceiverFn)
-  expect(returnValue).toEqual(contextObject)
-  expect(spyObjectContainingFn.myReceiverFn).toHaveBeenCalled()
-})
-
-it("_let() takes a contextObject, passes it to the ReceiverFnWithReturn, and returns its return value", () => {
-  const contextObject = "_let"
-  const receiverFnReturnValue = Symbol()
-
-  // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
-  const myReceiverFn: ReceiverFnWithReturn<string, symbol> = (it) => {
-    expect(it).toEqual(contextObject)
-    return receiverFnReturnValue
+it(
+  "_also() takes a contextObject, passes it to the ReceiverFn, and returns the contextObject",
+  () => {
+    const contextObject = "_also"
+    
+    // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
+    const myReceiverFn: ReceiverFn<string> = (it) => {
+      expect(it).toEqual(contextObject)
+      return it
+    }
+    const spyObjectContainingFn = { myReceiverFn }
+    spyOn(spyObjectContainingFn, "myReceiverFn").and.callThrough()
+    
+    const returnValue = _also(contextObject, spyObjectContainingFn.myReceiverFn)
+    expect(returnValue).toEqual(contextObject)
+    expect(spyObjectContainingFn.myReceiverFn).toHaveBeenCalled()
   }
-  const spyObjectContainingFn = { myReceiverFn }
-  spyOn(spyObjectContainingFn, "myReceiverFn").and.callThrough()
+)
 
-  const returnValue = _let(contextObject, spyObjectContainingFn.myReceiverFn)
-  expect(returnValue).toEqual(receiverFnReturnValue)
-  expect(spyObjectContainingFn.myReceiverFn).toHaveBeenCalled()
-})
+it(
+  "_let() takes a contextObject, passes it to the ReceiverFnWithReturn, and returns its return value",
+  () => {
+    const contextObject = "_let"
+    const receiverFnReturnValue = Symbol()
+    
+    // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
+    const myReceiverFn: ReceiverFnWithReturn<string, symbol> = (it) => {
+      expect(it).toEqual(contextObject)
+      return receiverFnReturnValue
+    }
+    const spyObjectContainingFn = { myReceiverFn }
+    spyOn(spyObjectContainingFn, "myReceiverFn").and.callThrough()
+    
+    const returnValue = _let(contextObject, spyObjectContainingFn.myReceiverFn)
+    expect(returnValue).toEqual(receiverFnReturnValue)
+    expect(spyObjectContainingFn.myReceiverFn).toHaveBeenCalled()
+  }
+)
 
 it(
   "_apply() takes a contextObject, binds it to ImplicitReceiverObject's this, calls it, then" +
-    " returns the contextObject",
+  " returns the contextObject",
   () => {
     const contextObject = "_apply"
-
+    
     // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
     const myImplicitReceiverObject: ImplicitReceiverObject<string> = {
       fnWithReboundThis: function (): string {
@@ -73,7 +95,7 @@ it(
       },
     }
     spyOn(myImplicitReceiverObject, "fnWithReboundThis").and.callThrough()
-
+    
     const returnValue = _apply(contextObject, myImplicitReceiverObject)
     expect(returnValue).toEqual(contextObject)
     expect(myImplicitReceiverObject.fnWithReboundThis).toHaveBeenCalled()
@@ -82,11 +104,11 @@ it(
 
 it(
   "_with() takes a contextObject, binds it to ImplicitReceiverObjectWithReturn's this, calls it," +
-    " then returns the its return value",
+  " then returns the its return value",
   () => {
     const contextObject = "_with"
     const receiverReturnValue = Symbol()
-
+    
     // https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
     const myImplicitReceiverObjectWithReturn: ImplicitReceiverObjectWithReturn<string, symbol> = {
       fnWithReboundThis: function (): symbol {
@@ -95,7 +117,7 @@ it(
       },
     }
     spyOn(myImplicitReceiverObjectWithReturn, "fnWithReboundThis").and.callThrough()
-
+    
     const returnValue = _with(contextObject, myImplicitReceiverObjectWithReturn)
     expect(returnValue).toEqual(receiverReturnValue)
     expect(myImplicitReceiverObjectWithReturn.fnWithReboundThis).toHaveBeenCalled()
