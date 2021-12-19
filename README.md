@@ -7,6 +7,7 @@
 - [Colorized console](#colorized-console)
 - [Scope functions](#scope-functions)
   - [`_also`](#_also)
+  - [`_alsoAsync`](#_alsoasync)
   - [`_then`](#_then)
   - [`_let`](#_let)
   - [`_apply`](#_apply)
@@ -15,7 +16,7 @@
 - [React utils](#react-utils)
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
-  - ['useClock()'](#useclock)
+  - [`useClock()`](#useclock)
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useTTYSize()`](#usettysize)
@@ -201,11 +202,48 @@ console.log(output)
 > You can name the argument to the `ReceiverFn` anything you like and not just `it` (which is the
 > common practice in Kotlin).
 
+### `_alsoAsync`
+
+[`_alsoAsync()`][sf-1] is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to
+`also()` except that it accepts an async receiver function (`ReceiverFnAsync`). And it returns the
+`contextObject` and a promise from the async receiver function. Here's an example.
+
+```tsx
+import { _alsoAsync } from "r3bl-ts-utils"
+
+const contextObject = "_alsoAsync"
+
+let flag = false
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+const asyncFn: ReceiverFnAsync<string, boolean> = async (it) =>
+  new Promise<boolean>((resolveFn) => {
+    const _fun = () => {
+      expect(it).toEqual(contextObject)
+      flag = true
+      resolveFn(true)
+    }
+    // Delay execution of _fun to next iteration of event loop.
+    // https://nodejs.dev/learn/understanding-setimmediate
+    setImmediate(_fun)
+  })
+
+const { contextObject: obj, promiseFromReceiverFn: promise } = _alsoAsync(contextObject, asyncFn)
+
+expect(obj).toEqual(contextObject)
+expect(flag).toBeFalsy()
+
+const value = await promise
+expect(value).toBeTruthy()
+expect(flag).toBeTruthy()
+```
+
 ### `_then`
 
-This is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to `_also()`, except
-that it takes an array of receiver functions (each of which accepts a `contextObject` argument), and
-runs them all sequentially. It returns `contextObject` just like `_also()`. Here's an example.
+[`_then()`][sf-1] is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to
+`_also()`, except that it takes an array of receiver functions (each of which accepts a
+`contextObject` argument), and runs them all sequentially. It returns `contextObject` just like
+`_also()`. Here's an example.
 
 ```tsx
 import { _then } from "r3bl-ts-utils"
@@ -357,7 +395,7 @@ const Row_Instructions: FC = function (): JSX.Element {
 
 The following custom hooks make it easier to work w/ Ink and React function components.
 
-### 'useClock()'
+### `useClock()`
 
 The `useClock()` custom hook can be used start a clock that ticks every 1 second and updates the
 state. The hook returns a `number` that can be used to render a UI in React.
