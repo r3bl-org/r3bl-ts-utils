@@ -25,7 +25,7 @@ import { StateHook } from "../react-hook-utils"
 export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
 export type UseKeyboardReturnType = [UserInputKeyPress | undefined, boolean]
 export type ActionFn = () => void
-export type Shortcuts = string[]
+export type Shortcuts = string[] // "Shortcuts" aka "KeyBindings".
 export type KeyBindingsForActions = Map<Shortcuts, ActionFn>
 
 //#endregion

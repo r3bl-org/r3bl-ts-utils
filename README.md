@@ -404,7 +404,7 @@ state. The hook returns a `number` that can be used to render a UI in React.
 Here's an example.
 
 ```tsx
-/** App functional component. */
+/** App function component. */
 export const appFn: FC<{ name: string }> = ({ name }) => render(runHooks(name))
 
 function runHooks(name: string): LocalVars {
@@ -507,7 +507,7 @@ this map which is expensive to re-create on every key press.
 Here's an example.
 
 ```tsx
-//#region Main functional component.
+//#region Main function component.
 const useFocusExampleFn: FC = (): JSX.Element => render.call(useHooks())
 //#endregion
 
@@ -578,7 +578,7 @@ setTimeout(() => unmount(), 30_000)
 ## React Hook utils
 
 The following [utility types](https://www.typescriptlang.org/docs/handbook/utility-types.html) and
-custom hooks make it easier to work w/ React functional components and hooks.
+custom hooks make it easier to work w/ React function components and hooks.
 
 ### `StateHook<T>`
 
@@ -687,7 +687,7 @@ sequenceDiagram
 
 To use the timer utils, use the factory function `createTimer()` which returns an object that
 implements the `Timer` interface. This interface and the [tests][sf-2] are a great place to discover
-the API surface. Here's an example of using this in a React functional component that uses Hooks to
+the API surface. Here's an example of using this in a React function component that uses Hooks to
 generate a CLI interface using [ink](https://github.com/vadimdemedes/ink).
 
 ```tsx
