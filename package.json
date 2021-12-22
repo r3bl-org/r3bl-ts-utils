@@ -19,6 +19,8 @@
     "version": "npm run format && git add -A",
     "postversion": "git push && git push --tags",
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
+    "/*format-with-tsfmt*/": "https://github.com/vvakame/typescript-formatter",
+    "format-with-tsfmt": "tsfmt -r"
   },
   "repository": {
     "type": "git",
