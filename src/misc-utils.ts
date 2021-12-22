@@ -23,7 +23,7 @@ export const sleep = (ms = 500) => {
   let count = 0
   const printDotsInterval = setInterval(() => {
     const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
-    ColorConsole.create(Styles.Primary.cyan)("Sleep " + sprite).consoleLogInPlace()
+    ColorConsole.create(Styles.Primary)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
 
   return new Promise<void>((resolveFn) => {

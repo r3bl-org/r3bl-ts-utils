@@ -16,11 +16,11 @@
  */
 
 // Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
-export * from "./color-console-utils"
 export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
 export * from "./react-hook-utils"
 export * from "./timer-utils"
 export * from "./cache-utils"
 export * from "./react-ink-hook-utils"
 export * from "./react-utils"
+export * from "./color-console-utils"
+export * from "./misc-utils"

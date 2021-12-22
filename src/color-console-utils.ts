@@ -19,7 +19,6 @@
 // TypeScript issues w/ Chalk.
 // https://github.com/chalk/chalk/issues/281#issuecomment-401591747
 // https://github.com/chalk/chalk/issues/215
-import chalk from "chalk"
 import * as _kt from "./kotlin-lang-utils"
 
 const maxWidth = 100 / 3
@@ -31,8 +30,15 @@ const padding = 2
 const defaultPostFix = ""
 const spaceChar = " "
 
-const getHeaderLine = (message: string, repeat: string): string =>
-  repeat.repeat(message.length + padding)
+type ChalkFn = (text: string) => string
+
+namespace Formatter {
+  export const textStyleHeaderUnderlineFn: ChalkFn = (text: string) => text
+  export const textStyleHeaderFn: ChalkFn = (text: string) => text
+  export const textStyleHeaderBodyFn: ChalkFn = (text: string) => text
+  export const primaryFn: ChalkFn = text => text
+  export const secondaryFn: ChalkFn = text => text
+}
 
 export const printHeader = (message: string, postFix = defaultPostFix) => {
   const isTooWide = message.length > maxWidth ? "\n" : ""
@@ -43,15 +49,18 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
     
     let headerLeft, headerRight
     if (isTooWide) {
-      headerLeft = textStyleHeaderUnderline(headerLineUnderscores)
-      headerRight = textStyleHeaderUnderline(headerLineUnderscores)
+      headerLeft = Formatter.textStyleHeaderUnderlineFn(headerLineUnderscores)
+      headerRight = Formatter.textStyleHeaderUnderlineFn(headerLineUnderscores)
     } else {
-      headerLeft = textStyleHeaderUnderline(getHeaderLine(message, defaultShortLeftRepeatChar))
-      headerRight = textStyleHeader(getHeaderLine(message, defaultShortRightRepeatChar))
+      headerLeft = Formatter.textStyleHeaderUnderlineFn(getHeaderLine(
+        message,
+        defaultShortLeftRepeatChar
+      ))
+      headerRight = Formatter.textStyleHeaderFn(getHeaderLine(message, defaultShortRightRepeatChar))
     }
     
     spans[0] = headerLeft
-    spans[1] = textStyleHeaderBody(`${spaceChar}${message}${spaceChar}`)
+    spans[1] = Formatter.textStyleHeaderBodyFn(`${spaceChar}${message}${spaceChar}`)
     spans[2] = headerRight
   })
   
@@ -60,9 +69,8 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
   console.log(output + postFix)
 }
 
-const textStyleHeaderUnderline = chalk.underline.black.bgWhiteBright
-const textStyleHeader = chalk.black.bgWhiteBright
-const textStyleHeaderBody = chalk.bold.black.bgYellow
+const getHeaderLine = (message: string, repeat: string): string =>
+  repeat.repeat(message.length + padding)
 
 export interface ColorConsoleIF {
   (text: string): ColorConsole
@@ -79,16 +87,16 @@ export interface ColorConsoleIF {
 }
 
 export class ColorConsole {
-  private readonly myStyle: chalk.Chalk
+  private readonly myStyleFn: ChalkFn
   private myText = ""
   
-  static create = (style: chalk.Chalk): ColorConsoleIF => {
+  static create = (style: ChalkFn): ColorConsoleIF => {
     const instance = new ColorConsole(style)
     return Object.assign((text: string) => instance.call(text)) as ColorConsoleIF
   }
   
-  constructor(style: chalk.Chalk) {
-    this.myStyle = style
+  constructor(style: ChalkFn) {
+    this.myStyleFn = style
   }
   
   call = (text: string): ColorConsole => this.apply(text)
@@ -107,7 +115,7 @@ export class ColorConsole {
   consoleLogInPlace = (printNewline = false): void => {
     process.stdout.clearLine(-1)
     process.stdout.cursorTo(0)
-    process.stdout.write(Styles.Primary.red(this.toString()))
+    process.stdout.write(Styles.Primary(this.toString()))
     printNewline ? process.stdout.write("\n") : null
   }
   
@@ -115,15 +123,15 @@ export class ColorConsole {
     console.error(this.toString())
   }
   
-  toString = (): string => this.myStyle(this.myText)
+  toString = (): string => this.myStyleFn(this.myText)
 }
 
-export const Styles = {
-  Primary: chalk.bold.yellow.bgBlack,
-  Secondary: chalk.underline.cyan.bgGray,
+export const Styles: { Primary: ChalkFn, Secondary: ChalkFn } = {
+  Primary: Formatter.primaryFn,
+  Secondary: Formatter.secondaryFn,
 }
 
-export const StyledColorConsole = {
+export const StyledColorConsole: { Secondary: ColorConsoleIF; Primary: ColorConsoleIF } = {
   Primary: ColorConsole.create(Styles.Primary),
   Secondary: ColorConsole.create(Styles.Secondary),
 }

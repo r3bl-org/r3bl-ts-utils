@@ -15,6 +15,7 @@
  *
  */
 
+import { printHeader } from "../color-console-utils"
 import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../misc-utils"
 
 describe("misc-utils", () => {
@@ -27,28 +28,28 @@ describe("misc-utils", () => {
     expect(ctxObject).toBeTruthy()
     expect(executed).toBeTruthy()
   })
-
+  
   test("_callIfFalsy", () => {
     let executedIfNull = false
     let executedIfUndefined = false
-
+    
     _callIfFalsy(undefined, () => {
       executedIfUndefined = true
     })
     _callIfFalsy(null, () => {
       executedIfNull = true
     })
-
+    
     expect(executedIfUndefined).toBeTruthy()
     expect(executedIfNull).toBeTruthy()
   })
-
+  
   test("_repeat", () => {
     let count = 0
     _repeat(5, () => count++)
     expect(count).toEqual(5)
   })
-
+  
   test("_callIfTrue", () => {
     let flag = false
     const fun = () => {
@@ -59,7 +60,7 @@ describe("misc-utils", () => {
     _callIfTrue(true, fun)
     expect(flag).toBeTruthy()
   })
-
+  
   test("_callIfFalse", () => {
     let flag = true
     const fun = () => {
