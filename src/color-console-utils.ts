@@ -15,11 +15,9 @@
  *
  */
 
-// TODO: Remove dependency on Chalk since it breaks TypeScript (v 5.0.0 doesn't work).
-// TypeScript issues w/ Chalk.
-// https://github.com/chalk/chalk/issues/281#issuecomment-401591747
-// https://github.com/chalk/chalk/issues/215
+import colors from "colors/safe"
 import * as _kt from "./kotlin-lang-utils"
+import { _let } from "./kotlin-lang-utils"
 
 const maxWidth = 100 / 3
 const defaultRepeatChar = "-"
@@ -30,47 +28,46 @@ const padding = 2
 const defaultPostFix = ""
 const spaceChar = " "
 
-type ChalkFn = (text: string) => string
+type FormatFn = (text: string) => string
 
 namespace Formatter {
-  export const textStyleHeaderUnderlineFn: ChalkFn = (text: string) => text
-  export const textStyleHeaderFn: ChalkFn = (text: string) => text
-  export const textStyleHeaderBodyFn: ChalkFn = (text: string) => text
-  export const primaryFn: ChalkFn = text => text
-  export const secondaryFn: ChalkFn = text => text
+  export const headerUnderlineFn: FormatFn = text => colors.underline(colors.blue(text))
+  export const headerFn: FormatFn = text => colors.blue(text)
+  export const headerMessageFn: FormatFn = text => colors.cyan(colors.bold(text))
+  export const primaryFn: FormatFn = text => colors.yellow(colors.bold(text))
+  export const secondaryFn: FormatFn = text => colors.underline(colors.cyan(text))
 }
 
 export const printHeader = (message: string, postFix = defaultPostFix) => {
-  const isTooWide = message.length > maxWidth ? "\n" : ""
+  const isTooWideChar = (message.length > maxWidth) ? "\n" : ""
   
   const spans = _kt._also(new Array<string>(3), (spans) => {
     const headerLine = getHeaderLine(message, defaultRepeatChar)
     const headerLineUnderscores = headerLine.replace(regExForDefaultRepeatChar, spaceChar)
     
     let headerLeft, headerRight
-    if (isTooWide) {
-      headerLeft = Formatter.textStyleHeaderUnderlineFn(headerLineUnderscores)
-      headerRight = Formatter.textStyleHeaderUnderlineFn(headerLineUnderscores)
+    if (isTooWideChar) {
+      headerLeft = Formatter.headerUnderlineFn(headerLineUnderscores)
+      headerRight = Formatter.headerUnderlineFn(headerLineUnderscores)
     } else {
-      headerLeft = Formatter.textStyleHeaderUnderlineFn(getHeaderLine(
-        message,
-        defaultShortLeftRepeatChar
-      ))
-      headerRight = Formatter.textStyleHeaderFn(getHeaderLine(message, defaultShortRightRepeatChar))
+      headerLeft = Formatter.headerUnderlineFn(getHeaderLine(message, defaultShortLeftRepeatChar))
+      headerRight = Formatter.headerFn(getHeaderLine(message, defaultShortRightRepeatChar))
     }
     
     spans[0] = headerLeft
-    spans[1] = Formatter.textStyleHeaderBodyFn(`${spaceChar}${message}${spaceChar}`)
+    spans[1] = Formatter.headerMessageFn(`${spaceChar}${message}${spaceChar}`)
     spans[2] = headerRight
   })
   
-  const output = spans.join(isTooWide ? "\n" : "")
+  const output = spans.join(isTooWideChar ? "\n" : "")
   
   console.log(output + postFix)
 }
 
-const getHeaderLine = (message: string, repeat: string): string =>
-  repeat.repeat(message.length + padding)
+const getHeaderLine = (message: string, repeatChar: string): string => _let(
+  message.length,
+  count => repeatChar.repeat(count + padding)
+)
 
 export interface ColorConsoleIF {
   (text: string): ColorConsole
@@ -87,15 +84,15 @@ export interface ColorConsoleIF {
 }
 
 export class ColorConsole {
-  private readonly myStyleFn: ChalkFn
+  private readonly myStyleFn: FormatFn
   private myText = ""
   
-  static create = (style: ChalkFn): ColorConsoleIF => {
+  static create = (style: FormatFn): ColorConsoleIF => {
     const instance = new ColorConsole(style)
     return Object.assign((text: string) => instance.call(text)) as ColorConsoleIF
   }
   
-  constructor(style: ChalkFn) {
+  constructor(style: FormatFn) {
     this.myStyleFn = style
   }
   
@@ -126,7 +123,7 @@ export class ColorConsole {
   toString = (): string => this.myStyleFn(this.myText)
 }
 
-export const Styles: { Primary: ChalkFn, Secondary: ChalkFn } = {
+export const Styles: { Primary: FormatFn, Secondary: FormatFn } = {
   Primary: Formatter.primaryFn,
   Secondary: Formatter.secondaryFn,
 }

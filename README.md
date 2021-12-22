@@ -107,41 +107,40 @@ styles that are provided in `Styles`.
 import { printHeader, Styles } from "r3bl-ts-utils"
 
 printHeader(`Example 1`)
+
 console.log(Styles.Primary(`Wrote file successfully. 👍`))
 console.error(Styles.Secondary(`Failed to write file! ⛔`))
+
+Styles.Primary(`Wrote file successfully. 👍`).consoleLog()
+Styles.Secondary(`Failed to write file! ⛔`).consoleError()
 ```
 
-To override on the default styles, here's an example. The [`chalk`][cc-2] library is used under the
+To override on the default styles, here's an example. The [`colors`][cc-2] library is used under the
 hood, so you can use all its styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
+
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
-[cc-2]: https://www.npmjs.com/package/chalk
+
+[cc-2]: https://github.com/Marak/colors.js
 <!-- prettier-ignore-end -->
-
-```typescript
-import { printHeader, Styles } from "r3bl-ts-utils"
-
-printHeader(`Example 2`)
-console.log(Styles.Primary.blue(`Wrote file successfully. 👍`))
-console.error(Styles.Secondary.red.bgBlack(`Failed to write file! ⛔`))
-```
 
 Here's how you can use the `ColorConsole` class to do more powerful things.
 
 ```typescript
+import colors from "colors/safe"
 import { printHeader, Styles, ColorConsole } from "r3bl-ts-utils"
 
-printHeader(`Example 3`)
-const myColorConsole = ColorConsole.create(chalk.bold.yellow.bgBlack)
+printHeader(`Example 2`)
+const myColorConsole = ColorConsole.create((text) => colors.bold(colors.yellow(text)))
 myColorConsole(/* text: */ `Start log output...`).consoleLog()
 
 const count = 4
 while (count-- > 0) {
-  ColorConsole.create(Styles.Primary.red)(`While loop output: ${count}`).consoleLogInPlace()
+  ColorConsole.create(Styles.Primary)(`While loop output: ${count}`).consoleLogInPlace()
 }
 
-ColorConsole.create(Styles.Primary.blue)(/* text: */ `End log output...`).consoleLog(
+ColorConsole.create(Styles.Secondary)(/* text: */ `End log output...`).consoleLog(
   /* prefixWithNewLine: */ true
 )
 ```
@@ -158,7 +157,7 @@ If you don't deviate from the `Primary` and `Secondary` styles, then you can sim
 import { printHeader, Styles, ColorConsole, StyledColorConsole } from "r3bl-ts-utils"
 import * as _ from "lodash"
 
-printHeader(`Example 4`)
+printHeader(`Example 3`)
 const data = { foo: "foo_value", bar: "bar_value" }
 for (const key in data) {
   StyledColorConsole.Primary(
@@ -876,7 +875,6 @@ Run `npm publish` - This will publish your package to npm after running the foll
 [npm-3]: https://docs.npmjs.com/unpublishing-packages-from-the-registry
 
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
-
 <!-- prettier-ignore-end -->
 
 ### Bump a package version (patch)
@@ -924,5 +922,4 @@ Run `npm publish` - This will publish your package to npm after running the foll
 [r-1]: https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
 
 [r-2]: https://stackoverflow.com/a/41285281/2085356
-
 <!-- prettier-ignore-end -->

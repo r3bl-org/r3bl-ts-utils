@@ -15,7 +15,6 @@
  *
  */
 
-import { printHeader } from "../color-console-utils"
 import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../misc-utils"
 
 describe("misc-utils", () => {
