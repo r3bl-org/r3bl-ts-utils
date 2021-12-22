@@ -112,12 +112,10 @@ console.error(Styles.Secondary(`Failed to write file! ⛔`))
 ```
 
 To override on the default styles, here's an example. The [`chalk`][cc-2] library is used under the
-hood, so you can use all it's styling rules, objects, functions, and classes.
+hood, so you can use all its styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
-
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
-
 [cc-2]: https://www.npmjs.com/package/chalk
 <!-- prettier-ignore-end -->
 
