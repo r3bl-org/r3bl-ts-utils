@@ -18,17 +18,23 @@
 import { _also, _let } from "../kotlin-lang-utils"
 import { Formatter } from "./color-console"
 import {
-  defaultPostFix, defaultRepeatChar, defaultShortLeftRepeatChar, defaultShortRightRepeatChar,
-  maxWidth, padding, regExForDefaultRepeatChar, spaceChar
+  defaultPostFix,
+  defaultRepeatChar,
+  defaultShortLeftRepeatChar,
+  defaultShortRightRepeatChar,
+  maxWidth,
+  padding,
+  regExForDefaultRepeatChar,
+  spaceChar,
 } from "./internal-constants"
 
 export const printHeader = (message: string, postFix = defaultPostFix) => {
   const isTooWideChar = message.length > maxWidth ? "\n" : ""
-  
+
   const spans = _also(new Array<string>(3), (spans) => {
     const headerLine = getHeaderLine(message, defaultRepeatChar)
     const headerLineUnderscores = headerLine.replace(regExForDefaultRepeatChar, spaceChar)
-    
+
     let headerLeft, headerRight
     if (isTooWideChar) {
       headerLeft = Formatter.headerUnderlineFn(headerLineUnderscores)
@@ -37,17 +43,16 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
       headerLeft = Formatter.headerUnderlineFn(getHeaderLine(message, defaultShortLeftRepeatChar))
       headerRight = Formatter.headerFn(getHeaderLine(message, defaultShortRightRepeatChar))
     }
-    
+
     spans[0] = headerLeft
     spans[1] = Formatter.headerMessageFn(`${spaceChar}${message}${spaceChar}`)
     spans[2] = headerRight
   })
-  
+
   const output = spans.join(isTooWideChar ? "\n" : "")
-  
+
   console.log(output + postFix)
 }
 
 const getHeaderLine = (message: string, repeatChar: string): string =>
   _let(message.length, (count) => repeatChar.repeat(count + padding))
-

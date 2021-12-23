@@ -24,158 +24,158 @@ export class TextColor {
   static get builder(): TextColor {
     return new TextColor()
   }
-  
+
   private readonly _stack = new Array<FormatFn>()
-  
+
   constructor(otherStyles?: FormatFn[]) {
     if (otherStyles) this._stack = otherStyles
   }
-  
+
   toString: () => string = () => `${this._stack.length}`
-  
-  build: () => TextColor & FormatFn =
-    () => Object.assign(
+
+  build: () => TextColor & FormatFn = () =>
+    Object.assign(
       (text: string) => this.applyFormatting(text), // Callable via FormatFn signature.
-      this,
+      this
     )
-  
-  applyFormatting = (input: string): string => _also(
-    { output: input.slice() }, // https://reactgo.com/javascript-string-copy/
-    holder => this._stack.forEach(
-      formatFn => holder.output = formatFn(holder.output))
-  ).output
-  
+
+  applyFormatting = (input: string): string =>
+    _also(
+      { output: input.slice() }, // https://reactgo.com/javascript-string-copy/
+      (holder) => this._stack.forEach((formatFn) => (holder.output = formatFn(holder.output)))
+    ).output
+
   // From colors.js (safe.d.ts). https://github.com/Marak/colors.js
-  
+
   get strip(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.strip)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.strip)))
   }
-  
+
   get stripColors(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.stripColors)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.stripColors)))
   }
-  
+
   get black(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.black)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.black)))
   }
-  
+
   get red(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.red)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.red)))
   }
-  
+
   get green(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.green)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.green)))
   }
-  
+
   get yellow(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.yellow)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.yellow)))
   }
-  
+
   get blue(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.blue)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.blue)))
   }
-  
+
   get magenta(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.magenta)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.magenta)))
   }
-  
+
   get cyan(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.cyan)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.cyan)))
   }
-  
+
   get white(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.white)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.white)))
   }
-  
+
   get gray(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.gray)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.gray)))
   }
-  
+
   get grey(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.grey)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.grey)))
   }
-  
+
   get bgBlack(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgBlack)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgBlack)))
   }
-  
+
   get bgRed(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgRed)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgRed)))
   }
-  
+
   get bgGreen(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgGreen)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgGreen)))
   }
-  
+
   get bgYellow(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgYellow)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgYellow)))
   }
-  
+
   get bgBlue(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgBlue)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgBlue)))
   }
-  
+
   get bgMagenta(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgMagenta)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgMagenta)))
   }
-  
+
   get bgCyan(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgCyan)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgCyan)))
   }
-  
+
   get bgWhite(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bgWhite)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bgWhite)))
   }
-  
+
   get reset(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.reset)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.reset)))
   }
-  
+
   get bold(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.bold)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.bold)))
   }
-  
+
   get dim(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.dim)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.dim)))
   }
-  
+
   get italic(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.italic)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.italic)))
   }
-  
+
   get underline(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.underline)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.underline)))
   }
-  
+
   get inverse(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.inverse)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.inverse)))
   }
-  
+
   get hidden(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.hidden)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.hidden)))
   }
-  
+
   get strikethrough(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.strikethrough)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.strikethrough)))
   }
-  
+
   get rainbow(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.rainbow)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.rainbow)))
   }
-  
+
   get america(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.america)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.america)))
   }
-  
+
   get trap(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.trap)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.trap)))
   }
-  
+
   get random(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.random)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.random)))
   }
-  
+
   get zalgo(): TextColor {
-    return new TextColor(_also(this._stack, it => it.push(colors.zalgo)))
+    return new TextColor(_also(this._stack, (it) => it.push(colors.zalgo)))
   }
 }
