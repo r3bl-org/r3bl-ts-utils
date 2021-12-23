@@ -4,6 +4,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Overview](#overview)
+- [Colorized text](#colorized-text)
 - [Colorized console](#colorized-console)
 - [Scope functions](#scope-functions)
   - [`_also`](#_also)
@@ -63,9 +64,7 @@ This module is written entirely in TypeScript, and is configured to be a CommonJ
 > - [Example of a dual module][mod-2].
 
 <!-- prettier-ignore-start -->
-
 [mod-1]: https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
-
 [mod-2]: https://github.com/sensedeep/dynamodb-onetable
 <!-- prettier-ignore-end -->
 
@@ -84,17 +83,41 @@ Here are some important links for this package.
 2. [npm package][o-2]
 
 <!-- prettier-ignore-start -->
-
 [o-1]: https://github.com/r3bl-org/r3bl-ts-utils
-
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
-
 [o-3]: https://github.com/nazmulidris/color-console
-
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
-
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 <!-- prettier-ignore-end -->
+
+## Colorized text
+
+The `TextColor` class provides a DSL (domain specific language) that makes it trivial to generate
+reusable styles to apply ANSI colors to strings. This is very useful when making CLI (command line
+interface) apps or colorful console log outputs. For just color colorful console output, you can
+check out the next section on [Colorized console](#colorized-console). You can browse the source
+[here][cc-1].
+
+Here is a simple example that colorizes a string.
+
+```tsx
+import { TextColor } from "r3bl-ts-utils"
+
+const expected: string = "[47m[31mtext[39m[49m"
+const style = TextColor.builder.red.bgWhite.build()
+expect(style("text")).toEqual(expected)
+expect(style.applyFormatting("text")).toEqual(expected)
+```
+
+Here's similar functionality via a one liner.
+
+```tsx
+import { TextColor } from "r3bl-ts-utils"
+
+const formattedOutput = TextColor.builder.red.bgWhite.build()("text")
+const expected: string = "[47m[31mtext[39m[49m"
+expect(formattedOutput).toEqual(expected)
+```
 
 ## Colorized console
 
@@ -119,9 +142,7 @@ To override on the default styles, here's an example. The [`colors`][cc-2] libra
 hood, so you can use all its styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
-
-[cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/color-console-utils.ts
-
+[cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/
 [cc-2]: https://github.com/Marak/colors.js
 <!-- prettier-ignore-end -->
 
@@ -174,9 +195,7 @@ one. So here are four examples of using them. You can browse the source [here][s
 > The [tests][sf-2] for this library are worth taking a look at to get a sense of how to use them.
 
 <!-- prettier-ignore-start -->
-
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
-
 [sf-2]: https://github.com/r3bl-org/r3bl-ts-utils/tree/main/src/__tests
 <!-- prettier-ignore-end -->
 
@@ -829,11 +848,8 @@ Here are some good references for this:
 - [Module re-exports][b-3]
 
 <!-- prettier-ignore-start -->
-
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
-
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
-
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
 <!-- prettier-ignore-end -->
 
@@ -867,13 +883,9 @@ Run `npm publish` - This will publish your package to npm after running the foll
 > 3. More info on [`npm publish`][npm-1].
 
 <!-- prettier-ignore-start -->
-
 [npm-1]: https://docs.npmjs.com/cli/v7/commands/npm-publish
-
 [npm-2]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/.npmignore
-
 [npm-3]: https://docs.npmjs.com/unpublishing-packages-from-the-registry
-
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
 <!-- prettier-ignore-end -->
 
@@ -918,8 +930,6 @@ Run `npm publish` - This will publish your package to npm after running the foll
 - [`.npmignore` and `files` directive in `package.json`][r-2].
 
 <!-- prettier-ignore-start -->
-
 [r-1]: https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
-
 [r-2]: https://stackoverflow.com/a/41285281/2085356
 <!-- prettier-ignore-end -->

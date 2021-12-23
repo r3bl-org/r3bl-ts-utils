@@ -15,7 +15,7 @@
  *
  */
 
-import { ColorConsole, Styles } from "./color-console-utils"
+import { ColorConsole, Styles } from "./color-console-utils/color-console"
 
 export const sleep = (ms = 500) => {
   const sprites = ["-", "\\", "-", "/"]

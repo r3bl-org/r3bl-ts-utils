@@ -16,7 +16,31 @@
  */
 
 import { getLog } from "console-testing-library" // https://www.npmjs.com/package/console-testing-library
-import { _also, Formatter, printHeader, StyledColorConsole } from "../index"
+import {
+  _also, ColorConsole, Formatter, printHeader, StyledColorConsole, Styles, TextColor
+} from "../index"
+
+test("TextColor builder works", () => {
+  {
+    const styleBuilder = TextColor.builder.red.bgWhite
+    const builtStyle = styleBuilder.build()
+    expect(builtStyle("text")).toEqual("[47m[31mtext[39m[49m")
+    expect(builtStyle.applyFormatting("text")).toEqual("[47m[31mtext[39m[49m")
+  }
+  
+  {
+    const style = TextColor.builder.red.bgWhite.build()
+    expect(style("text")).toEqual("[47m[31mtext[39m[49m")
+    expect(style.applyFormatting("text")).toEqual("[47m[31mtext[39m[49m")
+  }
+})
+
+test("create works", () => {
+  _also("create test", it => {
+    ColorConsole.create(Styles.Primary)(it).consoleLog()
+    expect(getLog().log).toEqual(Formatter.primaryFn(it))
+  })
+})
 
 test("Primary style works", () => {
   _also("primary color", it => {
