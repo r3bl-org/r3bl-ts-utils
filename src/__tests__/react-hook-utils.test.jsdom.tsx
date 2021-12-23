@@ -15,10 +15,10 @@
  *
  */
 
+import { render } from "@testing-library/react"
 import * as React from "react"
 import { FC } from "react"
 import { _withRef, ReactRef } from "../index"
-import { render } from "@testing-library/react"
 
 interface GlobalState {
   myRef: ReactRef<boolean> | null

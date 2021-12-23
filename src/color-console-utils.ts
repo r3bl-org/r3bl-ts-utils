@@ -30,7 +30,7 @@ const spaceChar = " "
 
 type FormatFn = (text: string) => string
 
-namespace Formatter {
+export namespace Formatter {
   export const headerUnderlineFn: FormatFn = text => colors.underline(colors.blue(text))
   export const headerFn: FormatFn = text => colors.blue(text)
   export const headerMessageFn: FormatFn = text => colors.cyan(colors.bold(text))

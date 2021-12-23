@@ -15,38 +15,33 @@
  *
  */
 
-import { stdout } from "test-console" // https://github.com/jamesshore/test-console
-import { printHeader, StyledColorConsole } from "../color-console-utils"
-import { _also } from "../kotlin-lang-utils"
+import { getLog } from "console-testing-library" // https://www.npmjs.com/package/console-testing-library
+import { _also, Formatter, printHeader, StyledColorConsole } from "../index"
 
-test("color-console-utils works", () => {
-  _also(
-    stdout.inspectSync(() => printHeader(
-      "Very long test string. Very long test string. Very long test string. Very long test string. Very long test string. Very long test string. Very long test string. Very long test string. ")
-    ),
-    (output: ReadonlyArray<string>) => {
-      expect(output[0]).toContain("Very long test string.")
-    }
-  )
-  
-  _also(
-    stdout.inspectSync(() => printHeader("Short test string!🌈")),
-    (output: ReadonlyArray<string>) => {
-      expect(output[0]).toContain("Short test string!🌈")
-    }
-  )
-  
-  _also(
-    stdout.inspectSync(() => StyledColorConsole.Primary("primary color").consoleLog()),
-    (output: ReadonlyArray<string>) => {
-      expect(output[0]).toContain("primary color")
-    }
-  )
-  
-  _also(
-    stdout.inspectSync(() => StyledColorConsole.Secondary("secondary color").consoleLog()),
-    (output: ReadonlyArray<string>) => {
-      expect(output[0]).toContain("secondary color")
-    }
-  )
+test("Primary style works", () => {
+  _also("primary color", it => {
+    StyledColorConsole.Primary(it).consoleLog()
+    expect(getLog().log).toEqual(Formatter.primaryFn(it))
+  })
+})
+
+test("Secondary style works", () => {
+  _also("secondary color", it => {
+    StyledColorConsole.Secondary(it).consoleLog()
+    expect(getLog().log).toEqual(Formatter.secondaryFn(it))
+  })
+})
+
+test("printHeader works with long text", () => {
+  _also("Very long test string.", it => {
+    printHeader(it.repeat(10))
+    expect(getLog().log).toContain(it)
+  })
+})
+
+test("printHeader works with short text", () => {
+  _also("Short test string!🌈", it => {
+    printHeader(it)
+    expect(getLog().log).toContain(it)
+  })
 })

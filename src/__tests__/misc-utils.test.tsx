@@ -15,7 +15,7 @@
  *
  */
 
-import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../misc-utils"
+import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../index"
 
 describe("misc-utils", () => {
   test("_callIfTruthy", () => {

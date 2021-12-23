@@ -60,7 +60,6 @@
     "@types/lodash": "latest",
     "@types/node": "latest",
     "@types/react-redux": "latest",
-    "@types/test-console": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "latest",
@@ -72,11 +71,11 @@
     "nodemon": "latest",
     "npm-run-all": "latest",
     "prettier": "latest",
-    "test-console": "^2.0.0",
     "ts-jest": "latest",
     "ts-node": "latest",
     "typescript": "latest",
-    "typescript-formatter": "latest"
+    "typescript-formatter": "latest",
+    "console-testing-library": "^0.6.1"
   },
   "peerDependencies": {
     "@types/react": "^17.0.34",
