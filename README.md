@@ -532,21 +532,49 @@ this map which is expensive to re-create on every key press.
 Here's an example.
 
 ```tsx
-import { useKeyboardWithMap, KeyBindingsForActions } from "r3bl-ts-utils"
+import {
+  _also,
+  _let,
+  createNewKeyPressesToActionMap,
+  TextColor,
+  useKeyboardWithMap,
+  UserInputKeyPress,
+} from "r3bl-ts-utils"
 
-const Test: FC = () => {
-  const { exit } = useApp()
-  const createShortcutsMap = () =>
+//#region Main function component.
+
+const functionComponent: FC = () => render(runHooks())
+
+//#endregion
+
+//#region runHooks.
+
+interface RenderContext {
+  keyPress: UserInputKeyPress | undefined
+  inRawMode: boolean
+}
+
+const runHooks = (): RenderContext => {
+  const app = useApp()
+
+  const createShortcuts = () =>
     _also(createNewKeyPressesToActionMap(), (map) =>
-      map.set(["q", "ctrl+q"], ext).set(["x", "ctrl+x"], exit)
+      map.set(["q", "ctrl+q"], app.exit).set(["x", "ctrl+x"], app.exit)
     )
-  const map: KeyBindingsForActions = useMemo(createShortcutsMap, [])
-  const { keyPress, inRawMode } = useKeyboardWithMap(map)
 
+  return _let(useMemo(createShortcuts, []), useKeyboardWithMap)
+}
+
+//#endregion
+
+//#region UI.
+
+const render = (ctx: RenderContext) => {
+  const { keyPress, inRawMode } = ctx
   return (
     <Box flexDirection="column">
       {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
-      <Text>"Your example goes here!"</Text>
+      <Text>{TextColor.builder.rainbow.build()("Your example goes here!")}</Text>
     </Box>
   )
 }
@@ -554,14 +582,16 @@ const Test: FC = () => {
 const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
   keyPress,
   inRawMode,
-}) =>
+}): JSX.Element =>
   inRawMode ? (
     <Text color="magenta">keyPress: {keyPress}</Text>
   ) : (
     <Text color="gray">keyb disabled</Text>
   )
 
-const ink = render(<Test />)
+//#endregion
+
+ink.render(createElement(functionComponent))
 ```
 
 ### `useTTYSize()`
