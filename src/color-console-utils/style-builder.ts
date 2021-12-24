@@ -33,14 +33,11 @@ export class TextColor {
       this
     )
   
-  applyFormatting = (input: string): string =>
-    _also(
-      { output: input.slice() }, // https://reactgo.com/javascript-string-copy/
-      it => this.formatFns.forEach(
-        formatFn => it.output = formatFn(it.output)
-      )
-    )
-      .output
+  applyFormatting = (input: string): string => {
+    let copy = input.slice()
+    this.formatFns.forEach(fn => copy = fn(copy))
+    return copy
+  }
   
   toString = () => `${this.formatFns.length}`
   
