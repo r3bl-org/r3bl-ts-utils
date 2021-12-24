@@ -15,12 +15,15 @@
  *
  */
 
-import { Text } from "ink"
+import { Box, Text } from "ink"
 import { render } from "ink-testing-library"
 import * as React from "react"
+import { FC, useMemo } from "react"
 import {
-  _also, createNewKeyPressesToActionMap, processKeyPress, UserInputKeyPress, useTTYSize,
+  _also, createNewKeyPressesToActionMap, KeyBindingsForActions, processKeyPress, TextColor,
+  useKeyboardWithMap, UserInputKeyPress, useTTYSize,
 } from "../index"
+import { ctrlKey, delay, escapeKey, Flag } from "./use-keyboard-helpers"
 
 // https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
 describe("useTTYSize", () => {
@@ -41,39 +44,27 @@ describe("useTTYSize", () => {
 
 describe("useKeyboard", () => {
   test("UserInputKeyPress works", () => {
-    _also(
-      new UserInputKeyPress(undefined, undefined),
-      it => expect(it.toString()).toEqual("")
-    )
+    _also(new UserInputKeyPress(undefined, undefined), it => expect(it.toString()).toEqual(""))
     
-    _also(
-      new UserInputKeyPress("a", undefined),
-      it => {
-        expect(it.toString()).toEqual("a")
-        expect(it.input).toEqual("a")
-        expect(it.key).toEqual("")
-      }
-    )
+    _also(new UserInputKeyPress("a", undefined), it => {
+      expect(it.toString()).toEqual("a")
+      expect(it.input).toEqual("a")
+      expect(it.key).toEqual("")
+    })
     
-    _also(
-      new UserInputKeyPress("a", ctrlKey),
-      it => {
-        expect(it.toString()).toEqual("ctrl+a")
-        expect(it.input).toEqual("a")
-        expect(it.key).toEqual("ctrl")
-        expect(it.matches("ctrl+a")).toBeTruthy()
-      }
-    )
+    _also(new UserInputKeyPress("a", ctrlKey), it => {
+      expect(it.toString()).toEqual("ctrl+a")
+      expect(it.input).toEqual("a")
+      expect(it.key).toEqual("ctrl")
+      expect(it.matches("ctrl+a")).toBeTruthy()
+    })
     
-    _also(
-      new UserInputKeyPress(undefined, escapeKey),
-      it => {
-        expect(it.toString()).toEqual("escape")
-        expect(it.input).toEqual("")
-        expect(it.key).toEqual("escape")
-        expect(it.matches("escape")).toBeTruthy()
-      }
-    )
+    _also(new UserInputKeyPress(undefined, escapeKey), it => {
+      expect(it.toString()).toEqual("escape")
+      expect(it.input).toEqual("")
+      expect(it.key).toEqual("escape")
+      expect(it.matches("escape")).toBeTruthy()
+    })
   })
   
   test("processKeyPress works", () => {
@@ -88,14 +79,11 @@ describe("useKeyboard", () => {
       fun2State = arg
     }
     
-    const shortcutsToActionMap = _also(
-      createNewKeyPressesToActionMap(),
-      map => map
-        .set([ "q", "ctrl+q" ], fun1)
-        .set([ "!" ], fun2.bind(this, "1"))
-        .set([ "@" ], fun2.bind(this, "2"))
-        .set([ "#" ], fun2.bind(this, "3"))
-    )
+    const shortcutsToActionMap = _also(createNewKeyPressesToActionMap(), map => map
+      .set([ "q", "ctrl+q" ], fun1)
+      .set([ "!" ], fun2.bind(this, "1"))
+      .set([ "@" ], fun2.bind(this, "2"))
+      .set([ "#" ], fun2.bind(this, "3")))
     
     processKeyPress(new UserInputKeyPress("q", undefined), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
@@ -113,38 +101,40 @@ describe("useKeyboard", () => {
     processKeyPress(new UserInputKeyPress("#", undefined), shortcutsToActionMap)
     expect(fun2State).toEqual("3")
   })
+  
+  test("useKeyboard works on keypress", async done => {
+    const flag = new Flag()
+    
+    const Test: FC = () => {
+      const createShortcutsMap = (): KeyBindingsForActions => _also(
+        createNewKeyPressesToActionMap(),
+        map => map
+          .set([ "q", "ctrl+q" ], flag.set)
+          .set([ "x", "ctrl+x" ], flag.set)
+      )
+      const map: KeyBindingsForActions = useMemo(() => createShortcutsMap(), [])
+      const [ keyPress, inRawMode ] = useKeyboardWithMap(map)
+      
+      return (<Box flexDirection="column">
+        {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
+        <Text>{TextColor.builder.rainbow.build()("Your example goes here!")}</Text>
+      </Box>)
+    }
+    
+    const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
+      keyPress, inRawMode,
+    }): JSX.Element => inRawMode ? (<Text color="magenta">keyPress: {keyPress}</Text>) :
+      (<Text color="gray">keyb disabled</Text>)
+    
+    const ink = render(<Test/>)
+    
+    await delay(100)
+    ink.stdin.emit("data", "q")
+    // ink.stdin.emit("data", "\u001B") // Escape.
+    await delay(100)
+    
+    expect(flag.isSet()).toBeTruthy()
+    done()
+  })
+  
 })
-
-// Constants for useKeyboard.
-const ctrlKey = {
-  backspace: false,
-  ctrl: true,
-  delete: false,
-  downArrow: false,
-  escape: false,
-  leftArrow: false,
-  meta: false,
-  pageDown: false,
-  pageUp: false,
-  return: false,
-  rightArrow: false,
-  shift: false,
-  tab: false,
-  upArrow: false,
-}
-const escapeKey = {
-  backspace: false,
-  ctrl: false,
-  delete: false,
-  downArrow: false,
-  escape: true,
-  leftArrow: false,
-  meta: false,
-  pageDown: false,
-  pageUp: false,
-  return: false,
-  rightArrow: false,
-  shift: false,
-  tab: false,
-  upArrow: false,
-}
