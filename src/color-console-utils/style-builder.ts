@@ -22,156 +22,156 @@ export type FormatFn = (text: string) => string
 
 export class TextColor {
   private readonly formatFns = new Array<FormatFn>()
-  
+
   static get builder(): TextColor {
     return new TextColor()
   }
-  
+
   build = (): TextColor & FormatFn =>
     Object.assign(
       (text: string) => this.applyFormatting(text), // Callable via FormatFn signature.
       this
     )
-  
+
   applyFormatting = (input: string): string => {
     let copy = input.slice()
-    this.formatFns.forEach(fn => copy = fn(copy))
+    this.formatFns.forEach((fn) => (copy = fn(copy)))
     return copy
   }
-  
+
   toString = () => `${this.formatFns.length}`
-  
+
   // From colors.js (safe.d.ts). https://github.com/Marak/colors.js
-  
+
   get strip(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.strip))
+    return _also(this, (it) => it.formatFns.push(colors.strip))
   }
-  
+
   get stripColors(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.stripColors))
+    return _also(this, (it) => it.formatFns.push(colors.stripColors))
   }
-  
+
   get black(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.black))
+    return _also(this, (it) => it.formatFns.push(colors.black))
   }
-  
+
   get red(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.red))
+    return _also(this, (it) => it.formatFns.push(colors.red))
   }
-  
+
   get green(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.green))
+    return _also(this, (it) => it.formatFns.push(colors.green))
   }
-  
+
   get yellow(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.yellow))
+    return _also(this, (it) => it.formatFns.push(colors.yellow))
   }
-  
+
   get blue(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.blue))
+    return _also(this, (it) => it.formatFns.push(colors.blue))
   }
-  
+
   get magenta(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.magenta))
+    return _also(this, (it) => it.formatFns.push(colors.magenta))
   }
-  
+
   get cyan(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.cyan))
+    return _also(this, (it) => it.formatFns.push(colors.cyan))
   }
-  
+
   get white(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.white))
+    return _also(this, (it) => it.formatFns.push(colors.white))
   }
-  
+
   get gray(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.gray))
+    return _also(this, (it) => it.formatFns.push(colors.gray))
   }
-  
+
   get grey(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.grey))
+    return _also(this, (it) => it.formatFns.push(colors.grey))
   }
-  
+
   get bgBlack(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgBlack))
+    return _also(this, (it) => it.formatFns.push(colors.bgBlack))
   }
-  
+
   get bgRed(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgRed))
+    return _also(this, (it) => it.formatFns.push(colors.bgRed))
   }
-  
+
   get bgGreen(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgGreen))
+    return _also(this, (it) => it.formatFns.push(colors.bgGreen))
   }
-  
+
   get bgYellow(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgYellow))
+    return _also(this, (it) => it.formatFns.push(colors.bgYellow))
   }
-  
+
   get bgBlue(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgBlue))
+    return _also(this, (it) => it.formatFns.push(colors.bgBlue))
   }
-  
+
   get bgMagenta(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgMagenta))
+    return _also(this, (it) => it.formatFns.push(colors.bgMagenta))
   }
-  
+
   get bgCyan(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgCyan))
+    return _also(this, (it) => it.formatFns.push(colors.bgCyan))
   }
-  
+
   get bgWhite(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bgWhite))
+    return _also(this, (it) => it.formatFns.push(colors.bgWhite))
   }
-  
+
   get reset(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.reset))
+    return _also(this, (it) => it.formatFns.push(colors.reset))
   }
-  
+
   get bold(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.bold))
+    return _also(this, (it) => it.formatFns.push(colors.bold))
   }
-  
+
   get dim(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.dim))
+    return _also(this, (it) => it.formatFns.push(colors.dim))
   }
-  
+
   get italic(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.italic))
+    return _also(this, (it) => it.formatFns.push(colors.italic))
   }
-  
+
   get underline(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.underline))
+    return _also(this, (it) => it.formatFns.push(colors.underline))
   }
-  
+
   get inverse(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.inverse))
+    return _also(this, (it) => it.formatFns.push(colors.inverse))
   }
-  
+
   get hidden(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.hidden))
+    return _also(this, (it) => it.formatFns.push(colors.hidden))
   }
-  
+
   get strikethrough(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.strikethrough))
+    return _also(this, (it) => it.formatFns.push(colors.strikethrough))
   }
-  
+
   get rainbow(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.rainbow))
+    return _also(this, (it) => it.formatFns.push(colors.rainbow))
   }
-  
+
   get america(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.america))
+    return _also(this, (it) => it.formatFns.push(colors.america))
   }
-  
+
   get trap(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.trap))
+    return _also(this, (it) => it.formatFns.push(colors.trap))
   }
-  
+
   get random(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.random))
+    return _also(this, (it) => it.formatFns.push(colors.random))
   }
-  
+
   get zalgo(): TextColor {
-    return _also(this, it => it.formatFns.push(colors.zalgo))
+    return _also(this, (it) => it.formatFns.push(colors.zalgo))
   }
 }
