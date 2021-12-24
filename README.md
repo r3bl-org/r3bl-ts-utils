@@ -64,7 +64,9 @@ This module is written entirely in TypeScript, and is configured to be a CommonJ
 > - [Example of a dual module][mod-2].
 
 <!-- prettier-ignore-start -->
+
 [mod-1]: https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+
 [mod-2]: https://github.com/sensedeep/dynamodb-onetable
 <!-- prettier-ignore-end -->
 
@@ -83,10 +85,15 @@ Here are some important links for this package.
 2. [npm package][o-2]
 
 <!-- prettier-ignore-start -->
+
 [o-1]: https://github.com/r3bl-org/r3bl-ts-utils
+
 [o-2]: https://www.npmjs.com/package/r3bl-ts-utils
+
 [o-3]: https://github.com/nazmulidris/color-console
+
 [o-4]: https://kotlinlang.org/docs/scope-functions.html
+
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 <!-- prettier-ignore-end -->
 
@@ -142,7 +149,9 @@ To override on the default styles, here's an example. The [`colors`][cc-2] libra
 hood, so you can use all its styling rules, objects, functions, and classes.
 
 <!-- prettier-ignore-start -->
+
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/
+
 [cc-2]: https://github.com/Marak/colors.js
 <!-- prettier-ignore-end -->
 
@@ -195,7 +204,9 @@ one. So here are four examples of using them. You can browse the source [here][s
 > The [tests][sf-2] for this library are worth taking a look at to get a sense of how to use them.
 
 <!-- prettier-ignore-start -->
+
 [sf-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/kotlin-lang-utils.ts
+
 [sf-2]: https://github.com/r3bl-org/r3bl-ts-utils/tree/main/src/__tests
 <!-- prettier-ignore-end -->
 
@@ -476,12 +487,10 @@ terminal.
 Here's an example.
 
 ```tsx
-import { Props as AppContextProps } from "ink/build/components/AppContext"
-import { Props as FocusContextProps } from "ink/build/components/FocusContext"
-import { UserInputKeyPress, KeyboardInputHandlerFn, UserInputKeyPress } from "r3bl-ts-utils"
+import { KeyboardInputHandlerFn, UserInputKeyPress, useKeyboard } from "r3bl-ts-utils"
 
-const UseFocusExample: FC = function (): JSX.Element {
-  const [keyPress] = useKeyboard(
+const UseFocusExample: FC = () => {
+  const { keyPress, inRawMode } = useKeyboard(
     onKeyPress.bind({ app: useApp(), focusManager: useFocusManager() })
   )
 
@@ -494,10 +503,10 @@ const UseFocusExample: FC = function (): JSX.Element {
   )
 }
 
-const onKeyPress: KeyboardInputHandlerFn = function (
+const onKeyPress: KeyboardInputHandlerFn = (
   this: { app: AppContextProps; focusManager: FocusContextProps },
   userInputKeyPress: UserInputKeyPress
-) {
+) => {
   const { app, focusManager } = this
   const { exit } = app
   const { focus } = focusManager
@@ -523,45 +532,36 @@ this map which is expensive to re-create on every key press.
 Here's an example.
 
 ```tsx
-//#region Main function component.
-const useFocusExampleFn: FC = (): JSX.Element => render.call(useHooks())
-//#endregion
+import { useKeyboardWithMap, KeyBindingsForActions } from "r3bl-ts-utils"
 
-//#region useHooks.
-interface RenderContext {
-  keyPress: UserInputKeyPress | undefined
-  inRawMode: boolean
-}
+const Test: FC = () => {
+  const { exit } = useApp()
+  const createShortcutsMap = () =>
+    _also(createNewKeyPressesToActionMap(), (map) =>
+      map.set(["q", "ctrl+q"], ext).set(["x", "ctrl+x"], exit)
+    )
+  const map: KeyBindingsForActions = useMemo(createShortcutsMap, [])
+  const { keyPress, inRawMode } = useKeyboardWithMap(map)
 
-function useHooks(): RenderContext {
-  const map: KeyBindingsForActions = useMemo(
-    createActionMap.bind({ app: useApp(), focusManager: useFocusManager() }),
-    []
+  return (
+    <Box flexDirection="column">
+      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
+      <Text>"Your example goes here!"</Text>
+    </Box>
   )
-  const [keyPress, inRawMode] = useKeyboardWithMap(map)
-  return { keyPress, inRawMode }
 }
 
-//#endregion
+const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
+  keyPress,
+  inRawMode,
+}) =>
+  inRawMode ? (
+    <Text color="magenta">keyPress: {keyPress}</Text>
+  ) : (
+    <Text color="gray">keyb disabled</Text>
+  )
 
-//#region handleKeyboard.
-type CreateActionMapContext = {
-  app: ReturnType<typeof useApp>
-  focusManager: ReturnType<typeof useFocusManager>
-}
-
-function createActionMap(this: CreateActionMapContext): KeyBindingsForActions {
-  console.log("createActionMap - cache miss!")
-  return _also(createNewKeyPressesToActionMap(), (map) => {
-    const { app, focusManager } = this
-    map.set(["q", "ctrl+q"], app.exit)
-    map.set(["!"], focusManager.focus.bind(undefined, "1"))
-    map.set(["@"], focusManager.focus.bind(undefined, "2"))
-    map.set(["#"], focusManager.focus.bind(undefined, "3"))
-  })
-}
-
-//#endregion
+const ink = render(<Test />)
 ```
 
 ### `useTTYSize()`
@@ -848,8 +848,11 @@ Here are some good references for this:
 - [Module re-exports][b-3]
 
 <!-- prettier-ignore-start -->
+
 [b-1]: https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
+
 [b-2]: https://stackoverflow.com/questions/43613124/should-i-publish-my-modules-source-code-on-npm
+
 [b-3]: https://www.typescriptlang.org/docs/handbook/modules.html
 <!-- prettier-ignore-end -->
 
@@ -883,9 +886,13 @@ Run `npm publish` - This will publish your package to npm after running the foll
 > 3. More info on [`npm publish`][npm-1].
 
 <!-- prettier-ignore-start -->
+
 [npm-1]: https://docs.npmjs.com/cli/v7/commands/npm-publish
+
 [npm-2]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/.npmignore
+
 [npm-3]: https://docs.npmjs.com/unpublishing-packages-from-the-registry
+
 [npm-4]: https://docs.npmjs.com/cli/v7/commands/npm-version
 <!-- prettier-ignore-end -->
 
@@ -930,6 +937,8 @@ Run `npm publish` - This will publish your package to npm after running the foll
 - [`.npmignore` and `files` directive in `package.json`][r-2].
 
 <!-- prettier-ignore-start -->
+
 [r-1]: https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
+
 [r-2]: https://stackoverflow.com/a/41285281/2085356
 <!-- prettier-ignore-end -->

@@ -20,8 +20,8 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC, useMemo } from "react"
 import {
-  _also, createNewKeyPressesToActionMap, KeyBindingsForActions, processKeyPress, TextColor,
-  useKeyboardWithMap, UserInputKeyPress, useTTYSize,
+  _also, createNewKeyPressesToActionMap, KeyBindingsForActions, processKeyPress, useKeyboardWithMap,
+  UserInputKeyPress, useTTYSize,
 } from "../index"
 import { ctrlKey, delay, escapeKey, Flag } from "./use-keyboard-helpers"
 
@@ -106,31 +106,33 @@ describe("useKeyboard", () => {
     const flag = new Flag()
     
     const Test: FC = () => {
-      const createShortcutsMap = (): KeyBindingsForActions => _also(
-        createNewKeyPressesToActionMap(),
-        map => map
-          .set([ "q", "ctrl+q" ], flag.set)
-          .set([ "x", "ctrl+x" ], flag.set)
-      )
-      const map: KeyBindingsForActions = useMemo(() => createShortcutsMap(), [])
-      const [ keyPress, inRawMode ] = useKeyboardWithMap(map)
+      const createShortcutsMap = () =>
+        _also(
+          createNewKeyPressesToActionMap(),
+          map => map
+            .set([ "q", "ctrl+q" ], flag.set)
+            .set([ "x", "ctrl+x" ], flag.set)
+        )
+      const map: KeyBindingsForActions = useMemo(createShortcutsMap, [])
+      const { keyPress, inRawMode } = useKeyboardWithMap(map)
       
       return (<Box flexDirection="column">
         {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
-        <Text>{TextColor.builder.rainbow.build()("Your example goes here!")}</Text>
+        <Text>"Your example goes here!"</Text>
       </Box>)
     }
     
     const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
       keyPress, inRawMode,
-    }): JSX.Element => inRawMode ? (<Text color="magenta">keyPress: {keyPress}</Text>) :
-      (<Text color="gray">keyb disabled</Text>)
+    }) =>
+      inRawMode ?
+        (<Text color="magenta">keyPress: {keyPress}</Text>) :
+        (<Text color="gray">keyb disabled</Text>)
     
     const ink = render(<Test/>)
     
     await delay(100)
     ink.stdin.emit("data", "q")
-    // ink.stdin.emit("data", "\u001B") // Escape.
     await delay(100)
     
     expect(flag.isSet()).toBeTruthy()
