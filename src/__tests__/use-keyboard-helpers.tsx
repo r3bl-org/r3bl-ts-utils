@@ -22,7 +22,7 @@ export const delay = (timeMs: number) => new Promise<void>((resolveFn) => {
 })
 
 export class Flag {
-  flag: boolean = false
+  flag = false
   isSet = () => this.flag
   set = () => this.flag = true
 }
