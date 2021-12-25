@@ -23,7 +23,8 @@ import { Dispatch, SetStateAction } from "react"
 /*
  * Useful type function to describe array returned by `React.useState()`.
  */
-export type StateHook<T> = [T, Dispatch<SetStateAction<T>>]
+export type StateHook<T> = [ T, SetState<T> ]
+export type SetState<T> = Dispatch<SetStateAction<T>>
 
 // React.useRef() helpers.
 
@@ -49,6 +50,6 @@ export const _withRef = <T>(
  * More info - https://stackoverflow.com/a/68602854/2085356.
  */
 export function useForceUpdateFn(): () => void {
-  const [_, setValue]: StateHook<boolean> = React.useState<boolean>(false)
+  const [ _, setValue ]: StateHook<boolean> = React.useState<boolean>(false)
   return () => setValue((value) => !value)
 }
