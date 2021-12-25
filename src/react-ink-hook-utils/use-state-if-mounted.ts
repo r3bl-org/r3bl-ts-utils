@@ -16,7 +16,13 @@
  */
 
 import {
-  Dispatch, EffectCallback, MutableRefObject, SetStateAction, useEffect, useRef, useState
+  Dispatch,
+  EffectCallback,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
 } from "react"
 import { _also } from "../kotlin-lang-utils"
 import { StateHook } from "../react-hook-utils"
@@ -32,28 +38,25 @@ import { StateHook } from "../react-hook-utils"
  */
 export const useStateIfMounted = <T>(initialValue: T): StateHook<T> => {
   const isComponentMounted = useIsComponentMounted()
-  const [ state, setState ] = useState<T>(initialValue)
-  
+  const [state, setState] = useState<T>(initialValue)
+
   const newSetState: Dispatch<T> = (value: T) => {
     if (isComponentMounted.current) {
       setState(value)
     }
   }
-  
-  return [ state, newSetState as Dispatch<SetStateAction<T>> ]
+
+  return [state, newSetState as Dispatch<SetStateAction<T>>]
 }
 
 const useIsComponentMounted = (): MutableRefObject<boolean> =>
-  _also(
-    useRef(false) as ReturnType<typeof useIsComponentMounted>,
-    ref => {
-      const fun: EffectCallback = () => {
-        ref.current = true
-        // Clean up this hook.
-        return () => {
-          ref.current = false
-        }
+  _also(useRef(false) as ReturnType<typeof useIsComponentMounted>, (ref) => {
+    const fun: EffectCallback = () => {
+      ref.current = true
+      // Clean up this hook.
+      return () => {
+        ref.current = false
       }
-      useEffect(fun, [])
     }
-  )
+    useEffect(fun, [])
+  })
