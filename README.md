@@ -22,6 +22,7 @@
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useTTYSize()`](#usettysize)
+  - [`useStateIfMounted()`](#usestateifmounted)
 - [React Hook utils](#react-hook-utils)
   - [`StateHook<T>`](#statehookt)
   - [`useForceUpdateFn()`](#useforceupdatefn)
@@ -619,6 +620,27 @@ function Application() {
 const { unmount } = render(<Application />)
 
 setTimeout(() => unmount(), 30_000)
+```
+
+### `useStateIfMounted()`
+
+The `useStateIfMounted()` custom hook behaves just like the "normal" `useState()` hook with the only
+difference being that it won't update the state if its enclosing component has been unmounted. This
+is useful in CLI (command line interface) apps where a component could be unmounted (eg, via a
+keyboard shortcut to switch to a different tab or even exit the app). Here's an example of how to
+use it.
+
+```tsx
+const UseTextInput: FC = () =>
+  _let(useStateIfMounted(""), ([query, setQuery]) => (
+    <Box flexDirection="column">
+      <Box flexDirection="row" marginRight={1}>
+        <Text>Enter your query: </Text>
+        <TextInput value={query} onChange={setQuery} />
+      </Box>
+      <Text>You typed: {TextColor.builder.rainbow.build()(query)}</Text>
+    </Box>
+  ))
 ```
 
 ## React Hook utils
