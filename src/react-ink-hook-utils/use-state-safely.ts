@@ -32,12 +32,12 @@ import { ReactRef, SetState, StateHolder } from "../react-hook-utils"
  */
 export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
   const isComponentMounted: ReactRef<boolean> = useIsComponentMounted()
-  const [ state, setState ] = useState<T>(initialValue)
-  
+  const [state, setState] = useState<T>(initialValue)
+
   // https://stackoverflow.com/a/41085908/2085356
   const setStateOverride = (value: T) =>
-    _callIfTruthy(isComponentMounted.current, _ => setState(value))
-  
+    _callIfTruthy(isComponentMounted.current, (_) => setState(value))
+
   return new StateHolder(state, setStateOverride as SetState<T>)
 }
 
