@@ -22,7 +22,7 @@
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useTTYSize()`](#usettysize)
-  - [`useStateIfMounted()`](#usestateifmounted)
+  - [`useStateSafely()`](#usestatesafely)
 - [React Hook utils](#react-hook-utils)
   - [`StateHook<T>`](#statehookt)
   - [`useForceUpdateFn()`](#useforceupdatefn)
@@ -622,17 +622,17 @@ const { unmount } = render(<Application />)
 setTimeout(() => unmount(), 30_000)
 ```
 
-### `useStateIfMounted()`
+### `useStateSafely()`
 
-The `useStateIfMounted()` custom hook behaves just like the "normal" `useState()` hook with the only
-difference being that it won't update the state if its enclosing component has been unmounted. This
-is useful in CLI (command line interface) apps where a component could be unmounted (eg, via a
-keyboard shortcut to switch to a different tab or even exit the app). Here's an example of how to
-use it.
+The `useStateSafely()` custom hook behaves like the "normal" `useState()` hook with the differences
+being that difference it won't update the state if its enclosing component has been unmounted. It
+also returns an object instead of an array. This is useful in CLI (command line interface) apps
+where a component could be unmounted (eg, via a keyboard shortcut to switch to a different tab or
+even exit the app). Here's an example of how to use it.
 
 ```tsx
 const UseTextInput: FC = () =>
-  _let(useStateIfMounted(""), ([query, setQuery]) => (
+  _let(useStateSafely(""), ({ query, setQuery }) => (
     <Box flexDirection="column">
       <Box flexDirection="row" marginRight={1}>
         <Text>Enter your query: </Text>
