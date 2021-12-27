@@ -39,10 +39,25 @@ describe("use-state-safely", () => {
     expect(isComponentMounted!.current).toEqual(false)
   })
   
-  test("useStateSafely works", () => {
-    
+  test("useStateSafely as object works", () => {
     const TestComponent: FC = () => {
       const { value, setValue } = useStateSafely("foo")
+      return (
+        <div>
+          <p>{value}</p>
+          <button onClick={() => setValue("bar")}>click-me</button>
+        </div>
+      )
+    }
+    const result: RenderResult = render(<TestComponent/>)
+    expect(result.getByText("foo")).toBeInTheDocument()
+    fireEvent.click(result.getByText("click-me"))
+    expect(result.getByText("bar")).toBeInTheDocument()
+  })
+  
+  test("useStateSafely as array works", () => {
+    const TestComponent: FC = () => {
+      const [ value, setValue ] = useStateSafely("foo").asArray()
       return (
         <div>
           <p>{value}</p>

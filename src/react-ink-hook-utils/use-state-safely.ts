@@ -38,10 +38,7 @@ export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
   const setStateOverride = (value: T) =>
     _callIfTruthy(isComponentMounted.current, _ => setState(value))
   
-  return {
-    value: state,
-    setValue: setStateOverride as SetState<T>,
-  }
+  return new StateHolder(state, setStateOverride as SetState<T>)
 }
 
 /**
