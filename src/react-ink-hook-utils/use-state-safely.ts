@@ -32,15 +32,15 @@ import { ReactRef, SetState, StateHolder } from "../react-hook-utils"
  */
 export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
   const isComponentMounted: ReactRef<boolean> = useIsComponentMounted()
-  const [ state, setState ] = useState<T>(initialValue)
-  
+  const [state, setState] = useState<T>(initialValue)
+
   // https://stackoverflow.com/a/41085908/2085356
   const setStateOverride = (value: T) =>
-    _callIfTruthy(isComponentMounted.current, _ => setState(value))
-  
+    _callIfTruthy(isComponentMounted.current, (_) => setState(value))
+
   return {
     value: state,
-    setValue: setStateOverride as SetState<T>
+    setValue: setStateOverride as SetState<T>,
   }
 }
 
@@ -50,17 +50,14 @@ export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
  * unmounted).
  */
 export const useIsComponentMounted = (): ReactRef<boolean> =>
-  _also(
-    useRef(false) as ReactRef<boolean>,
-    ref => {
-      const runOnMount: EffectCallback = () => {
-        ref.current = true
-        // Clean up this hook.
-        const cleanUpFn = () => {
-          ref.current = false
-        }
-        return cleanUpFn
+  _also(useRef(false) as ReactRef<boolean>, (ref) => {
+    const runOnMount: EffectCallback = () => {
+      ref.current = true
+      // Clean up this hook.
+      const cleanUpFn = () => {
+        ref.current = false
       }
-      useEffect(runOnMount, [])
+      return cleanUpFn
     }
-  )
+    useEffect(runOnMount, [])
+  })
