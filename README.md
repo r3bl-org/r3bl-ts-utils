@@ -631,16 +631,19 @@ where a component could be unmounted (eg, via a keyboard shortcut to switch to a
 even exit the app). Here's an example of how to use it.
 
 ```tsx
-const UseTextInput: FC = () =>
-  _let(useStateSafely(""), ({ query, setQuery }) => (
-    <Box flexDirection="column">
-      <Box flexDirection="row" marginRight={1}>
-        <Text>Enter your query: </Text>
-        <TextInput value={query} onChange={setQuery} />
-      </Box>
-      <Text>You typed: {TextColor.builder.rainbow.build()(query)}</Text>
+import { _let } from "./kotlin-lang-utils"
+
+const UseTextInput: FC = () => _let(useStateSafely(""), createComponent)
+
+const createComponent = ({ value: query, setValue: setQuery }): ReactElement => (
+  <Box flexDirection="column">
+    <Box flexDirection="row" marginRight={1}>
+      <Text>Enter your query: </Text>
+      <TextInput value={query} onChange={setQuery} />
     </Box>
-  ))
+    <Text>You typed: {TextColor.builder.rainbow.build()(query)}</Text>
+  </Box>
+)
 ```
 
 ## React Hook utils
