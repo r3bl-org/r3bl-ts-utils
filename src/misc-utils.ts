@@ -15,17 +15,18 @@
  *
  */
 
+import EventEmitter from "events"
 import { ColorConsole, Styles } from "./color-console-utils/color-console"
 
 export const sleep = (ms = 500) => {
-  const sprites = ["-", "\\", "-", "/"]
-
+  const sprites = [ "-", "\\", "-", "/" ]
+  
   let count = 0
   const printDotsInterval = setInterval(() => {
     const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
     ColorConsole.create(Styles.Primary)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
-
+  
   return new Promise<void>((resolveFn) => {
     setTimeout(() => {
       clearInterval(printDotsInterval)
@@ -70,3 +71,20 @@ export const _callIfFalse = (ctxObject: boolean, receiverFn: SimpleReceiverFn): 
   if (!ctxObject) receiverFn()
 }
 export type SimpleReceiverFn = () => void
+
+// LifecycleHelper.
+
+type EventName = "exit" | "start"
+type EventListener = (name: EventName) => void
+
+export class LifecycleHelper extends EventEmitter {
+  static instance = new LifecycleHelper()
+  
+  static addStartListener = (listener: EventListener) => this.instance.on("start", listener)
+  static addExitListener = (listener: EventListener) => this.instance.on("exit", listener)
+  
+  static fireExit = () => this.instance.emit("exit")
+  static fireStart = () => this.instance.emit("start")
+  
+  static removeAll = () => this.instance.removeAllListeners()
+}
