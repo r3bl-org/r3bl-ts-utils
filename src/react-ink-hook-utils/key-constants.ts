@@ -31,7 +31,7 @@ export const downKey = {
   rightArrow: false,
   shift: false,
   tab: false,
-  upArrow: false
+  upArrow: false,
 }
 
 export const leftKey = {
@@ -239,4 +239,3 @@ export const shiftKey = {
   tab: false,
   upArrow: false,
 }
-
