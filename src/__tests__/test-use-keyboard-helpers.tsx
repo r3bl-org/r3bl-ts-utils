@@ -15,10 +15,14 @@
  *
  */
 
-export * from "./node-keypress"
-export * from "./testing"
-export * from "./use-keyboard"
-export * from "./use-tty-size"
-export * from "./use-clock"
-export * from "./use-state-safely"
-export * from "./key-constants"
+export const delay = (timeMs: number) => new Promise<void>((resolveFn) => {
+  setTimeout(() => {
+    resolveFn()
+  }, timeMs)
+})
+
+export class Flag {
+  flag = false
+  isSet = () => this.flag
+  set = () => this.flag = true
+}

@@ -20,13 +20,12 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC, useMemo } from "react"
 import {
-  _also, _let, createNewKeyPressesToActionMap, KeyBindingsForActions, processKeyPress,
-  useKeyboardWithMap, UserInputKeyPress, useTTYSize,
+  _also, _let, backspaceKey, createNewKeyPressesToActionMap, ctrlKey, deleteKey, downKey, escapeKey,
+  KeyBindingsForActions, leftKey, metaKey, pageDownKey, pageUpKey, processKeyPress, returnKey,
+  rightKey, shiftKey, tabKey, upKey, useKeyboardWithMap, UserInputKeyPress, useTTYSize
 } from "../index"
-import {
-  backspaceKey, ctrlKey, delay, deleteKey, downKey, escapeKey, Flag, leftKey, metaKey, pageDownKey,
-  pageUpKey, returnKey, rightKey, shiftKey, tabKey, upKey
-} from "./use-keyboard-helpers"
+
+import { delay, Flag } from "./test-use-keyboard-helpers"
 
 // https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
 describe("useTTYSize", () => {
