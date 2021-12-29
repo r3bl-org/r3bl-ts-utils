@@ -40,18 +40,18 @@ export type KeyBindingsForActions = Map<Shortcuts, ActionFn>
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
 export const useKeyboard = (fun: KeyboardInputHandlerFn): UseKeyboardReturnType => {
-  const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
+  const [ keyPress, setKeyPress ]: StateHook<UserInputKeyPress | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
-
+  
   // Can only call useInput in raw mode.
   if (!inRawMode) return { keyPress: undefined, inRawMode: false }
-
+  
   useInput((input, key) => {
-    const userInputKeyPress = new UserInputKeyPress(input, key)
+    const userInputKeyPress = new UserInputKeyPress(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
-
+  
   return { keyPress, inRawMode }
 }
 
@@ -74,63 +74,86 @@ export const processKeyPress = (userInput: UserInputKeyPress, map: KeyBindingsFo
 
 export const createNewKeyPressesToActionMap = (): KeyBindingsForActions => new Map()
 
+// https://www.nadershamma.dev/blog/2019/how-to-access-object-properties-dynamically-using-bracket-notation-in-typescript/
+// https://www.typescriptlang.org/docs/handbook/advanced-types.html#index-types
+const specialKeysPropertyNames: Array<keyof Key> = [
+  "upArrow", "downArrow", "leftArrow", "rightArrow", "pageDown", "pageUp", "return",
+  "escape", "tab", "backspace", "delete"
+]
+
 export class UserInputKeyPress {
-  constructor(readonly _input: string | undefined, readonly _key: Key | undefined) {}
-
+  constructor(readonly _key: Key | undefined, readonly _input: string | undefined) {}
+  
   get input(): string {
-    return this._input ? this._input : ""
+    return this._input ? this._input.toLowerCase() : "" /* falsy */
   }
-
-  get key(): string | undefined {
-    return this._key ? this.convertKeyToString() : ""
+  
+  get key(): string {
+    return this._key ? this.convertKeyToString() : "" /* falsy */
   }
-
-  toString = () => {
-    const { key, input } = this
-    if (key && input) return `${key}+${input}`
-    if (key && !input) return key
-    if (!key && input) return input
+  
+  toString = (): string => {
+    const { isSpecialKey, key: key_getter, input: input_getter } = this
+    
+    if (isSpecialKey()) return `${key_getter}`
+    
+    if (key_getter && input_getter) return `${key_getter}+${input_getter}`
+    if (key_getter && !input_getter) return key_getter
+    if (!key_getter && input_getter) return input_getter
+    
     return ""
   }
-
+  
+  /** Key is special if it can be pressed independently of input, eg: "upArrow" and "downArrow". */
+  isSpecialKey = (): boolean => {
+    const { _key } = this
+    
+    if (!_key) return false
+    
+    for (const propertyName of specialKeysPropertyNames)
+      if (_key[propertyName]) return true
+    
+    return false
+  }
+  
   matches = (selector: string): boolean => this.toString() === selector
-
+  
   /**
    * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
    */
   private convertKeyToString = (): string => {
-    const { _key: key } = this
-
-    if (!key) return ""
-
+    const { _key } = this
+    
+    if (!_key) return ""
+    
     // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
     type PropertyFlags<T> = {
       [Property in keyof T as string]: boolean
     }
-
+    
     const properties: PropertyFlags<Key> = {
-      backspace: key.backspace,
-      ctrl: key.ctrl,
-      delete: key.delete,
-      downArrow: key.downArrow,
-      escape: key.escape,
-      leftArrow: key.leftArrow,
-      meta: key.meta,
-      pageDown: key.pageDown,
-      pageUp: key.pageUp,
-      return: key.return,
-      rightArrow: key.rightArrow,
-      shift: key.shift,
-      tab: key.tab,
-      upArrow: key.upArrow,
+      backspace: _key.backspace,
+      ctrl: _key.ctrl,
+      delete: _key.delete,
+      downArrow: _key.downArrow,
+      escape: _key.escape,
+      leftArrow: _key.leftArrow,
+      meta: _key.meta,
+      pageDown: _key.pageDown,
+      pageUp: _key.pageUp,
+      return: _key.return,
+      rightArrow: _key.rightArrow,
+      shift: _key.shift,
+      tab: _key.tab,
+      upArrow: _key.upArrow,
     }
     for (const key in properties) {
       if (properties[key]) return key.toLowerCase()
     }
-
+    
     return ""
   }
-
+  
   // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
   static isKeyType = (param: any): param is Key => {
     const key = param as Key
