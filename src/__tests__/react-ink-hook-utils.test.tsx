@@ -46,7 +46,10 @@ describe("useTTYSize", () => {
 
 describe("useKeyboard", () => {
   test("UserInputKeyPress works", () => {
-    _also(new UserInputKeyPress(undefined, undefined), it => expect(it.toString()).toEqual(""))
+    _also(
+      new UserInputKeyPress(undefined, undefined),
+      it => expect(it.toString()).toEqual("")
+    )
     
     _also(new UserInputKeyPress(undefined, "a"), it => {
       expect(it.toString()).toEqual("a")
@@ -81,6 +84,30 @@ describe("useKeyboard", () => {
       expect(it.input).toEqual("")
       expect(it.key).toEqual("escape")
       expect(it.matches("escape")).toBeTruthy()
+    })
+    
+    _also(new UserInputKeyPress(tabKey, undefined), it => {
+      it.setModifierKey("shift", true)
+      expect(it.toString()).toEqual("shift+tab")
+      expect(it.input).toEqual("")
+      expect(it.key).toEqual("shift+tab")
+      expect(it.matches("shift+tab")).toBeTruthy()
+    })
+    
+    _also(new UserInputKeyPress(tabKey, undefined), it => {
+      it.setModifierKey("meta", true)
+      expect(it.toString()).toEqual("meta+tab")
+      expect(it.input).toEqual("")
+      expect(it.key).toEqual("meta+tab")
+      expect(it.matches("meta+tab")).toBeTruthy()
+    })
+    
+    _also(new UserInputKeyPress(tabKey, undefined), it => {
+      it.setModifierKey("ctrl", true)
+      expect(it.toString()).toEqual("ctrl+tab")
+      expect(it.input).toEqual("")
+      expect(it.key).toEqual("ctrl+tab")
+      expect(it.matches("ctrl+tab")).toBeTruthy()
     })
   })
   
@@ -119,7 +146,7 @@ describe("useKeyboard", () => {
     expect(fun2State).toEqual("3")
   })
   
-  test("isSpecialKey works", () => {
+  test("isSpecialKey, isModifierKey works", () => {
     type Tuple = [ UserInputKeyPress, string ]
     // These are special keys:
     //   "upArrow", "downArrow", "leftArrow", "rightArrow",
@@ -160,10 +187,10 @@ describe("useKeyboard", () => {
         tuple => {
           const [ keyPress, shortcut ] = tuple
           expect(keyPress.isSpecialKey()).toBeFalsy()
+          expect(keyPress.isModifierKey()).toBeTruthy()
           expect(keyPress.toString()).toEqual(shortcut)
         })
     )
-    
   })
   
   test("useKeyboard works on keypress", async done => {

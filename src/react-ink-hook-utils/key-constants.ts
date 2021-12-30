@@ -1,6 +1,25 @@
+/*
+ * Copyright 2021 R3BL LLC. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 // Special keys.
 
-export const upKey = {
+import { ModifierKey, SpecialKey } from "./user-input-keypress"
+
+export const upKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -17,7 +36,7 @@ export const upKey = {
   upArrow: true, // 👍
 }
 
-export const downKey = {
+export const downKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -34,7 +53,7 @@ export const downKey = {
   upArrow: false,
 }
 
-export const leftKey = {
+export const leftKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -51,7 +70,7 @@ export const leftKey = {
   upArrow: false,
 }
 
-export const rightKey = {
+export const rightKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -68,7 +87,7 @@ export const rightKey = {
   upArrow: false,
 }
 
-export const pageUpKey = {
+export const pageUpKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -85,7 +104,7 @@ export const pageUpKey = {
   upArrow: false,
 }
 
-export const pageDownKey = {
+export const pageDownKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -102,7 +121,7 @@ export const pageDownKey = {
   upArrow: false,
 }
 
-export const escapeKey = {
+export const escapeKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -119,7 +138,7 @@ export const escapeKey = {
   upArrow: false,
 }
 
-export const returnKey = {
+export const returnKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -136,7 +155,7 @@ export const returnKey = {
   upArrow: false,
 }
 
-export const tabKey = {
+export const tabKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -153,7 +172,7 @@ export const tabKey = {
   upArrow: false,
 }
 
-export const backspaceKey = {
+export const backspaceKey: SpecialKey & ModifierKey = {
   backspace: true, // 👍
   ctrl: false,
   delete: false,
@@ -170,7 +189,7 @@ export const backspaceKey = {
   upArrow: false,
 }
 
-export const deleteKey = {
+export const deleteKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: true, // 👍
@@ -189,7 +208,7 @@ export const deleteKey = {
 
 // Modifier keys.
 
-export const ctrlKey = {
+export const ctrlKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: true, // 👍
   delete: false,
@@ -206,7 +225,7 @@ export const ctrlKey = {
   upArrow: false,
 }
 
-export const metaKey = {
+export const metaKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
@@ -223,7 +242,7 @@ export const metaKey = {
   upArrow: false,
 }
 
-export const shiftKey = {
+export const shiftKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
   delete: false,
