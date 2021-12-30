@@ -19,6 +19,23 @@
 
 import { ModifierKey, SpecialKey } from "./user-input-keypress"
 
+export const emptyKey: SpecialKey & ModifierKey = {
+  backspace: false,
+  ctrl: false,
+  delete: false,
+  downArrow: false,
+  escape: false,
+  leftArrow: false,
+  meta: false,
+  pageDown: false,
+  pageUp: false,
+  return: false,
+  rightArrow: false,
+  shift: false,
+  tab: false,
+  upArrow: false
+}
+
 export const upKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
