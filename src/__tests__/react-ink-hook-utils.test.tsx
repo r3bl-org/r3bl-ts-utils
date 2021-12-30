@@ -146,7 +146,7 @@ describe("useKeyboard", () => {
     expect(fun2State).toEqual("3")
   })
   
-  test("isSpecialKey, isModifierKey works", () => {
+  test("isSpecialKey works", () => {
     type Tuple = [ UserInputKeyPress, string ]
     // These are special keys:
     //   "upArrow", "downArrow", "leftArrow", "rightArrow",
@@ -191,6 +191,21 @@ describe("useKeyboard", () => {
           expect(keyPress.toString()).toEqual(shortcut)
         })
     )
+  })
+  
+  test("Modifier keys work", () => {
+    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+      keyPress.setModifierKey("shift", true)
+      expect(keyPress.toString()).toEqual("shift+rightarrow")
+    })
+    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+      keyPress.setModifierKey("meta", true)
+      expect(keyPress.toString()).toEqual("meta+rightarrow")
+    })
+    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+      keyPress.setModifierKey("ctrl", true)
+      expect(keyPress.toString()).toEqual("ctrl+rightarrow")
+    })
   })
   
   test("useKeyboard works on keypress", async done => {
