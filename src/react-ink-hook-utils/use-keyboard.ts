@@ -41,18 +41,18 @@ export type KeyBindingsForActions = Map<Shortcuts, ActionFn>
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
 export const useKeyboard = (fun: KeyboardInputHandlerFn): UseKeyboardReturnType => {
-  const [ keyPress, setKeyPress ]: StateHook<UserInputKeyPress | undefined> = useState()
+  const [keyPress, setKeyPress]: StateHook<UserInputKeyPress | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
-  
+
   // Can only call useInput in raw mode.
   if (!inRawMode) return { keyPress: undefined, inRawMode: false }
-  
+
   useInput((input, key) => {
     const userInputKeyPress = new UserInputKeyPress(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
-  
+
   return { keyPress, inRawMode }
 }
 
