@@ -16,7 +16,6 @@
  */
 
 // Special keys.
-
 import { ModifierKey, SpecialKey } from "./user-input-keypress"
 
 export const emptyKey: SpecialKey & ModifierKey = {
@@ -35,7 +34,6 @@ export const emptyKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const upKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -52,7 +50,6 @@ export const upKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: true, // 👍
 }
-
 export const downKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -69,7 +66,6 @@ export const downKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const leftKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -86,7 +82,6 @@ export const leftKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const rightKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -103,7 +98,6 @@ export const rightKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const pageUpKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -120,7 +114,6 @@ export const pageUpKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const pageDownKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -137,7 +130,6 @@ export const pageDownKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const escapeKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -154,7 +146,6 @@ export const escapeKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const returnKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -171,7 +162,6 @@ export const returnKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const tabKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -188,7 +178,6 @@ export const tabKey: SpecialKey & ModifierKey = {
   tab: true, // 👍
   upArrow: false,
 }
-
 export const backspaceKey: SpecialKey & ModifierKey = {
   backspace: true, // 👍
   ctrl: false,
@@ -205,7 +194,6 @@ export const backspaceKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const deleteKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -224,7 +212,6 @@ export const deleteKey: SpecialKey & ModifierKey = {
 }
 
 // Modifier keys.
-
 export const ctrlKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: true, // 👍
@@ -241,7 +228,6 @@ export const ctrlKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const metaKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
@@ -258,7 +244,6 @@ export const metaKey: SpecialKey & ModifierKey = {
   tab: false,
   upArrow: false,
 }
-
 export const shiftKey: SpecialKey & ModifierKey = {
   backspace: false,
   ctrl: false,
