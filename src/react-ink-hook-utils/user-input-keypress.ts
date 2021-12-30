@@ -39,7 +39,7 @@ const specialKeysPropertyNames: Array<keyof SpecialKey> = [
   "delete",
 ]
 
-const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "meta", "ctrl", "shift" ]
+const modifierKeysPropertyNames: Array<keyof ModifierKey> = ["meta", "ctrl", "shift"]
 
 export interface ModifierKey {
   ctrl: boolean
@@ -119,33 +119,33 @@ export interface SpecialKey {
 export class UserInputKeyPress {
   readonly _key: (SpecialKey & ModifierKey) | undefined
   readonly _input: string | undefined
-  
+
   /** Deep copy all the provided arguments. */
   constructor(key?: (SpecialKey & ModifierKey) | InkKey, input?: string) {
     if (key) this._key = _.cloneDeep(key)
     if (input) this._input = input.slice()
   }
-  
+
   get input(): string {
     return this._input ? this._input.toLowerCase() : "" /* falsy */
   }
-  
+
   get key(): string {
     return this._key ? this.convertKeyToString() : "" /* falsy */
   }
-  
+
   toString = (): string => {
     const { isSpecialKey, key: key_getter, input: input_getter } = this
-    
+
     if (isSpecialKey()) return `${key_getter}`
-    
+
     if (key_getter && input_getter) return `${key_getter}+${input_getter}`
     if (key_getter && !input_getter) return key_getter
     if (!key_getter && input_getter) return input_getter
-    
+
     return ""
   }
-  
+
   setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): void => {
     if (!this._key) return
     switch (modifier) {
@@ -163,7 +163,7 @@ export class UserInputKeyPress {
       }
     }
   }
-  
+
   /** Key is special if it can be pressed independently of input, eg: "upArrow" and "downArrow". */
   isSpecialKey = (): boolean => {
     const { _key } = this
@@ -171,7 +171,7 @@ export class UserInputKeyPress {
     for (const propertyName of specialKeysPropertyNames) if (_key[propertyName]) return true
     return false
   }
-  
+
   /**
    * Key is modifier if "ctrl", "meta", or "shift" is true.
    */
@@ -181,22 +181,22 @@ export class UserInputKeyPress {
     for (const propertyName of modifierKeysPropertyNames) if (_key[propertyName]) return true
     return false
   }
-  
+
   matches = (selector: string): boolean => this.toString() === selector
-  
+
   /**
    * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
    */
   private convertKeyToString = (): string => {
     const { _key } = this
-    
+
     if (!_key) return ""
-    
+
     // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
     type PropertyFlags<T> = {
       [Property in keyof T as string]: boolean
     }
-    
+
     const returnValue = new Array<string>()
     const propertiesSpecialKey: PropertyFlags<SpecialKey> = {
       backspace: _key.backspace,
@@ -226,7 +226,7 @@ export class UserInputKeyPress {
     if (returnValue.length === 0) return ""
     else return returnValue.join("+")
   }
-  
+
   // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
   static isKeyType = (param: any): param is SpecialKey & ModifierKey => {
     const key = param as SpecialKey & ModifierKey

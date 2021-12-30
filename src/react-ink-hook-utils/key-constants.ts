@@ -33,7 +33,7 @@ export const emptyKey: SpecialKey & ModifierKey = {
   rightArrow: false,
   shift: false,
   tab: false,
-  upArrow: false
+  upArrow: false,
 }
 
 export const upKey: SpecialKey & ModifierKey = {
