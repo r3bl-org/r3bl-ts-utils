@@ -15,6 +15,8 @@
  *
  */
 
-export * from "./key-constants"
-export * from "./user-input-keypress"
+export * from "./key-config-and-constants"
 export * from "./use-node-keypress"
+export * from "./user-input-keypress"
+export * from "./utils"
+

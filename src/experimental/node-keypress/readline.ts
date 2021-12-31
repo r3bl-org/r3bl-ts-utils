@@ -19,6 +19,8 @@ import readline from "readline"
 import { _also, ReadlineKey, TextColor, UserInputKeyPress } from "../../index"
 import { keyCodeMap, keyNameMap, keySequenceMap } from "./key-map-config"
 
+// TODO move some of this code & comments into nodejs-keyb-utils/use-node-keypress.ts
+
 /*
  * Unicode, UTF-8, JS, hex encoding:
  * - https://flaviocopes.com/javascript-unicode/
@@ -42,7 +44,7 @@ import { keyCodeMap, keyNameMap, keySequenceMap } from "./key-map-config"
  * TODO: https://github.com/r3bl-org/r3bl-cmdr/issues/1
  */
 
-namespace nodejs_keypress_readline {
+namespace nodejs_keypress_readline { // eslint-disable-line
   // Types, interfaces, data classes / structs.
   type Stdin = NodeJS.ReadStream & { fd: 0 }
   
@@ -71,18 +73,18 @@ namespace nodejs_keypress_readline {
       printRegularKey(regularKey)
     }
     
-    // Check for exit.
+    // TODO replace exit check below using spKey or regularKey
     if (key && key.ctrl && key.name == "c") process.exit()
   }
   
   /**
    * First search key.code, then key.name, and finally key.sequence.
    */
-  function tryToFindSpecialKeyInMap(key: ReadlineKey): UserInputKeyPress | undefined {
+  const tryToFindSpecialKeyInMap = (key: ReadlineKey): UserInputKeyPress | undefined => {
     let returnValue: UserInputKeyPress | undefined = undefined
     // Check key.code.
     if (key.code)
-      for (let [ partialSequence, keyPress ] of keyCodeMap.entries()) {
+      for (const [ partialSequence, keyPress ] of keyCodeMap.entries()) {
         if (key.code.includes(partialSequence)) {
           returnValue = keyPress
           break
@@ -90,7 +92,7 @@ namespace nodejs_keypress_readline {
       }
     // Check key.name.
     if (key.name)
-      for (let [ partialSequence, keyPress ] of keyNameMap.entries()) {
+      for (const [ partialSequence, keyPress ] of keyNameMap.entries()) {
         if (key.name.includes(partialSequence)) {
           returnValue = keyPress
           break
@@ -98,7 +100,7 @@ namespace nodejs_keypress_readline {
       }
     // Check key.sequence.
     if (key.sequence)
-      for (let [ partialSequence, keyPress ] of keySequenceMap.entries()) {
+      for (const [ partialSequence, keyPress ] of keySequenceMap.entries()) {
         if (key.sequence.includes(partialSequence)) {
           return keyPress
           break
@@ -122,7 +124,7 @@ namespace nodejs_keypress_readline {
   const printInputAndKey = (input: string, key: ReadlineKey): void => {
     console.log(
       TextColor.builder.magenta.build()("input"),
-      input ? "[" + input + "], length:" + input.length : "n/a"
+      input ? `[${input}], length:${input.length}` : "n/a"
     )
     console.log(TextColor.builder.magenta.build()("key"), key ? key : "")
   }

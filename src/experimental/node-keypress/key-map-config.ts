@@ -15,6 +15,8 @@
  *
  */
 
+// TODO move to nodejs-keyb-utils
+
 import { _also, KeyCreator, UserInputKeyPress } from "../../index"
 
 export const keyCodeMap = _also(

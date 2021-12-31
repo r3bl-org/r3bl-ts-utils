@@ -15,70 +15,72 @@
  *
  */
 
+// TODO add comments
+
 // Constructor vs object literal:
 // https://medium.com/@mandeepkaur1/object-literal-vs-constructor-in-javascript-df143296b816
 // Object literals are singletons that are public. Constructors make unique instances.
 
 export class ModifierKey {
-  ctrl: boolean = false
+  ctrl = false
   /**
    * Shift key was pressed.
    */
-  shift: boolean = false
+  shift = false
   /**
    * Tab key was pressed.
    */
   /**
    * [Meta key](https://en.wikipedia.org/wiki/Meta_key) was pressed.
    */
-  meta: boolean = false
+  meta = false
 }
 
 export class SpecialKey {
   /**
    * Up arrow key was pressed.
    */
-  upArrow: boolean = false
+  upArrow = false
   /**
    * Down arrow key was pressed.
    */
-  downArrow: boolean = false
+  downArrow = false
   /**
    * Left arrow key was pressed.
    */
-  leftArrow: boolean = false
+  leftArrow = false
   /**
    * Right arrow key was pressed.
    */
-  rightArrow: boolean = false
+  rightArrow = false
   /**
    * Page Down key was pressed.
    */
-  pageDown: boolean = false
+  pageDown = false
   /**
    * Page Up key was pressed.
    */
-  pageUp: boolean = false
+  pageUp = false
   /**
    * Return (Enter) key was pressed.
    */
-  return: boolean = false
+  return = false
   /**
    * Escape key was pressed.
    */
-  escape: boolean = false
+  escape = false
   /**
    * Ctrl key was pressed.
    */
-  tab: boolean = false
+  tab = false
   /**
    * Backspace key was pressed.
    */
-  backspace: boolean = false
+  backspace = false
   /**
    * Delete key was pressed.
    */
-  delete: boolean = false
+  delete = false
 }
 
 /**

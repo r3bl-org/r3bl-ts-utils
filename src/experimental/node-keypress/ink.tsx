@@ -23,7 +23,7 @@ import {
   UserInputKeyPress, useTTYSize,
 } from "../../index"
 
-namespace nodejs_keypress_ink {
+namespace nodejs_keypress_ink { // eslint-disable-line
   //#region Hooks.
   
   interface RenderContext {

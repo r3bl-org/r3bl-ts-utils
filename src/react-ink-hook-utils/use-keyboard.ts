@@ -18,8 +18,10 @@
 import { useInput, useStdin } from "ink"
 import { useState } from "react"
 import { _callIfTrue } from "../misc-utils"
-import { UserInputKeyPress } from "../nodejs-keyb-utils"
+import { UserInputKeyPress } from "../node-keyb-utils"
 import { StateHook } from "../react-hook-utils"
+
+// TODO rename this to useKeyboardCompat & add comments
 
 //#region Types.
 

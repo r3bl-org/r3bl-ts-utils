@@ -19,28 +19,13 @@ import { Key } from "ink"
 import _ from "lodash"
 import { _also, _let } from "../kotlin-lang-utils"
 import { _callIfTruthy } from "../misc-utils"
-import { KeyBindingsForActions } from "../react-ink-hook-utils"
 import {
   KeyCreator, ModifierKey, modifierKeysPropertyNames, ReadlineKey, SpecialKey,
   specialKeysPropertyNames
-} from "./key-constants"
+} from "./key-config-and-constants"
+import { copyInkKey, copyReadlineKey } from "./utils"
 
-export const createNewShortcutsToActionMap = (): KeyBindingsForActions => new Map()
-
-const copyInkKey = (from: Key, to: SpecialKey & ModifierKey): void => {
-  for (const propertyName in from)
-    _also(
-      propertyName as keyof Key,
-      inkPropName => {
-        if (from[inkPropName]) to[inkPropName] = Boolean(from[inkPropName])
-      }
-    )
-}
-
-const copyReadlineKey = (from: ReadlineKey, to: SpecialKey & ModifierKey): void => {
-  for (const propertyName of modifierKeysPropertyNames)
-    if (from[propertyName]) to[propertyName] = Boolean(from[propertyName])
-}
+// TODO speed up keyboard input matching by "flattening" the array of keys into another map
 
 /**
  * A key press can be one of three things:
