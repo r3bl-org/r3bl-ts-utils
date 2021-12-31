@@ -23,9 +23,7 @@ import readline from "readline"
  * https://www.npmjs.com/package/keypress
  */
 export function useNodeKeypress() {
-  useEffect(fun, [])
-
-  function fun() {
+  const run = () => {
     readline.emitKeypressEvents(process.stdin)
     if (process.stdin.isTTY) process.stdin.setRawMode(true)
     process.stdin.on("keypress", (chunk, key) => {
@@ -35,4 +33,6 @@ export function useNodeKeypress() {
       // if (key && key.ctrl && key.name == 'c') process.exit();
     })
   }
+  
+  useEffect(run, [])
 }

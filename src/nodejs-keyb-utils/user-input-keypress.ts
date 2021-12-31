@@ -15,92 +15,31 @@
  *
  */
 
-import { Key as InkKey } from "ink"
+import { Key } from "ink"
 import _ from "lodash"
-import { KeyBindingsForActions } from "../react-ink-hook-utils/use-keyboard"
+import { _also, _let } from "../kotlin-lang-utils"
+import { _callIfTruthy } from "../misc-utils"
+import { KeyBindingsForActions } from "../react-ink-hook-utils"
+import {
+  KeyCreator, ModifierKey, modifierKeysPropertyNames, ReadlineKey, SpecialKey,
+  specialKeysPropertyNames
+} from "./key-constants"
 
-export const createNewKeyPressesToActionMap = (): KeyBindingsForActions => new Map()
+export const createNewShortcutsToActionMap = (): KeyBindingsForActions => new Map()
 
-/**
- * https://www.nadershamma.dev/blog/2019/how-to-access-object-properties-dynamically-using-bracket-notation-in-typescript/
- * https://www.typescriptlang.org/docs/handbook/advanced-types.html#index-types
- */
-const specialKeysPropertyNames: Array<keyof SpecialKey> = [
-  "upArrow",
-  "downArrow",
-  "leftArrow",
-  "rightArrow",
-  "pageDown",
-  "pageUp",
-  "return",
-  "escape",
-  "tab",
-  "backspace",
-  "delete",
-]
-
-const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "meta", "ctrl", "shift" ]
-
-export interface ModifierKey {
-  ctrl: boolean
-  /**
-   * Shift key was pressed.
-   */
-  shift: boolean
-  /**
-   * Tab key was pressed.
-   */
-  /**
-   * [Meta key](https://en.wikipedia.org/wiki/Meta_key) was pressed.
-   */
-  meta: boolean
+const copyInkKey = (from: Key, to: SpecialKey & ModifierKey): void => {
+  for (const propertyName in from)
+    _also(
+      propertyName as keyof Key,
+      inkPropName => {
+        if (from[inkPropName]) to[inkPropName] = Boolean(from[inkPropName])
+      }
+    )
 }
 
-export interface SpecialKey {
-  /**
-   * Up arrow key was pressed.
-   */
-  upArrow: boolean
-  /**
-   * Down arrow key was pressed.
-   */
-  downArrow: boolean
-  /**
-   * Left arrow key was pressed.
-   */
-  leftArrow: boolean
-  /**
-   * Right arrow key was pressed.
-   */
-  rightArrow: boolean
-  /**
-   * Page Down key was pressed.
-   */
-  pageDown: boolean
-  /**
-   * Page Up key was pressed.
-   */
-  pageUp: boolean
-  /**
-   * Return (Enter) key was pressed.
-   */
-  return: boolean
-  /**
-   * Escape key was pressed.
-   */
-  escape: boolean
-  /**
-   * Ctrl key was pressed.
-   */
-  tab: boolean
-  /**
-   * Backspace key was pressed.
-   */
-  backspace: boolean
-  /**
-   * Delete key was pressed.
-   */
-  delete: boolean
+const copyReadlineKey = (from: ReadlineKey, to: SpecialKey & ModifierKey): void => {
+  for (const propertyName of modifierKeysPropertyNames)
+    if (from[propertyName]) to[propertyName] = Boolean(from[propertyName])
 }
 
 /**
@@ -120,10 +59,43 @@ export class UserInputKeyPress {
   readonly _key: (SpecialKey & ModifierKey) | undefined
   readonly _input: string | undefined
   
-  /** Deep copy all the provided arguments. */
-  constructor(key?: (SpecialKey & ModifierKey) | InkKey, input?: string) {
-    if (key) this._key = _.cloneDeep(key)
-    if (input) this._input = input.slice()
+  static createFromInk(
+    argKeyNullable?: Key,
+    argInputNullable?: string
+  ): UserInputKeyPress {
+    const copyOfArgKey: SpecialKey & ModifierKey = _also(
+      KeyCreator.emptyKey,
+      emptyKey => _callIfTruthy(argKeyNullable, argKey => copyInkKey(argKey, emptyKey))
+    )
+    const inputCopy: string | undefined = argInputNullable ? argInputNullable.slice() : undefined
+    return new UserInputKeyPress(copyOfArgKey, inputCopy)
+  }
+  
+  static createFromKeypress(
+    nullableKey?: ReadlineKey,
+    nullableInput?: string
+  ): UserInputKeyPress {
+    const copyOfKey: SpecialKey & ModifierKey = _also(
+      KeyCreator.emptyKey,
+      emptyKey => _callIfTruthy(nullableKey, key => copyReadlineKey(key, emptyKey))
+    )
+    const inputCopy: string | undefined = nullableInput ? nullableInput.slice() : undefined
+    return new UserInputKeyPress(copyOfKey, inputCopy)
+  }
+  
+  static create(key?: (SpecialKey & ModifierKey), input?: string) {
+    return new UserInputKeyPress(
+      key ? _.cloneDeep(key) : undefined,
+      input ? input.slice() : undefined
+    )
+  }
+  
+  /**
+   * Don't deep copy all the provided arguments, use them as is. Use the static factory methods.
+   */
+  private constructor(key?: (SpecialKey & ModifierKey), input?: string) {
+    if (key) this._key = key
+    if (input) this._input = input
   }
   
   get input(): string {
@@ -148,20 +120,7 @@ export class UserInputKeyPress {
   
   setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): void => {
     if (!this._key) return
-    switch (modifier) {
-      case "shift": {
-        this._key.shift = value
-        break
-      }
-      case "meta": {
-        this._key.meta = value
-        break
-      }
-      case "ctrl": {
-        this._key.ctrl = value
-        break
-      }
-    }
+    this._key[modifier] = value
   }
   
   /** Key is special if it can be pressed independently of input, eg: "upArrow" and "downArrow". */
@@ -192,39 +151,17 @@ export class UserInputKeyPress {
     
     if (!_key) return ""
     
-    // https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
-    type PropertyFlags<T> = {
-      [Property in keyof T as string]: boolean
-    }
-    
-    const returnValue = new Array<string>()
-    const propertiesSpecialKey: PropertyFlags<SpecialKey> = {
-      backspace: _key.backspace,
-      delete: _key.delete,
-      downArrow: _key.downArrow,
-      escape: _key.escape,
-      leftArrow: _key.leftArrow,
-      pageDown: _key.pageDown,
-      pageUp: _key.pageUp,
-      return: _key.return,
-      rightArrow: _key.rightArrow,
-      tab: _key.tab,
-      upArrow: _key.upArrow,
-    }
-    const propertiesModifierKey: PropertyFlags<ModifierKey> = {
-      ctrl: _key.ctrl,
-      meta: _key.meta,
-      shift: _key.shift,
-    }
-    for (const key in propertiesSpecialKey) {
-      if (propertiesSpecialKey[key]) returnValue.push(key.toLowerCase())
-    }
-    for (const key in propertiesModifierKey) {
-      // https://alligator.io/js/push-pop-shift-unshift-array-methods/
-      if (propertiesModifierKey[key]) returnValue.unshift(key.toLowerCase())
-    }
-    if (returnValue.length === 0) return ""
-    else return returnValue.join("+")
+    return _let(new Array<string>(), returnValue => {
+      specialKeysPropertyNames.forEach((propName: keyof SpecialKey) => {
+        if (_key[propName]) returnValue.push(propName.toLowerCase())
+      })
+      modifierKeysPropertyNames.forEach((propName: keyof ModifierKey) => {
+        // https://alligator.io/js/push-pop-shift-unshift-array-methods/
+        if (_key[propName]) returnValue.unshift(propName.toLowerCase())
+      })
+      if (returnValue.length === 0) return ""
+      else return returnValue.join("+")
+    })
   }
   
   // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards

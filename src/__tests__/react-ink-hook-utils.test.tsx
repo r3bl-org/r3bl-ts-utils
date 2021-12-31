@@ -20,11 +20,9 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC, useMemo } from "react"
 import {
-  _also, _let, backspaceKey, createNewKeyPressesToActionMap, ctrlKey, deleteKey, downKey, escapeKey,
-  KeyBindingsForActions, leftKey, metaKey, pageDownKey, pageUpKey, processKeyPress, returnKey,
-  rightKey, shiftKey, tabKey, upKey, useKeyboardWithMap, UserInputKeyPress, useTTYSize
+  _also, _let, createNewShortcutsToActionMap, KeyBindingsForActions, KeyCreator, processKeyPress,
+  useKeyboardWithMap, UserInputKeyPress, useTTYSize
 } from "../index"
-
 import { delay, Flag } from "./test-use-keyboard-helpers"
 
 // https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
@@ -47,46 +45,46 @@ describe("useTTYSize", () => {
 describe("useKeyboard", () => {
   test("UserInputKeyPress works", () => {
     _also(
-      new UserInputKeyPress(undefined, undefined),
+      UserInputKeyPress.create(undefined, undefined),
       it => expect(it.toString()).toEqual("")
     )
     
-    _also(new UserInputKeyPress(undefined, "a"), it => {
+    _also(UserInputKeyPress.create(undefined, "a"), it => {
       expect(it.toString()).toEqual("a")
       expect(it.input).toEqual("a")
       expect(it.key).toEqual("")
       expect(it.matches("a")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(undefined, "q"), it => {
+    _also(UserInputKeyPress.create(undefined, "q"), it => {
       expect(it.toString()).toEqual("q")
       expect(it.input).toEqual("q")
       expect(it.key).toEqual("")
       expect(it.matches("q")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(ctrlKey, "q"), it => {
+    _also(UserInputKeyPress.create(KeyCreator.ctrlKey, "q"), it => {
       expect(it.toString()).toEqual("ctrl+q")
       expect(it.input).toEqual("q")
       expect(it.key).toEqual("ctrl")
       expect(it.matches("ctrl+q")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(ctrlKey, "a"), it => {
+    _also(UserInputKeyPress.create(KeyCreator.ctrlKey, "a"), it => {
       expect(it.toString()).toEqual("ctrl+a")
       expect(it.input).toEqual("a")
       expect(it.key).toEqual("ctrl")
       expect(it.matches("ctrl+a")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(escapeKey, undefined), it => {
+    _also(UserInputKeyPress.create(KeyCreator.escapeKey, undefined), it => {
       expect(it.toString()).toEqual("escape")
       expect(it.input).toEqual("")
       expect(it.key).toEqual("escape")
       expect(it.matches("escape")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(tabKey, undefined), it => {
+    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
       it.setModifierKey("shift", true)
       expect(it.toString()).toEqual("shift+tab")
       expect(it.input).toEqual("")
@@ -94,7 +92,7 @@ describe("useKeyboard", () => {
       expect(it.matches("shift+tab")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(tabKey, undefined), it => {
+    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
       it.setModifierKey("meta", true)
       expect(it.toString()).toEqual("meta+tab")
       expect(it.input).toEqual("")
@@ -102,7 +100,7 @@ describe("useKeyboard", () => {
       expect(it.matches("meta+tab")).toBeTruthy()
     })
     
-    _also(new UserInputKeyPress(tabKey, undefined), it => {
+    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
       it.setModifierKey("ctrl", true)
       expect(it.toString()).toEqual("ctrl+tab")
       expect(it.input).toEqual("")
@@ -123,26 +121,26 @@ describe("useKeyboard", () => {
       fun2State = arg
     }
     
-    const shortcutsToActionMap = _also(createNewKeyPressesToActionMap(), map => map
+    const shortcutsToActionMap = _also(createNewShortcutsToActionMap(), map => map
       .set([ "q", "ctrl+q" ], fun1)
       .set([ "!" ], fun2.bind(this, "1"))
       .set([ "@" ], fun2.bind(this, "2"))
       .set([ "#" ], fun2.bind(this, "3")))
     
-    processKeyPress(new UserInputKeyPress(undefined, "q"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.create(undefined, "q"), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
     
     fun1Flag = false
-    processKeyPress(new UserInputKeyPress(ctrlKey, "q"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.create(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
     
-    processKeyPress(new UserInputKeyPress(undefined, "!"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.create(undefined, "!"), shortcutsToActionMap)
     expect(fun2State).toEqual("1")
     
-    processKeyPress(new UserInputKeyPress(undefined, "@"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.create(undefined, "@"), shortcutsToActionMap)
     expect(fun2State).toEqual("2")
     
-    processKeyPress(new UserInputKeyPress(undefined, "#"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.create(undefined, "#"), shortcutsToActionMap)
     expect(fun2State).toEqual("3")
   })
   
@@ -154,17 +152,17 @@ describe("useKeyboard", () => {
     //   "return", "escape", "tab", "backspace", "delete"
     _let(
       [
-        [ new UserInputKeyPress(upKey, undefined), "uparrow" ], /* Tuple */
-        [ new UserInputKeyPress(downKey, undefined), "downarrow" ], /* Tuple */
-        [ new UserInputKeyPress(leftKey, undefined), "leftarrow" ], /* Tuple */
-        [ new UserInputKeyPress(rightKey, undefined), "rightarrow" ], /* Tuple */
-        [ new UserInputKeyPress(pageUpKey, undefined), "pageup" ], /* Tuple */
-        [ new UserInputKeyPress(pageDownKey, undefined), "pagedown" ], /* Tuple */
-        [ new UserInputKeyPress(returnKey, undefined), "return" ], /* Tuple */
-        [ new UserInputKeyPress(escapeKey, undefined), "escape" ], /* Tuple */
-        [ new UserInputKeyPress(tabKey, undefined), "tab" ], /* Tuple */
-        [ new UserInputKeyPress(backspaceKey, undefined), "backspace" ], /* Tuple */
-        [ new UserInputKeyPress(deleteKey, undefined), "delete" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.upKey, undefined), "uparrow" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.downKey, undefined), "downarrow" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.leftKey, undefined), "leftarrow" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.rightKey, undefined), "rightarrow" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.pageUpKey, undefined), "pageup" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.pageDownKey, undefined), "pagedown" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.returnKey, undefined), "return" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.escapeKey, undefined), "escape" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.tabKey, undefined), "tab" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.backspaceKey, undefined), "backspace" ], /* Tuple */
+        [ UserInputKeyPress.create(KeyCreator.deleteKey, undefined), "delete" ], /* Tuple */
       ] as Array<Tuple>,
       array => array.forEach(
         tuple => {
@@ -177,11 +175,11 @@ describe("useKeyboard", () => {
     // These are not special keys: "ctrl", "meta", "shift".
     _let(
       [
-        [ new UserInputKeyPress(ctrlKey, undefined), "ctrl" ], /* tuple */
-        [ new UserInputKeyPress(ctrlKey, "a"), "ctrl+a" ], /* tuple */
-        [ new UserInputKeyPress(metaKey, undefined), "meta" ], /* tuple */
-        [ new UserInputKeyPress(shiftKey, undefined), "shift" ], /* tuple */
-        [ new UserInputKeyPress(shiftKey, "b"), "shift+b" ], /* tuple */
+        [ UserInputKeyPress.create(KeyCreator.ctrlKey, undefined), "ctrl" ], /* tuple */
+        [ UserInputKeyPress.create(KeyCreator.ctrlKey, "a"), "ctrl+a" ], /* tuple */
+        [ UserInputKeyPress.create(KeyCreator.metaKey, undefined), "meta" ], /* tuple */
+        [ UserInputKeyPress.create(KeyCreator.shiftKey, undefined), "shift" ], /* tuple */
+        [ UserInputKeyPress.create(KeyCreator.shiftKey, "b"), "shift+b" ], /* tuple */
       ] as Array<Tuple>,
       array => array.forEach(
         tuple => {
@@ -194,15 +192,15 @@ describe("useKeyboard", () => {
   })
   
   test("Modifier keys work", () => {
-    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
       keyPress.setModifierKey("shift", true)
       expect(keyPress.toString()).toEqual("shift+rightarrow")
     })
-    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
       keyPress.setModifierKey("meta", true)
       expect(keyPress.toString()).toEqual("meta+rightarrow")
     })
-    _also(new UserInputKeyPress(rightKey, undefined), keyPress => {
+    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
       keyPress.setModifierKey("ctrl", true)
       expect(keyPress.toString()).toEqual("ctrl+rightarrow")
     })
@@ -214,7 +212,7 @@ describe("useKeyboard", () => {
     const Test: FC = () => {
       const createShortcutsMap = () =>
         _also(
-          createNewKeyPressesToActionMap(),
+          createNewShortcutsToActionMap(),
           map => map
             .set([ "q", "ctrl+q" ], flag.set)
             .set([ "x", "ctrl+x" ], flag.set)

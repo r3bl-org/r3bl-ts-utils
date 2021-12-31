@@ -15,21 +15,18 @@
  *
  */
 
-import {
-  _also, backspaceKey, deleteKey, downKey, leftKey, pageDownKey, pageUpKey, returnKey, rightKey,
-  tabKey, UserInputKeyPress
-} from "../../index"
+import { _also, KeyCreator, UserInputKeyPress } from "../../index"
 
 export const keyCodeMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("[D", new UserInputKeyPress(leftKey, undefined))
-      .set("[C", new UserInputKeyPress(rightKey, undefined))
-      .set("[A", new UserInputKeyPress(rightKey, undefined))
-      .set("[B", new UserInputKeyPress(downKey, undefined))
-      .set("[6~", new UserInputKeyPress(pageDownKey, undefined))
-      .set("[5~", new UserInputKeyPress(pageUpKey, undefined))
+      .set("[D", UserInputKeyPress.create(KeyCreator.leftKey, undefined))
+      .set("[C", UserInputKeyPress.create(KeyCreator.rightKey, undefined))
+      .set("[A", UserInputKeyPress.create(KeyCreator.rightKey, undefined))
+      .set("[B", UserInputKeyPress.create(KeyCreator.downKey, undefined))
+      .set("[6~", UserInputKeyPress.create(KeyCreator.pageDownKey, undefined))
+      .set("[5~", UserInputKeyPress.create(KeyCreator.pageUpKey, undefined))
   }
 )
 
@@ -37,10 +34,10 @@ export const keySequenceMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("7F", new UserInputKeyPress(backspaceKey, undefined))
-      .set("[3~", new UserInputKeyPress(deleteKey, undefined))
-      .set("\r", new UserInputKeyPress(returnKey, undefined))
-      .set("\t", new UserInputKeyPress(tabKey, undefined))
+      .set("7F", UserInputKeyPress.create(KeyCreator.backspaceKey, undefined))
+      .set("[3~", UserInputKeyPress.create(KeyCreator.deleteKey, undefined))
+      .set("\r", UserInputKeyPress.create(KeyCreator.returnKey, undefined))
+      .set("\t", UserInputKeyPress.create(KeyCreator.tabKey, undefined))
   }
 )
 
@@ -48,9 +45,9 @@ export const keyNameMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("backspace", new UserInputKeyPress(backspaceKey, undefined))
-      .set("delete", new UserInputKeyPress(deleteKey, undefined))
-      .set("return", new UserInputKeyPress(returnKey, undefined))
-      .set("tab", new UserInputKeyPress(tabKey, undefined))
+      .set("backspace", UserInputKeyPress.create(KeyCreator.backspaceKey, undefined))
+      .set("delete", UserInputKeyPress.create(KeyCreator.deleteKey, undefined))
+      .set("return", UserInputKeyPress.create(KeyCreator.returnKey, undefined))
+      .set("tab", UserInputKeyPress.create(KeyCreator.tabKey, undefined))
   }
 )

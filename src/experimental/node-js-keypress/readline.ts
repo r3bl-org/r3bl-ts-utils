@@ -16,7 +16,7 @@
  */
 
 import readline from "readline"
-import { _also, emptyKey, TextColor, UserInputKeyPress } from "../../index"
+import { _also, ReadlineKey, TextColor, UserInputKeyPress } from "../../index"
 import { keyCodeMap, keyNameMap, keySequenceMap } from "./key-map-config"
 
 /*
@@ -44,15 +44,6 @@ import { keyCodeMap, keyNameMap, keySequenceMap } from "./key-map-config"
 
 namespace nodejs_keypress_readline {
   // Types, interfaces, data classes / structs.
-  interface ReadlineKey {
-    sequence?: string,
-    name?: string,
-    code?: string,
-    ctrl: boolean,
-    meta: boolean,
-    shift: boolean,
-  }
-  
   type Stdin = NodeJS.ReadStream & { fd: 0 }
   
   // Main program.
@@ -76,12 +67,7 @@ namespace nodejs_keypress_readline {
     
     // Regular key.
     if (!spKey) {
-      const regularKey = new UserInputKeyPress({
-        ...emptyKey,
-        ctrl: key.ctrl,
-        meta: key.meta,
-        shift: key.shift,
-      }, input)
+      const regularKey = UserInputKeyPress.createFromKeypress(key, input)
       printRegularKey(regularKey)
     }
     

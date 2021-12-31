@@ -18,7 +18,7 @@
 import { Box, render, Text } from "ink"
 import React, { FC, useMemo } from "react"
 import {
-  _also, createNewKeyPressesToActionMap, KeyBindingsForActions, LifecycleHelper, TimerRegistry,
+  _also, createNewShortcutsToActionMap, KeyBindingsForActions, LifecycleHelper, TimerRegistry,
   TTYSize, useClockWithLocalTimeFormat, useKeyboardWithMap, usePreventProcessExitDuringTesting,
   UserInputKeyPress, useTTYSize,
 } from "../../index"
@@ -56,7 +56,7 @@ namespace nodejs_keypress_ink {
   //#region handleKeyboard.
   
   const createShortcutsMap = (): KeyBindingsForActions => _also(
-    createNewKeyPressesToActionMap(),
+    createNewShortcutsToActionMap(),
     map => map
       .set([ "q", "ctrl+q", "escape" ], LifecycleHelper.fireExit)
   )

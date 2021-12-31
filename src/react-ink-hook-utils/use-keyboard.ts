@@ -48,7 +48,7 @@ export const useKeyboard = (fun: KeyboardInputHandlerFn): UseKeyboardReturnType 
   if (!inRawMode) return { keyPress: undefined, inRawMode: false }
   
   useInput((input, key) => {
-    const userInputKeyPress = new UserInputKeyPress(key, input)
+    const userInputKeyPress = UserInputKeyPress.createFromInk(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
