@@ -23,12 +23,12 @@ export const keyCodeMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("[D", UserInputKeyPress.create(KeyCreator.leftKey, undefined))
-      .set("[C", UserInputKeyPress.create(KeyCreator.rightKey, undefined))
-      .set("[A", UserInputKeyPress.create(KeyCreator.rightKey, undefined))
-      .set("[B", UserInputKeyPress.create(KeyCreator.downKey, undefined))
-      .set("[6~", UserInputKeyPress.create(KeyCreator.pageDownKey, undefined))
-      .set("[5~", UserInputKeyPress.create(KeyCreator.pageUpKey, undefined))
+      .set("[D", UserInputKeyPress.createCopyOf(KeyCreator.leftKey, undefined))
+      .set("[C", UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined))
+      .set("[A", UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined))
+      .set("[B", UserInputKeyPress.createCopyOf(KeyCreator.downKey, undefined))
+      .set("[6~", UserInputKeyPress.createCopyOf(KeyCreator.pageDownKey, undefined))
+      .set("[5~", UserInputKeyPress.createCopyOf(KeyCreator.pageUpKey, undefined))
   }
 )
 
@@ -36,10 +36,10 @@ export const keySequenceMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("7F", UserInputKeyPress.create(KeyCreator.backspaceKey, undefined))
-      .set("[3~", UserInputKeyPress.create(KeyCreator.deleteKey, undefined))
-      .set("\r", UserInputKeyPress.create(KeyCreator.returnKey, undefined))
-      .set("\t", UserInputKeyPress.create(KeyCreator.tabKey, undefined))
+      .set("7F", UserInputKeyPress.createCopyOf(KeyCreator.backspaceKey, undefined))
+      .set("[3~", UserInputKeyPress.createCopyOf(KeyCreator.deleteKey, undefined))
+      .set("\r", UserInputKeyPress.createCopyOf(KeyCreator.returnKey, undefined))
+      .set("\t", UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined))
   }
 )
 
@@ -47,9 +47,9 @@ export const keyNameMap = _also(
   new Map<string, UserInputKeyPress>(),
   map => {
     map
-      .set("backspace", UserInputKeyPress.create(KeyCreator.backspaceKey, undefined))
-      .set("delete", UserInputKeyPress.create(KeyCreator.deleteKey, undefined))
-      .set("return", UserInputKeyPress.create(KeyCreator.returnKey, undefined))
-      .set("tab", UserInputKeyPress.create(KeyCreator.tabKey, undefined))
+      .set("backspace", UserInputKeyPress.createCopyOf(KeyCreator.backspaceKey, undefined))
+      .set("delete", UserInputKeyPress.createCopyOf(KeyCreator.deleteKey, undefined))
+      .set("return", UserInputKeyPress.createCopyOf(KeyCreator.returnKey, undefined))
+      .set("tab", UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined))
   }
 )

@@ -45,63 +45,63 @@ describe("useTTYSize", () => {
 describe("useKeyboard", () => {
   test("UserInputKeyPress works", () => {
     _also(
-      UserInputKeyPress.create(undefined, undefined),
+      UserInputKeyPress.createCopyOf(undefined, undefined),
       it => expect(it.toString()).toEqual("")
     )
     
-    _also(UserInputKeyPress.create(undefined, "a"), it => {
+    _also(UserInputKeyPress.createCopyOf(undefined, "a"), it => {
       expect(it.toString()).toEqual("a")
       expect(it.input).toEqual("a")
       expect(it.key).toEqual("")
       expect(it.matches("a")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(undefined, "q"), it => {
+    _also(UserInputKeyPress.createCopyOf(undefined, "q"), it => {
       expect(it.toString()).toEqual("q")
       expect(it.input).toEqual("q")
       expect(it.key).toEqual("")
       expect(it.matches("q")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.ctrlKey, "q"), it => {
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.ctrlKey, "q"), it => {
       expect(it.toString()).toEqual("ctrl+q")
       expect(it.input).toEqual("q")
       expect(it.key).toEqual("ctrl")
       expect(it.matches("ctrl+q")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.ctrlKey, "a"), it => {
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.ctrlKey, "a"), it => {
       expect(it.toString()).toEqual("ctrl+a")
       expect(it.input).toEqual("a")
       expect(it.key).toEqual("ctrl")
       expect(it.matches("ctrl+a")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.escapeKey, undefined), it => {
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.escapeKey, undefined), it => {
       expect(it.toString()).toEqual("escape")
       expect(it.input).toEqual("")
       expect(it.key).toEqual("escape")
       expect(it.matches("escape")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
-      it.setModifierKey("shift", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined), it => {
+      it = it.setModifierKey("shift", true)
       expect(it.toString()).toEqual("shift+tab")
       expect(it.input).toEqual("")
       expect(it.key).toEqual("shift+tab")
       expect(it.matches("shift+tab")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
-      it.setModifierKey("meta", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined), it => {
+      it = it.setModifierKey("meta", true)
       expect(it.toString()).toEqual("meta+tab")
       expect(it.input).toEqual("")
       expect(it.key).toEqual("meta+tab")
       expect(it.matches("meta+tab")).toBeTruthy()
     })
     
-    _also(UserInputKeyPress.create(KeyCreator.tabKey, undefined), it => {
-      it.setModifierKey("ctrl", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined), it => {
+      it = it.setModifierKey("ctrl", true)
       expect(it.toString()).toEqual("ctrl+tab")
       expect(it.input).toEqual("")
       expect(it.key).toEqual("ctrl+tab")
@@ -127,20 +127,20 @@ describe("useKeyboard", () => {
       .set([ "@" ], fun2.bind(this, "2"))
       .set([ "#" ], fun2.bind(this, "3")))
     
-    processKeyPress(UserInputKeyPress.create(undefined, "q"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.createCopyOf(undefined, "q"), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
     
     fun1Flag = false
-    processKeyPress(UserInputKeyPress.create(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.createCopyOf(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
     expect(fun1Flag).toBeTruthy()
     
-    processKeyPress(UserInputKeyPress.create(undefined, "!"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.createCopyOf(undefined, "!"), shortcutsToActionMap)
     expect(fun2State).toEqual("1")
     
-    processKeyPress(UserInputKeyPress.create(undefined, "@"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.createCopyOf(undefined, "@"), shortcutsToActionMap)
     expect(fun2State).toEqual("2")
     
-    processKeyPress(UserInputKeyPress.create(undefined, "#"), shortcutsToActionMap)
+    processKeyPress(UserInputKeyPress.createCopyOf(undefined, "#"), shortcutsToActionMap)
     expect(fun2State).toEqual("3")
   })
   
@@ -152,17 +152,17 @@ describe("useKeyboard", () => {
     //   "return", "escape", "tab", "backspace", "delete"
     _let(
       [
-        [ UserInputKeyPress.create(KeyCreator.upKey, undefined), "uparrow" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.downKey, undefined), "downarrow" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.leftKey, undefined), "leftarrow" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.rightKey, undefined), "rightarrow" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.pageUpKey, undefined), "pageup" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.pageDownKey, undefined), "pagedown" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.returnKey, undefined), "return" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.escapeKey, undefined), "escape" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.tabKey, undefined), "tab" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.backspaceKey, undefined), "backspace" ], /* Tuple */
-        [ UserInputKeyPress.create(KeyCreator.deleteKey, undefined), "delete" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.upKey, undefined), "uparrow" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.downKey, undefined), "downarrow" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.leftKey, undefined), "leftarrow" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined), "rightarrow" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.pageUpKey, undefined), "pageup" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.pageDownKey, undefined), "pagedown" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.returnKey, undefined), "return" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.escapeKey, undefined), "escape" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.tabKey, undefined), "tab" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.backspaceKey, undefined), "backspace" ], /* Tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.deleteKey, undefined), "delete" ], /* Tuple */
       ] as Array<Tuple>,
       array => array.forEach(
         tuple => {
@@ -175,11 +175,11 @@ describe("useKeyboard", () => {
     // These are not special keys: "ctrl", "meta", "shift".
     _let(
       [
-        [ UserInputKeyPress.create(KeyCreator.ctrlKey, undefined), "ctrl" ], /* tuple */
-        [ UserInputKeyPress.create(KeyCreator.ctrlKey, "a"), "ctrl+a" ], /* tuple */
-        [ UserInputKeyPress.create(KeyCreator.metaKey, undefined), "meta" ], /* tuple */
-        [ UserInputKeyPress.create(KeyCreator.shiftKey, undefined), "shift" ], /* tuple */
-        [ UserInputKeyPress.create(KeyCreator.shiftKey, "b"), "shift+b" ], /* tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.ctrlKey, undefined), "ctrl" ], /* tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.ctrlKey, "a"), "ctrl+a" ], /* tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.metaKey, undefined), "meta" ], /* tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.shiftKey, undefined), "shift" ], /* tuple */
+        [ UserInputKeyPress.createCopyOf(KeyCreator.shiftKey, "b"), "shift+b" ], /* tuple */
       ] as Array<Tuple>,
       array => array.forEach(
         tuple => {
@@ -192,16 +192,16 @@ describe("useKeyboard", () => {
   })
   
   test("Modifier keys work", () => {
-    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
-      keyPress.setModifierKey("shift", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined), keyPress => {
+      keyPress = keyPress.setModifierKey("shift", true)
       expect(keyPress.toString()).toEqual("shift+rightarrow")
     })
-    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
-      keyPress.setModifierKey("meta", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined), keyPress => {
+      keyPress = keyPress.setModifierKey("meta", true)
       expect(keyPress.toString()).toEqual("meta+rightarrow")
     })
-    _also(UserInputKeyPress.create(KeyCreator.rightKey, undefined), keyPress => {
-      keyPress.setModifierKey("ctrl", true)
+    _also(UserInputKeyPress.createCopyOf(KeyCreator.rightKey, undefined), keyPress => {
+      keyPress = keyPress.setModifierKey("ctrl", true)
       expect(keyPress.toString()).toEqual("ctrl+rightarrow")
     })
   })

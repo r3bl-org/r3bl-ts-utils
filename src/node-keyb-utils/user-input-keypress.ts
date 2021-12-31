@@ -23,11 +23,18 @@ import {
   KeyCreator, ModifierKey, modifierKeysPropertyNames, ReadlineKey, SpecialKey,
   specialKeysPropertyNames
 } from "./key-config-and-constants"
-import { copyInkKey, copyReadlineKey } from "./utils"
+import { copyInkKey, copyModifiersFromReadlineKey } from "./utils"
 
 // TODO speed up keyboard input matching by "flattening" the array of keys into another map
 
 /**
+ * This class is immutable. In order to create an instance of it, please use the factory methods:
+ * createFromInk, createFromKeypress, createCopyOf
+ *
+ * Once an instance is created, only two mutation methods are provided which don't modify the
+ * original instance and return a newly deep copied instance:
+ * setModifierKeyFrom, setModifierKey
+ *
  * A key press can be one of three things:
  * 1. A char & Modifier keys (shift, meta, ctrl).
  * 2. A special key (enter, left, right, backspace, etc) & Modifier keys.
@@ -41,9 +48,11 @@ import { copyInkKey, copyReadlineKey } from "./utils"
  * require this functionality to be written natively in Rust (see gh issue above).
  */
 export class UserInputKeyPress {
-  readonly _key: (SpecialKey & ModifierKey) | undefined
-  readonly _input: string | undefined
+  // Private readonly fields.
+  private readonly _key: (SpecialKey & ModifierKey) | undefined
+  private readonly _input: string | undefined
   
+  // Factory methods.
   static createFromInk(
     argKeyNullable?: Key,
     argInputNullable?: string
@@ -56,25 +65,28 @@ export class UserInputKeyPress {
     return new UserInputKeyPress(copyOfArgKey, inputCopy)
   }
   
+  // TODO this needs to be merged w/ logic from
+  //  experimental/node-keypress/readline.ts#tryToFindSpecialKeyInMap
   static createFromKeypress(
     nullableKey?: ReadlineKey,
     nullableInput?: string
   ): UserInputKeyPress {
     const copyOfKey: SpecialKey & ModifierKey = _also(
       KeyCreator.emptyKey,
-      emptyKey => _callIfTruthy(nullableKey, key => copyReadlineKey(key, emptyKey))
+      emptyKey => _callIfTruthy(nullableKey, key => copyModifiersFromReadlineKey(key, emptyKey))
     )
     const inputCopy: string | undefined = nullableInput ? nullableInput.slice() : undefined
     return new UserInputKeyPress(copyOfKey, inputCopy)
   }
   
-  static create(key?: (SpecialKey & ModifierKey), input?: string) {
+  static createCopyOf(key?: (SpecialKey & ModifierKey), input?: string) {
     return new UserInputKeyPress(
       key ? _.cloneDeep(key) : undefined,
       input ? input.slice() : undefined
     )
   }
   
+  // Constructor and mutators.
   /**
    * Don't deep copy all the provided arguments, use them as is. Use the static factory methods.
    */
@@ -83,6 +95,21 @@ export class UserInputKeyPress {
     if (input) this._input = input
   }
   
+  /** @immutable */
+  setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): UserInputKeyPress =>
+    _also(
+      UserInputKeyPress.createCopyOf(this._key, this._input),
+      copyOfSelf => copyOfSelf._key ? copyOfSelf._key[modifier] = value : undefined
+    )
+  
+  /** @immutable */
+  setModifierKeyFrom = (arg: ReadlineKey): UserInputKeyPress =>
+    _also(
+      UserInputKeyPress.createCopyOf(this._key, this._input),
+      copyOfSelf => copyOfSelf._key ? copyModifiersFromReadlineKey(arg, copyOfSelf._key) : undefined
+    )
+  
+  // Accessors.
   get input(): string {
     return this._input ? this._input.toLowerCase() : "" /* falsy */
   }
@@ -101,11 +128,6 @@ export class UserInputKeyPress {
     if (!key_getter && input_getter) return input_getter
     
     return ""
-  }
-  
-  setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): void => {
-    if (!this._key) return
-    this._key[modifier] = value
   }
   
   /** Key is special if it can be pressed independently of input, eg: "upArrow" and "downArrow". */
@@ -147,26 +169,5 @@ export class UserInputKeyPress {
       if (returnValue.length === 0) return ""
       else return returnValue.join("+")
     })
-  }
-  
-  // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
-  static isKeyType = (param: any): param is SpecialKey & ModifierKey => {
-    const key = param as SpecialKey & ModifierKey
-    return (
-      key.upArrow !== undefined &&
-      key.downArrow !== undefined &&
-      key.leftArrow !== undefined &&
-      key.rightArrow !== undefined &&
-      key.pageDown !== undefined &&
-      key.pageUp !== undefined &&
-      key.return !== undefined &&
-      key.escape !== undefined &&
-      key.ctrl !== undefined &&
-      key.shift !== undefined &&
-      key.tab !== undefined &&
-      key.backspace !== undefined &&
-      key.delete !== undefined &&
-      key.meta !== undefined
-    )
   }
 }

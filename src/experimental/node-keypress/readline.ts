@@ -73,7 +73,7 @@ namespace nodejs_keypress_readline { // eslint-disable-line
       printRegularKey(regularKey)
     }
     
-    // TODO replace exit check below using spKey or regularKey
+    // TODO replace ctrl+c checking w/ spKey/regularKey
     if (key && key.ctrl && key.name == "c") process.exit()
   }
   
@@ -82,6 +82,7 @@ namespace nodejs_keypress_readline { // eslint-disable-line
    */
   const tryToFindSpecialKeyInMap = (key: ReadlineKey): UserInputKeyPress | undefined => {
     let returnValue: UserInputKeyPress | undefined = undefined
+    
     // Check key.code.
     if (key.code)
       for (const [ partialSequence, keyPress ] of keyCodeMap.entries()) {
@@ -90,6 +91,7 @@ namespace nodejs_keypress_readline { // eslint-disable-line
           break
         }
       }
+    
     // Check key.name.
     if (key.name)
       for (const [ partialSequence, keyPress ] of keyNameMap.entries()) {
@@ -98,21 +100,18 @@ namespace nodejs_keypress_readline { // eslint-disable-line
           break
         }
       }
+    
     // Check key.sequence.
     if (key.sequence)
       for (const [ partialSequence, keyPress ] of keySequenceMap.entries()) {
         if (key.sequence.includes(partialSequence)) {
-          return keyPress
+          returnValue = keyPress
           break
         }
       }
+    
     // Check for modifiers to be set.
-    if (returnValue) {
-      if (key.shift) returnValue.setModifierKey("shift", true)
-      if (key.meta) returnValue.setModifierKey("meta", true)
-      if (key.ctrl) returnValue.setModifierKey("ctrl", true)
-    }
-    return returnValue
+    return returnValue ? returnValue.setModifierKeyFrom(key) : undefined
   }
   
   
@@ -134,7 +133,7 @@ namespace nodejs_keypress_readline { // eslint-disable-line
   }
   
   const printRegularKey = (spKey: UserInputKeyPress): void => {
-    console.log(TextColor.builder.bold.bgYellow.black.underline.build()(
+    console.log(TextColor.builder.bold.bgWhite.black.underline.build()(
       " " + spKey.toString() + " "))
   }
   
