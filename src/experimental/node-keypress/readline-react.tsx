@@ -17,4 +17,4 @@
 
 import { keyboard_debug_ui } from "./debug-ui"
 
-keyboard_debug_ui.main("ink-compat")
+keyboard_debug_ui.main("node-keypress")

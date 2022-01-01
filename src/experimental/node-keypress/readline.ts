@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,105 +15,40 @@
  *
  */
 
-import readline from "readline"
-import { _also, ReadlineKey, TextColor, UserInputKeyPress } from "../../index"
-import { keyCodeMap, keyNameMap, keySequenceMap } from "./key-map-config"
-
-// TODO move some of this code & comments into nodejs-keyb-utils/use-node-keypress.ts
-
-/*
- * Unicode, UTF-8, JS, hex encoding:
- * - https://flaviocopes.com/javascript-unicode/
- * - https://dmitripavlutin.com/what-every-javascript-developer-should-know-about-unicode/#hexadecimal-escape-sequence
- * Unicode hex character to symbol (eg: '[' => '\x5b')
- * - https://www.utf8-chartable.de/
- * ASCII:
- * - https://www.ascii-code.com/
- *
- * Here's an example of a string generated when leftArrow is typed in the console: '\x1B[C'. Hex
- * escape sequence is the shortest form. Hex accept two digits (a hex number) after '\x' to
- * represent a single character. However, each character in the string is actually a hex number! In
- * order to translate the string into their numbers, we can use https://www.ascii-code.com/.
- *
- * Using these resources, we see that '\x1B[C' is broken down like so:
- * - '\x1' becomes '\x31'
- * - '\xB' becomes '\x42'
- * - '\x[' becomes '\x5B'
- * - '\xC' becomes '\x43'
- *
- * TODO: https://github.com/r3bl-org/r3bl-cmdr/issues/1
- */
+import {
+  attachToReadlineKeypress, createFromKeypress, detachFromReadlineKeypress, Keypress,
+  NodeKeypressFn, ReadlineKey, TextColor
+} from "../../index"
 
 namespace nodejs_keypress_readline { // eslint-disable-line
-  // Types, interfaces, data classes / structs.
-  type Stdin = NodeJS.ReadStream & { fd: 0 }
+  // Data.
+  let isAttached = false
   
   // Main program.
   export const main = () => {
     printInstructions()
-    _also(process.stdin as Stdin, it => {
-      readline.emitKeypressEvents(it)
-      it.setRawMode(true)
-      it.setEncoding("utf-8")
-    })
-      .on("keypress", onKeypress)
+    isAttached = attachToReadlineKeypress(onKeypress)
+    console.log(isAttached ?
+      TextColor.builder.bold.green.build()("raw mode & listener attached") :
+      TextColor.builder.bold.red.build()("not raw mode & listener not attached")
+    )
   }
   
   // Handle keypress events from Node.js.
-  const onKeypress = (input: string, key: ReadlineKey): void => {
+  const onKeypress: NodeKeypressFn = (input: string, key: ReadlineKey) => {
     printInputAndKey(input, key)
+    const keyPress = createFromKeypress(key, input)
+    keyPress.isSpecialKey() ? printSpKey(keyPress) : printRegularKey(keyPress)
+    keyPress.matches("ctrl+c") ? exit() : undefined
     
-    // Check for special keys.
-    const spKey = tryToFindSpecialKeyInMap(key)
-    if (spKey) printSpKey(spKey)
-    
-    // Regular key.
-    if (!spKey) {
-      const regularKey = UserInputKeyPress.createFromKeypress(key, input)
-      printRegularKey(regularKey)
+    function exit() {
+      if (isAttached) {
+        detachFromReadlineKeypress(onKeypress)
+        console.log(TextColor.builder.bold.cyan.build()("detaching listener"))
+      }
+      process.exit()
     }
-    
-    // TODO replace ctrl+c checking w/ spKey/regularKey
-    if (key && key.ctrl && key.name == "c") process.exit()
   }
-  
-  /**
-   * First search key.code, then key.name, and finally key.sequence.
-   */
-  const tryToFindSpecialKeyInMap = (key: ReadlineKey): UserInputKeyPress | undefined => {
-    let returnValue: UserInputKeyPress | undefined = undefined
-    
-    // Check key.code.
-    if (key.code)
-      for (const [ partialSequence, keyPress ] of keyCodeMap.entries()) {
-        if (key.code.includes(partialSequence)) {
-          returnValue = keyPress
-          break
-        }
-      }
-    
-    // Check key.name.
-    if (key.name)
-      for (const [ partialSequence, keyPress ] of keyNameMap.entries()) {
-        if (key.name.includes(partialSequence)) {
-          returnValue = keyPress
-          break
-        }
-      }
-    
-    // Check key.sequence.
-    if (key.sequence)
-      for (const [ partialSequence, keyPress ] of keySequenceMap.entries()) {
-        if (key.sequence.includes(partialSequence)) {
-          returnValue = keyPress
-          break
-        }
-      }
-    
-    // Check for modifiers to be set.
-    return returnValue ? returnValue.setModifierKeyFrom(key) : undefined
-  }
-  
   
   // Debug.
   const printInstructions = (): void => {
@@ -128,15 +63,14 @@ namespace nodejs_keypress_readline { // eslint-disable-line
     console.log(TextColor.builder.magenta.build()("key"), key ? key : "")
   }
   
-  const printSpKey = (spKey: UserInputKeyPress): void => {
+  const printSpKey = (spKey: Readonly<Keypress>): void => {
     console.log(TextColor.builder.bgYellow.black.underline.build()(spKey.toString()))
   }
   
-  const printRegularKey = (spKey: UserInputKeyPress): void => {
+  const printRegularKey = (spKey: Readonly<Keypress>): void => {
     console.log(TextColor.builder.bold.bgWhite.black.underline.build()(
       " " + spKey.toString() + " "))
   }
-  
 }
 
 nodejs_keypress_readline.main()

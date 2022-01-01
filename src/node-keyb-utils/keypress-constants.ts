@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,72 +15,57 @@
  *
  */
 
-// TODO add comments
-
-// Constructor vs object literal:
-// https://medium.com/@mandeepkaur1/object-literal-vs-constructor-in-javascript-df143296b816
-// Object literals are singletons that are public. Constructors make unique instances.
+/**
+ * Classes and types are provided in this class that describe key presses that can be typed in
+ * from a terminal. These are not tied to any specific implementation of Node.js readline for
+ * eg, or Ink. And in the future w/ Rust implementations of native keypress listeners these can
+ * be used and extended as well.
+ *
+ * Please note that it is unsafe to use mutable singleton constants. This is very easy to do with
+ * constants pointing to object literals that are exported. This is why all the getters in this
+ * class return a new object instance. Object literals are singletons that are public and all their
+ * properties can be modified publicly. Constructors make unique instances. More info:
+ * https://medium.com/@mandeepkaur1/object-literal-vs-constructor-in-javascript-df143296b816
+ */
 
 export class ModifierKey {
+  /** Ctrl key was pressed. */
   ctrl = false
-  /**
-   * Shift key was pressed.
-   */
+  /** Shift key was pressed. */
   shift = false
-  /**
-   * Tab key was pressed.
-   */
-  /**
-   * [Meta key](https://en.wikipedia.org/wiki/Meta_key) was pressed.
-   */
+  /** [Meta key](https://en.wikipedia.org/wiki/Meta_key) was pressed. */
   meta = false
 }
 
 export class SpecialKey {
-  /**
-   * Up arrow key was pressed.
-   */
+  /** Up arrow key was pressed. */
   upArrow = false
-  /**
-   * Down arrow key was pressed.
-   */
+  /** Down arrow key was pressed. */
   downArrow = false
-  /**
-   * Left arrow key was pressed.
-   */
+  /** Left arrow key was pressed. */
   leftArrow = false
-  /**
-   * Right arrow key was pressed.
-   */
+  /** Right arrow key was pressed. */
   rightArrow = false
-  /**
-   * Page Down key was pressed.
-   */
+  /** Page Down key was pressed. */
   pageDown = false
-  /**
-   * Page Up key was pressed.
-   */
+  /** Page Up key was pressed. */
   pageUp = false
-  /**
-   * Return (Enter) key was pressed.
-   */
+  /** Return (Enter) key was pressed. */
   return = false
-  /**
-   * Escape key was pressed.
-   */
+  /** Escape key was pressed. */
   escape = false
-  /**
-   * Ctrl key was pressed.
-   */
+  /** Ctrl key was pressed. */
   tab = false
-  /**
-   * Backspace key was pressed.
-   */
+  /** Backspace key was pressed. */
   backspace = false
-  /**
-   * Delete key was pressed.
-   */
+  /** Delete key was pressed. */
   delete = false
+  /** Space key was pressed. */
+  space = false
+  /** Home key was pressed. */
+  home = false
+  /** End key was pressed. */
+  end = false
 }
 
 /**
@@ -88,21 +73,14 @@ export class SpecialKey {
  * https://www.typescriptlang.org/docs/handbook/advanced-types.html#index-types
  */
 export const specialKeysPropertyNames: Array<keyof SpecialKey> = [
-  "upArrow",
-  "downArrow",
-  "leftArrow",
-  "rightArrow",
-  "pageDown",
-  "pageUp",
-  "return",
-  "escape",
-  "tab",
-  "backspace",
-  "delete",
+  "upArrow", "downArrow", "leftArrow", "rightArrow", "pageDown", "pageUp", "return", "escape",
+  "tab", "backspace", "delete", "space", "home", "end"
 ]
 export const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "shift", "ctrl", "meta" ]
 
-export class KeyPress implements ModifierKey, SpecialKey {
+/** Data class that holds information about modifiery and special key. */
+export class KeyData implements ModifierKey, SpecialKey {
+  public space = false
   public backspace = false
   public ctrl = false
   public delete = false
@@ -117,23 +95,27 @@ export class KeyPress implements ModifierKey, SpecialKey {
   public shift = false
   public tab = false
   public upArrow = false
+  public home = false
+  public end = false
   
   constructor(key?: SpecialKey & ModifierKey) {
     if (!key) return
-    
-    specialKeysPropertyNames.forEach((propName: keyof SpecialKey) => {
-      if (key[propName]) this[propName] = Boolean(key[propName])
-    })
-    modifierKeysPropertyNames.forEach((propName: keyof ModifierKey) => {
-      if (key[propName]) this[propName] = Boolean(key[propName])
-    })
+    specialKeysPropertyNames.forEach((propName: keyof SpecialKey) => (key[propName]) ?
+      this[propName] = Boolean(key[propName]) : undefined)
+    modifierKeysPropertyNames.forEach((propName: keyof ModifierKey) => (key[propName]) ?
+      this[propName] = Boolean(key[propName]) : undefined)
   }
 }
 
+/**
+ * All the getters return a new instance of SpecialKey & ModifierKey which is mutable, and meant
+ * to be modified.
+ */
 export class KeyCreator {
   // Special keys.
   static get emptyKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -148,11 +130,58 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
+    })
+  }
+  
+  static get homeKey(): SpecialKey & ModifierKey {
+    return new KeyData({
+      space: false,
+      backspace: false,
+      ctrl: false,
+      delete: false,
+      downArrow: false,
+      escape: false,
+      leftArrow: false,
+      meta: false,
+      pageDown: false,
+      pageUp: false,
+      return: false,
+      rightArrow: false,
+      shift: false,
+      tab: false,
+      upArrow: false,
+      home: true, // 👍
+      end: false
+    })
+  }
+  
+  static get endKey(): SpecialKey & ModifierKey {
+    return new KeyData({
+      space: false,
+      backspace: false,
+      ctrl: false,
+      delete: false,
+      downArrow: false,
+      escape: false,
+      leftArrow: false,
+      meta: false,
+      pageDown: false,
+      pageUp: false,
+      return: false,
+      rightArrow: false,
+      shift: false,
+      tab: false,
+      upArrow: false,
+      home: false,
+      end: true, // 👍
     })
   }
   
   static get upKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -167,11 +196,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: true, // 👍
+      home: false,
+      end: false
     })
   }
   
   static get downKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -186,11 +218,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get leftKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -205,11 +240,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get rightKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -224,11 +262,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get pageUpKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -243,11 +284,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get pageDownKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -262,11 +306,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get escapeKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -281,11 +328,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get returnKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -300,11 +350,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get tabKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -319,11 +372,14 @@ export class KeyCreator {
       shift: false,
       tab: true, // 👍
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get backspaceKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: true, // 👍
       ctrl: false,
       delete: false,
@@ -338,11 +394,36 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
+    })
+  }
+  
+  static get spaceKey(): SpecialKey & ModifierKey {
+    return new KeyData({
+      space: true, // 👍
+      backspace: false,
+      ctrl: false,
+      delete: false,
+      downArrow: false,
+      escape: false,
+      leftArrow: false,
+      meta: false,
+      pageDown: false,
+      pageUp: false,
+      return: false,
+      rightArrow: false,
+      shift: false,
+      tab: false,
+      upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get deleteKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: true, // 👍
@@ -357,12 +438,15 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   // Modifier keys.
   static get ctrlKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: true, // 👍
       delete: false,
@@ -377,11 +461,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get metaKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -396,11 +483,14 @@ export class KeyCreator {
       shift: false,
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
   
   static get shiftKey(): SpecialKey & ModifierKey {
-    return new KeyPress({
+    return new KeyData({
+      space: false,
       backspace: false,
       ctrl: false,
       delete: false,
@@ -415,15 +505,8 @@ export class KeyCreator {
       shift: true, // 👍
       tab: false,
       upArrow: false,
+      home: false,
+      end: false
     })
   }
-}
-
-export interface ReadlineKey {
-  sequence?: string,
-  name?: string,
-  code?: string,
-  ctrl: boolean,
-  meta: boolean,
-  shift: boolean,
 }

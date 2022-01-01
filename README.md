@@ -9,11 +9,23 @@
 - [Scope functions](#scope-functions)
   - [`_also`](#_also)
   - [`_alsoAsync`](#_alsoasync)
+  - [`_alsoSafe`](#_alsosafe)
+  - [`_alsoSafeAsync`](#_alsosafeasync)
   - [`_then`](#_then)
   - [`_let`](#_let)
+  - [`_letSafe`](#_letsafe)
   - [`_apply`](#_apply)
   - [`_with`](#_with)
 - [Misc utils](#misc-utils)
+  - [`sleep()`](#sleep)
+  - [`_repeat()`](#_repeat)
+  - [`_callIfTruthy()`](#_calliftruthy)
+  - [`_callIfTruthyWithReturn()`](#_calliftruthywithreturn)
+  - [`_callIfFalsy()`](#_calliffalsy)
+  - [`_callIfTrue()`](#_calliftrue)
+  - [`_callIfFalse()`](#_calliffalse)
+  - [`_callIfTrueWithReturn()`](#_calliftruewithreturn)
+  - [`LifecycleHelper`](#lifecyclehelper)
 - [React utils](#react-utils)
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink Hook utils](#react-ink-hook-utils)
@@ -267,6 +279,66 @@ expect(value).toBeTruthy()
 expect(flag).toBeTruthy()
 ```
 
+### `_alsoSafe`
+
+[`_alsoSafe()`][sf-1] takes a `contextObject`, passes a deep copy of it to the `ReceiverFn`, and
+returns this deep copy of `contextObject`. Here's an example.
+
+```tsx
+const contextObject = { foo: 1 }
+
+let flag = false
+const fun = (it: typeof contextObject): void => {
+  expect(it).not.toBe(contextObject)
+  flag = true
+}
+
+const returnValue = _alsoSafe(contextObject, fun)
+
+expect(returnValue).not.toBe(contextObject)
+expect(returnValue).toEqual(contextObject)
+expect(flag).toBeTruthy()
+```
+
+### `_alsoSafeAsync`
+
+[`_alsoSafeAsync()`][sf-1] is not part of Kotlin's `stdlib` scope functions, but it behaves
+similarly to `_alsoAsync()` except that it accepts an async receiver function (`ReceiverFnAsync`).
+And it returns a deep copy of then `contextObject` and a promise from the async receiver function.
+Here's an example.
+
+```tsx
+const contextObject = { foo: 1 }
+
+let flag = false
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+const fun1: ReceiverFnAsync<typeof contextObject, boolean> = async (it) =>
+  new Promise<boolean>((resolveFn) => {
+    const _fun = () => {
+      expect(it).toEqual(contextObject)
+      expect(it).not.toBe(contextObject)
+      flag = true
+      resolveFn(true)
+    }
+    // Delay execution of _fun to next iteration of event loop.
+    // https://nodejs.dev/learn/understanding-setimmediate
+    setImmediate(_fun)
+  })
+
+const { contextObjectDeepCopy: obj, promiseFromReceiverFn: promise } = _alsoSafeAsync(
+  contextObject,
+  fun1
+)
+
+expect(obj).toEqual(contextObject)
+expect(flag).toBeFalsy()
+
+const value = await promise
+expect(value).toBeTruthy()
+expect(flag).toBeTruthy()
+```
+
 ### `_then`
 
 [`_then()`][sf-1] is not part of Kotlin's `stdlib` scope functions, but it behaves similarly to
@@ -303,6 +375,29 @@ expect(returnValue).toEqual(`my-string`)
 
 > The call to `_let(...)` returns the value of the 2nd argument `ReceiverFnWithReturn` and not the
 > first argument `contextObject`.
+
+### `_letSafe`
+
+[`_letSafe()`][sf-1] takes a `contextObject`, and passes a deep copy of it to the
+`ReceiverFnWithReturn`, and returns its return value. Here's an example.
+
+```tsx
+const contextObject = { foo: 1 }
+const receiverFnReturnValue = Symbol()
+
+// https://jasmine.github.io/2.1/introduction#section-Spies:_%3Ccode%3Eand.callThrough%3C/code%3E
+const myReceiverFn: ReceiverFnWithReturn<typeof contextObject, symbol> = (it) => {
+  expect(it).toEqual(contextObject)
+  expect(it).not.toBe(contextObject)
+  return receiverFnReturnValue
+}
+const spyObjectContainingFn = { myReceiverFn }
+spyOn(spyObjectContainingFn, "myReceiverFn").and.callThrough()
+
+const returnValue = _letSafe(contextObject, spyObjectContainingFn.myReceiverFn)
+expect(returnValue).toEqual(receiverFnReturnValue)
+expect(spyObjectContainingFn.myReceiverFn).toHaveBeenCalled()
+```
 
 ### `_apply`
 
@@ -356,6 +451,8 @@ expect(returnValue).toEqual(hardcodedReceiverReturnValue)
 
 ## Misc utils
 
+### `sleep()`
+
 Let's look at how to use the only function included [here][mu-1] - `sleep()`. Here's an example of
 it in action (in a Node.js program).
 
@@ -383,6 +480,213 @@ const main = async (): Promise<void> => {
 }
 
 main().catch(console.error)
+```
+
+### `_repeat()`
+
+This is loosely inspired by the Kotlin scope function style and the `repeat` function in JavaScript.
+You can pass a lambda and have it repeat `n` times. Here's an example.
+
+```tsx
+let count = 0
+_repeat(5, () => count++)
+expect(count).toEqual(5)
+```
+
+### `_callIfTruthy()`
+
+This is inspired from the style of Kotlin scope functions [above](#scope-functions). If the
+`contextObject` is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy), then the
+lambda is executed & it gets the type-safe non-null reference to `contextObject`. Here's an example.
+
+```tsx
+type CtxObjType = { foo: number }
+const contextObject: CtxObjType | undefined = { foo: 1 }
+
+let executed = false
+const returnValue = _callIfTruthy(contextObject, (it: CtxObjType) => {
+  expect(it).toBeDefined()
+  expect(it).toEqual({ foo: 1 })
+  executed = true
+})
+expect(returnValue).toBeTruthy()
+expect(returnValue).toBe(contextObject)
+expect(executed).toBeTruthy()
+```
+
+### `_callIfTruthyWithReturn()`
+
+This is similar to `_callIfTruthy` except that it will return the return value of the lambda that's
+passed.
+
+```tsx
+_also(
+  {
+    onTrueFlag: false,
+    onFalseFlag: false,
+  },
+  (flags) => {
+    const returnValue = _callIfTruthyWithReturn(
+      "foo",
+      (it) => {
+        expect(it).toEqual("foo")
+        flags.onTrueFlag = true
+        return "true"
+      },
+      () => {
+        flags.onFalseFlag = false
+        return "false"
+      }
+    )
+    expect(returnValue).toEqual("true")
+    expect(flags.onTrueFlag).toBeTruthy()
+    expect(flags.onFalseFlag).toBeFalsy()
+  }
+)
+```
+
+### `_callIfFalsy()`
+
+This is the inverse of `_callIfTruthy`. If the `contextObject` is
+[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy), then the lambda is executed & it
+gets the type-safe non-null reference to `contextObject`. Here's an example.
+
+```tsx
+let executedIfNull = false
+let executedIfUndefined = false
+
+_callIfFalsy(undefined, () => {
+  executedIfUndefined = true
+})
+_callIfFalsy(null, () => {
+  executedIfNull = true
+})
+
+expect(executedIfUndefined).toBeTruthy()
+expect(executedIfNull).toBeTruthy()
+```
+
+### `_callIfTrue()`
+
+This is similar to `_callIfTruthy` except that the first argument is a `boolean`. Here's an example.
+
+```tsx
+let flag = false
+const fun = () => {
+  flag = true
+}
+_callIfTrue(false, fun)
+expect(flag).toBeFalsy()
+_callIfTrue(true, fun)
+expect(flag).toBeTruthy()
+```
+
+### `_callIfFalse()`
+
+This is the inverse of `_callIfFalse`. Here's an example.
+
+```tsx
+let flag = true
+const fun = () => {
+  flag = false
+}
+_callIfFalse(true, fun)
+expect(flag).toBeTruthy()
+_callIfFalse(false, fun)
+expect(flag).toBeFalsy()
+```
+
+### `_callIfTrueWithReturn()`
+
+This is an interesting control flow expression. It is another way to represent an `if statement`.
+Three arguments need to be passed.
+
+1. The first is the condition variable.
+2. The 2nd is the lambda that is executed if the condition holds true. The return value of this
+   lamba is returned by the expression.
+3. The 3rd argument is the lambda that's executed if the condition holds false. The return value of
+   this lambda is returned by the expression.
+
+Here's an example.
+
+```tsx
+// Condition is true.
+_also(
+  {
+    onTrueFlag: false,
+    onFalseFlag: false,
+  },
+  (flags) => {
+    const returnValue = _callIfTrueWithReturn(
+      true,
+      () => {
+        flags.onTrueFlag = true
+        return "true"
+      },
+      () => {
+        flags.onFalseFlag = false
+        return "false"
+      }
+    )
+    expect(returnValue).toEqual("true")
+    expect(flags.onTrueFlag).toBeTruthy()
+    expect(flags.onFalseFlag).toBeFalsy()
+  }
+)
+
+// Condition is false.
+_also(
+  {
+    onTrueFlag: false,
+    onFalseFlag: false,
+  },
+  (flags) => {
+    const returnValue = _callIfTrueWithReturn(
+      false,
+      () => {
+        flags.onTrueFlag = false
+        return "true"
+      },
+      () => {
+        flags.onFalseFlag = true
+        return "false"
+      }
+    )
+    expect(returnValue).toEqual("false")
+    expect(flags.onTrueFlag).toBeFalsy()
+    expect(flags.onFalseFlag).toBeTruthy()
+  }
+)
+```
+
+### `LifecycleHelper`
+
+This utility class is intended to be used in command line interface apps that run in a terminal (in
+Node.js). However, it can be used in browsers as well. The idea w/ this class is to fire a global
+`start` event when the CLI app container has started and is warm. And to fire a `exit` event when
+the container is in the process of initiating its exit (before `process.exit()` is called). Your
+code can attach listeners to these events. And you have to wire this class into the key lifecycle
+events of your app. Here's an example.
+
+```tsx
+//#region main().
+type MainParams = "node-keypress" | "ink-compat"
+export const main = (arg: MainParams) => {
+  const instance = render(<App arg={arg} />)
+  LifecycleHelper.addExitListener(() => {
+    instance
+      .waitUntilExit()
+      .then(() => {
+        console.log("Exiting ink")
+      })
+      .catch(() => {
+        console.error("Problem with exiting ink")
+      })
+    TimerRegistry.killAll()
+    instance.unmount()
+  })
+}
+//#endregion
 ```
 
 ## React utils
@@ -480,15 +784,23 @@ string and the time in ms.
 The `useKeyboard()` custom hook can be used to attach a function that responds to key presses in the
 terminal.
 
-1. The `UserInputKeyPress` class represents a single keypress (eg: <kbd>a</kbd>,
-   <kbd>backspace</kbd>, or <kbd>ctrl+k</kbd>).
-2. The `KeyboardInputHandlerFn` is a function that does something meaningful w/ a
-   `UserInputKeyPress` object (as it comes in from the terminal when the user presses keys).
+1. The `Keypress` class represents a single keypress (eg: <kbd>a</kbd>, <kbd>backspace</kbd>, or
+   <kbd>ctrl+k</kbd>).
+2. The `KeyboardInputHandlerFn` is a function that does something meaningful w/ a `Keypress` object
+   (as it comes in from the terminal when the user presses keys).
+3. The `Keypress` class creates immutable objects so it safe to use w/out having to worry about
+   references or memory leaking or having strange side effects when doing keyboard input handling
+   using this.
+
+> The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
+> compatibility version as well. Ink doesn't really handle some input events correctly, which is
+> what prompted the creation of this. To use the Ink compatible version of this hook, you can use
+> `useKeyboardCompatInk()`.
 
 Here's an example.
 
 ```tsx
-import { KeyboardInputHandlerFn, UserInputKeyPress, useKeyboard } from "r3bl-ts-utils"
+import { KeyboardInputHandlerFn, Keypress, useKeyboard } from "r3bl-ts-utils"
 
 const UseFocusExample: FC = () => {
   const { keyPress, inRawMode } = useKeyboard(
@@ -506,7 +818,7 @@ const UseFocusExample: FC = () => {
 
 const onKeyPress: KeyboardInputHandlerFn = (
   this: { app: AppContextProps; focusManager: FocusContextProps },
-  userInputKeyPress: UserInputKeyPress
+  userInputKeyPress: Keypress
 ) => {
   const { app, focusManager } = this
   const { exit } = app
@@ -524,11 +836,16 @@ const onKeyPress: KeyboardInputHandlerFn = (
 ### `useKeyboardWithMap()`
 
 This hook utilizes the `useKeyboard()` hook and makes it really easy to enable keyboard handling for
-CLI apps. Instead of providing the logic to match a "user typed keypress" to a function ("action"),
-this hook takes care of all that. Instead, you can provide a map that declares the key presses that
-should be matched in order to invoke an action. When combined w/ the
+CLI apps. Instead of providing the logic to match a "a keypress that the user typed" to a function
+("action"), this hook takes care of all that. Instead, you can provide a map that declares the key
+presses that should be matched in order to invoke an action. When combined w/ the
 [`useMemo()`](https://reactjs.org/docs/hooks-reference.html#usememo) React hook, this also caches
 this map which is expensive to re-create on every key press.
+
+> The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
+> compatibility version as well. Ink doesn't really handle some input events correctly, which is
+> what prompted the creation of this. To use the Ink compatible version of this hook, you can use
+> `useKeyboardCompatInkWithMap()`.
 
 Here's an example.
 
@@ -536,10 +853,10 @@ Here's an example.
 import {
   _also,
   _let,
-  createNewKeyPressesToActionMap,
+  createNewShortcutToActionMap,
   TextColor,
   useKeyboardWithMap,
-  UserInputKeyPress,
+  Keypress,
 } from "r3bl-ts-utils"
 
 //#region Main function component.
@@ -551,7 +868,7 @@ const functionComponent: FC = () => render(runHooks())
 //#region runHooks.
 
 interface RenderContext {
-  keyPress: UserInputKeyPress | undefined
+  keyPress: Keypress | undefined
   inRawMode: boolean
 }
 
@@ -559,8 +876,8 @@ const runHooks = (): RenderContext => {
   const app = useApp()
 
   const createShortcuts = () =>
-    _also(createNewKeyPressesToActionMap(), (map) =>
-      map.set(["q", "ctrl+q"], app.exit).set(["x", "ctrl+x"], app.exit)
+    _also(createNewShortcutToActionMap(), (map) =>
+      map.set("q", app.exit).set("x", app.exit).set("ctrl+q", app.exit).set("ctrl+x", app.exit)
     )
 
   return _let(useMemo(createShortcuts, []), useKeyboardWithMap)

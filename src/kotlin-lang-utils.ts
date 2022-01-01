@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+
+import _ from "lodash"
 
 /*
  * These functions are inspired by Kotlin scoping functions (with, apply, let, run, etc).
@@ -61,6 +63,17 @@ export const _also = <T>(contextObject: T, receiverFn: ReceiverFn<T>): T => {
 
 /**
  * @param contextObject value of `it`
+ * @param receiverFn lambda that accepts deep copy of `it`
+ * @return deep copy of `it`
+ */
+export const _alsoSafe = <T>(contextObject: T, receiverFn: ReceiverFn<T>): T => {
+  const ctxCopy = _.cloneDeep(contextObject)
+  receiverFn(ctxCopy)
+  return ctxCopy
+}
+
+/**
+ * @param contextObject value of `it`
  * @param receiverFn lambda that accepts `it`
  * @return {contextObject that is passed, promise returned by receiverFn}
  */
@@ -74,6 +87,20 @@ export const _alsoAsync = <T, R>(
 
 /**
  * @param contextObject value of `it`
+ * @param receiverFn lambda that accepts deep copy of `it`
+ * @return {contextObjectDeepCopy deep copy of `it`, promise returned by receiverFn}
+ */
+export const _alsoSafeAsync = <T, R>(
+  contextObject: T,
+  receiverFn: ReceiverFnAsync<T, R>
+): { contextObjectDeepCopy: T; promiseFromReceiverFn: Promise<R> } => {
+  const ctxCopy = _.cloneDeep(contextObject)
+  const promiseFromReceiverFn = receiverFn(ctxCopy)
+  return { contextObjectDeepCopy: ctxCopy, promiseFromReceiverFn }
+}
+
+/**
+ * @param contextObject value of `it`
  * @param receiverFnWithReturn lambda that accepts `it`
  * @return result of the receiverFnWithReturn (lambda)
  */
@@ -82,6 +109,18 @@ export const _let = <T, R>(
   receiverFnWithReturn: ReceiverFnWithReturn<T, R>
 ): R => {
   return receiverFnWithReturn(contextObject)
+}
+
+/**
+ * @param contextObject value of `it`
+ * @param receiverFnWithReturn lambda that accepts deep copy of `it`
+ * @return result of the receiverFnWithReturn (lambda)
+ */
+export const _letSafe = <T, R>(
+  contextObject: T,
+  receiverFnWithReturn: ReceiverFnWithReturn<T, R>
+): R => {
+  return receiverFnWithReturn(_.cloneDeep(contextObject))
 }
 
 export interface ImplicitReceiverObject<T> {

@@ -15,6 +15,16 @@
  *
  */
 
-import { keyboard_debug_ui } from "./debug-ui"
+import _ from "lodash"
+import { Keypress } from "./keypress"
+import { ModifierKey, SpecialKey } from "./keypress-constants"
 
-keyboard_debug_ui.main("ink-compat")
+export function createMutableCopyOf(
+  key?: (SpecialKey & ModifierKey),
+  input?: string
+): Keypress {
+  return Keypress.buildMutable(
+    key ? _.cloneDeep(key) : undefined,
+    input ? input.slice() : undefined
+  )
+}

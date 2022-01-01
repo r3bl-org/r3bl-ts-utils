@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,62 +17,104 @@
 
 import { useInput, useStdin } from "ink"
 import { useState } from "react"
-import { _callIfTrue } from "../misc-utils"
-import { UserInputKeyPress } from "../node-keyb-utils"
+import { _let } from "../kotlin-lang-utils"
+import { _callIfTruthy } from "../misc-utils"
+import {
+  createFromInk, createFromKeypress, isTTY, Keypress, NodeKeypressFn, ReadlineKey, useNodeKeypress
+} from "../node-keyb-utils"
 import { StateHook } from "../react-hook-utils"
-
-// TODO rename this to useKeyboardCompat & add comments
 
 //#region Types.
 
-export type KeyboardInputHandlerFn = (input: UserInputKeyPress) => void
-export type UseKeyboardReturnType = {
-  keyPress: UserInputKeyPress | undefined
-  inRawMode: boolean
+export type KeyboardInputHandlerFn = (input: Readonly<Keypress>) => void
+
+export class UseKeyboardReturnValue {
+  constructor(
+    readonly keyPress: Readonly<Keypress> | undefined,
+    readonly inRawMode: boolean
+  ) {}
+  
+  toArray() {
+    return [ this.keyPress, this.inRawMode ]
+  }
 }
+
 export type ActionFn = () => void
-export type Shortcuts = string[] // "Shortcuts" aka "KeyBindings".
-export type KeyBindingsForActions = Map<Shortcuts, ActionFn>
+export type Shortcut = string // "Shortcut" aka "KeyBinding".
+export type ShortcutToActionMap = Map<Shortcut, ActionFn>
 
 //#endregion
 
-//#region Custom hooks.
+//#region Custom hooks - useKeyboard that is Ink compatible.
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
-export const useKeyboard = (fun: KeyboardInputHandlerFn): UseKeyboardReturnType => {
-  const [ keyPress, setKeyPress ]: StateHook<UserInputKeyPress | undefined> = useState()
+export const useKeyboardCompatInk = (fun: KeyboardInputHandlerFn): UseKeyboardReturnValue => {
+  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
   
   // Can only call useInput in raw mode.
-  if (!inRawMode) return { keyPress: undefined, inRawMode: false }
+  if (!inRawMode) return new UseKeyboardReturnValue(undefined, false)
   
   useInput((input, key) => {
-    const userInputKeyPress = UserInputKeyPress.createFromInk(key, input)
+    const userInputKeyPress = createFromInk(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
   
-  return { keyPress, inRawMode }
+  return new UseKeyboardReturnValue(keyPress, inRawMode)
 }
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
-export const useKeyboardWithMap = (map: KeyBindingsForActions): UseKeyboardReturnType =>
+export const useKeyboardCompatInkWithMap = (map: ShortcutToActionMap): UseKeyboardReturnValue =>
+  useKeyboardCompatInk((keyPress) => processKeyPress(keyPress, map))
+
+//#endregion
+
+//#region Custom hooks - useKeyboard that uses readline keypress events.
+
+/**
+ * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
+ * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
+ */
+export const useKeyboard = (processFn: KeyboardInputHandlerFn): UseKeyboardReturnValue => {
+  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
+  
+  if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
+  
+  const onKeypress: NodeKeypressFn = (input: string, key: ReadlineKey) =>
+    _let(
+      createFromKeypress(key, input),
+      keyPress => {
+        setKeyPress(keyPress)
+        processFn(keyPress)
+      }
+    )
+  useNodeKeypress(onKeypress)
+  return new UseKeyboardReturnValue(keyPress, true)
+}
+
+/**
+ * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
+ * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
+ */
+export const useKeyboardWithMap = (map: ShortcutToActionMap): UseKeyboardReturnValue =>
   useKeyboard((keyPress) => processKeyPress(keyPress, map))
 
 //#endregion
 
 //#region Handle user input key presses.
 
-export const processKeyPress = (userInput: UserInputKeyPress, map: KeyBindingsForActions): void => {
-  const _tryToMatchUserInputToEntry = (actionFn: ActionFn, shortcuts: Shortcuts) =>
-    shortcuts.forEach((shortcut) => _callIfTrue(userInput.matches(shortcut), actionFn))
-  map.forEach(_tryToMatchUserInputToEntry)
+export const processKeyPress = (
+  userInput: Readonly<Keypress>,
+  map: ShortcutToActionMap
+): void => {
+  _callIfTruthy(map.get(userInput.toString()), actionFn => actionFn())
 }
 
 //#endregion

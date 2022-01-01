@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,24 @@
  *
  */
 
-import { _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTruthy, _repeat } from "../index"
+import {
+  _also, _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTrueWithReturn, _callIfTruthy,
+  _callIfTruthyWithReturn, _repeat
+} from "../index"
 
 describe("misc-utils", () => {
   test("_callIfTruthy", () => {
+    type CtxObjType = { foo: number }
+    const contextObject: CtxObjType | undefined = { foo: 1 }
+    
     let executed = false
-    const ctxObject = _callIfTruthy(true, (it) => {
-      expect(it).toBeTruthy()
+    const returnValue = _callIfTruthy(contextObject, (it: CtxObjType) => {
+      expect(it).toBeDefined()
+      expect(it).toEqual({ foo: 1 })
       executed = true
     })
-    expect(ctxObject).toBeTruthy()
+    expect(returnValue).toBeTruthy()
+    expect(returnValue).toBe(contextObject)
     expect(executed).toBeTruthy()
   })
   
@@ -49,7 +57,7 @@ describe("misc-utils", () => {
     expect(count).toEqual(5)
   })
   
-  test("_callIfTrue", () => {
+  test("_callIfTrue(condition, fun)", () => {
     let flag = false
     const fun = () => {
       flag = true
@@ -58,6 +66,30 @@ describe("misc-utils", () => {
     expect(flag).toBeFalsy()
     _callIfTrue(true, fun)
     expect(flag).toBeTruthy()
+  })
+  
+  test("_callIfTrue(condition, onTrueFun, onFalseFun)", () => {
+    type Flags = { onTrueFlag: boolean; onFalseFlag: boolean }
+    const onTrueFn = (flags: Flags) => flags.onTrueFlag = true
+    const onFalseFn = (flags: Flags) => flags.onFalseFlag = true
+    
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, it => {
+      _callIfTrue(false, onTrueFn.bind(undefined, it), onFalseFn.bind(undefined, it))
+      expect(it.onTrueFlag).toBeFalsy()
+      expect(it.onFalseFlag).toBeTruthy()
+    })
+    
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, it => {
+      _callIfFalse(false, onFalseFn.bind(undefined, it), onTrueFn.bind(undefined, it))
+      expect(it.onTrueFlag).toBeFalsy()
+      expect(it.onFalseFlag).toBeTruthy()
+    })
   })
   
   test("_callIfFalse", () => {
@@ -69,5 +101,93 @@ describe("misc-utils", () => {
     expect(flag).toBeTruthy()
     _callIfFalse(false, fun)
     expect(flag).toBeFalsy()
+  })
+  
+  test("_callIfTruthyWithReturn", () => {
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, flags => {
+      const returnValue = _callIfTruthyWithReturn(
+        "foo",
+        (it) => {
+          expect(it).toEqual("foo")
+          flags.onTrueFlag = true
+          return "true"
+        },
+        () => {
+          flags.onFalseFlag = false
+          return "false"
+        }
+      )
+      expect(returnValue).toEqual("true")
+      expect(flags.onTrueFlag).toBeTruthy()
+      expect(flags.onFalseFlag).toBeFalsy()
+    })
+    
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, flags => {
+      const returnValue = _callIfTruthyWithReturn(
+        undefined,
+        (it) => {
+          expect(it).toBeFalsy()
+          flags.onTrueFlag = false
+          return "true"
+        },
+        () => {
+          flags.onFalseFlag = true
+          return "false"
+        }
+      )
+      expect(returnValue).toEqual("false")
+      expect(flags.onTrueFlag).toBeFalsy()
+      expect(flags.onFalseFlag).toBeTruthy()
+    })
+  })
+  
+  test("_callIfTrueWithReturn", () => {
+    // Condition is true.
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, flags => {
+      const returnValue = _callIfTrueWithReturn(
+        true,
+        () => {
+          flags.onTrueFlag = true
+          return "true"
+        },
+        () => {
+          flags.onFalseFlag = false
+          return "false"
+        }
+      )
+      expect(returnValue).toEqual("true")
+      expect(flags.onTrueFlag).toBeTruthy()
+      expect(flags.onFalseFlag).toBeFalsy()
+    })
+    
+    // Condition is false.
+    _also({
+      onTrueFlag: false,
+      onFalseFlag: false
+    }, flags => {
+      const returnValue = _callIfTrueWithReturn(
+        false,
+        () => {
+          flags.onTrueFlag = false
+          return "true"
+        },
+        () => {
+          flags.onFalseFlag = true
+          return "false"
+        }
+      )
+      expect(returnValue).toEqual("false")
+      expect(flags.onTrueFlag).toBeFalsy()
+      expect(flags.onFalseFlag).toBeTruthy()
+    })
   })
 })

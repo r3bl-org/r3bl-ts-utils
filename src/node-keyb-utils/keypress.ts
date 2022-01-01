@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,11 @@
  *
  */
 
-import { Key } from "ink"
-import _ from "lodash"
-import { _also, _let } from "../kotlin-lang-utils"
-import { _callIfTruthy } from "../misc-utils"
+import { _let } from "../kotlin-lang-utils"
+import { createMutableCopyOf } from "./builder-general"
 import {
-  KeyCreator, ModifierKey, modifierKeysPropertyNames, ReadlineKey, SpecialKey,
-  specialKeysPropertyNames
-} from "./key-config-and-constants"
-import { copyInkKey, copyModifiersFromReadlineKey } from "./utils"
-
-// TODO speed up keyboard input matching by "flattening" the array of keys into another map
+  ModifierKey, modifierKeysPropertyNames, SpecialKey, specialKeysPropertyNames
+} from "./keypress-constants"
 
 /**
  * This class is immutable. In order to create an instance of it, please use the factory methods:
@@ -40,73 +34,50 @@ import { copyInkKey, copyModifiersFromReadlineKey } from "./utils"
  * 2. A special key (enter, left, right, backspace, etc) & Modifier keys.
  * 3. Just modifier keys (not currently supported)
  *
- * TODO: https://github.com/r3bl-org/r3bl-cmdr/issues/1
+ * ENHANCEMENT: https://github.com/r3bl-org/r3bl-cmdr/issues/1
  *
  * Currently this works for Ink's abstraction of key presses (via useInput) and it works when
  * directly using Node.js readline's raw mode (keypress events). Howeever, there are severe
  * limitations in both Ink and Node.js's handling of keypresses into a terminal that will
  * require this functionality to be written natively in Rust (see gh issue above).
  */
-export class UserInputKeyPress {
-  // Private readonly fields.
-  private readonly _key: (SpecialKey & ModifierKey) | undefined
-  private readonly _input: string | undefined
-  
-  // Factory methods.
-  static createFromInk(
-    argKeyNullable?: Key,
-    argInputNullable?: string
-  ): UserInputKeyPress {
-    const copyOfArgKey: SpecialKey & ModifierKey = _also(
-      KeyCreator.emptyKey,
-      emptyKey => _callIfTruthy(argKeyNullable, argKey => copyInkKey(argKey, emptyKey))
-    )
-    const inputCopy: string | undefined = argInputNullable ? argInputNullable.slice() : undefined
-    return new UserInputKeyPress(copyOfArgKey, inputCopy)
-  }
-  
-  // TODO this needs to be merged w/ logic from
-  //  experimental/node-keypress/readline.ts#tryToFindSpecialKeyInMap
-  static createFromKeypress(
-    nullableKey?: ReadlineKey,
-    nullableInput?: string
-  ): UserInputKeyPress {
-    const copyOfKey: SpecialKey & ModifierKey = _also(
-      KeyCreator.emptyKey,
-      emptyKey => _callIfTruthy(nullableKey, key => copyModifiersFromReadlineKey(key, emptyKey))
-    )
-    const inputCopy: string | undefined = nullableInput ? nullableInput.slice() : undefined
-    return new UserInputKeyPress(copyOfKey, inputCopy)
-  }
-  
-  static createCopyOf(key?: (SpecialKey & ModifierKey), input?: string) {
-    return new UserInputKeyPress(
-      key ? _.cloneDeep(key) : undefined,
-      input ? input.slice() : undefined
-    )
-  }
+export class Keypress {
+  readonly _key: (SpecialKey & ModifierKey) | undefined
+  readonly _input: string | undefined
   
   // Constructor and mutators.
   /**
-   * Don't deep copy all the provided arguments, use them as is. Use the static factory methods.
+   * Don't deep copy all the provided arguments, use them as is. Use builders instead.
    */
   private constructor(key?: (SpecialKey & ModifierKey), input?: string) {
     if (key) this._key = key
     if (input) this._input = input
   }
   
-  /** @immutable */
-  setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): UserInputKeyPress =>
-    _also(
-      UserInputKeyPress.createCopyOf(this._key, this._input),
-      copyOfSelf => copyOfSelf._key ? copyOfSelf._key[modifier] = value : undefined
-    )
+  static buildMutable = (
+    key?: SpecialKey & ModifierKey,
+    input?: string
+  ): Keypress => new Keypress(key, input)
   
   /** @immutable */
-  setModifierKeyFrom = (arg: ReadlineKey): UserInputKeyPress =>
-    _also(
-      UserInputKeyPress.createCopyOf(this._key, this._input),
-      copyOfSelf => copyOfSelf._key ? copyModifiersFromReadlineKey(arg, copyOfSelf._key) : undefined
+  static buildImmutable = (
+    key?: SpecialKey & ModifierKey,
+    input?: string
+  ): Readonly<Keypress> => Object.freeze(new Keypress(key, input))
+  
+  /** @immutable */
+  makeImmutable = (): Readonly<Keypress> => {
+    return Object.freeze(this)
+  }
+  
+  /** @immutable */
+  setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): Readonly<Keypress> =>
+    _let(
+      createMutableCopyOf(this._key, this._input),
+      copyOfSelf => {
+        copyOfSelf._key ? copyOfSelf._key[modifier] = value : undefined
+        return Object.freeze(copyOfSelf)
+      }
     )
   
   // Accessors.

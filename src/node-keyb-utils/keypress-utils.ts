@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,10 @@
  *
  */
 
-import { Key } from "ink"
-import { _also } from "../kotlin-lang-utils"
-import { KeyBindingsForActions } from "../react-ink-hook-utils"
-import {
-  ModifierKey, modifierKeysPropertyNames, ReadlineKey, SpecialKey
-} from "./key-config-and-constants"
+import { ShortcutToActionMap } from "../react-ink-hook-utils"
+import { ModifierKey, SpecialKey } from "./keypress-constants"
 
-export const createNewShortcutsToActionMap = (): KeyBindingsForActions => new Map()
-
-export const copyInkKey = (from: Key, to: SpecialKey & ModifierKey): void => {
-  for (const propertyName in from)
-    _also(
-      propertyName as keyof Key,
-      inkPropName => {
-        if (from[inkPropName]) to[inkPropName] = Boolean(from[inkPropName])
-      }
-    )
-}
-
-export const copyModifiersFromReadlineKey = (
-  from: ReadlineKey,
-  to: SpecialKey & ModifierKey
-): void => {
-  for (const propertyName of modifierKeysPropertyNames)
-    if (from[propertyName]) to[propertyName] = Boolean(from[propertyName])
-}
+export const createNewShortcutToActionMap = (): ShortcutToActionMap => new Map()
 
 // https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
 export const isKeyType = (param: any): param is SpecialKey & ModifierKey => {

@@ -15,6 +15,23 @@
  *
  */
 
-import { keyboard_debug_ui } from "./debug-ui"
+import { Text } from "ink"
+import { render } from "ink-testing-library"
+import * as React from "react"
+import { useTTYSize } from "../index"
 
-keyboard_debug_ui.main("ink-compat")
+// https://github.com/vadimdemedes/ink/blob/master/readme.md#testing
+test("hook works", () => {
+  const propsObj = { rows: -1, columns: -1 }
+  const TestEl = () => {
+    const ttySize = useTTYSize()
+    propsObj.rows = ttySize.rows
+    propsObj.columns = ttySize.columns
+    return <Text>Test</Text>
+  }
+  const { lastFrame } = render(<TestEl/>)
+  expect(lastFrame()).toEqual("Test")
+  expect(propsObj.rows).not.toEqual(-1)
+  expect(propsObj.columns).not.toEqual(-1)
+})
+
