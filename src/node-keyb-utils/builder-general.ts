@@ -19,10 +19,7 @@ import _ from "lodash"
 import { Keypress } from "./keypress"
 import { ModifierKey, SpecialKey } from "./keypress-constants"
 
-export function createMutableCopyOf(
-  key?: (SpecialKey & ModifierKey),
-  input?: string
-): Keypress {
+export function createMutableCopyOf(key?: SpecialKey & ModifierKey, input?: string): Keypress {
   return Keypress.buildMutable(
     key ? _.cloneDeep(key) : undefined,
     input ? input.slice() : undefined

@@ -73,10 +73,22 @@ export class SpecialKey {
  * https://www.typescriptlang.org/docs/handbook/advanced-types.html#index-types
  */
 export const specialKeysPropertyNames: Array<keyof SpecialKey> = [
-  "upArrow", "downArrow", "leftArrow", "rightArrow", "pageDown", "pageUp", "return", "escape",
-  "tab", "backspace", "delete", "space", "home", "end"
+  "upArrow",
+  "downArrow",
+  "leftArrow",
+  "rightArrow",
+  "pageDown",
+  "pageUp",
+  "return",
+  "escape",
+  "tab",
+  "backspace",
+  "delete",
+  "space",
+  "home",
+  "end",
 ]
-export const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "shift", "ctrl", "meta" ]
+export const modifierKeysPropertyNames: Array<keyof ModifierKey> = ["shift", "ctrl", "meta"]
 
 /** Data class that holds information about modifiery and special key. */
 export class KeyData implements ModifierKey, SpecialKey {
@@ -97,13 +109,15 @@ export class KeyData implements ModifierKey, SpecialKey {
   public upArrow = false
   public home = false
   public end = false
-  
+
   constructor(key?: SpecialKey & ModifierKey) {
     if (!key) return
-    specialKeysPropertyNames.forEach((propName: keyof SpecialKey) => (key[propName]) ?
-      this[propName] = Boolean(key[propName]) : undefined)
-    modifierKeysPropertyNames.forEach((propName: keyof ModifierKey) => (key[propName]) ?
-      this[propName] = Boolean(key[propName]) : undefined)
+    specialKeysPropertyNames.forEach((propName: keyof SpecialKey) =>
+      key[propName] ? (this[propName] = Boolean(key[propName])) : undefined
+    )
+    modifierKeysPropertyNames.forEach((propName: keyof ModifierKey) =>
+      key[propName] ? (this[propName] = Boolean(key[propName])) : undefined
+    )
   }
 }
 
@@ -131,10 +145,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get homeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -153,10 +167,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: true, // 👍
-      end: false
+      end: false,
     })
   }
-  
+
   static get endKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -178,7 +192,7 @@ export class KeyCreator {
       end: true, // 👍
     })
   }
-  
+
   static get upKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -197,10 +211,10 @@ export class KeyCreator {
       tab: false,
       upArrow: true, // 👍
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get downKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -219,10 +233,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get leftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -241,10 +255,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get rightKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -263,10 +277,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get pageUpKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -285,10 +299,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get pageDownKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -307,10 +321,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get escapeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -329,10 +343,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get returnKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -351,10 +365,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get tabKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -373,10 +387,10 @@ export class KeyCreator {
       tab: true, // 👍
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get backspaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -395,10 +409,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get spaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: true, // 👍
@@ -417,10 +431,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get deleteKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -439,10 +453,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   // Modifier keys.
   static get ctrlKey(): SpecialKey & ModifierKey {
     return new KeyData({
@@ -462,10 +476,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get metaKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -484,10 +498,10 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
-  
+
   static get shiftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -506,7 +520,7 @@ export class KeyCreator {
       tab: false,
       upArrow: false,
       home: false,
-      end: false
+      end: false,
     })
   }
 }

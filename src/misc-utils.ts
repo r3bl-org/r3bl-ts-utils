@@ -19,14 +19,14 @@ import EventEmitter from "events"
 import { ColorConsole, Styles } from "./color-console-utils/color-console"
 
 export const sleep = (ms = 500) => {
-  const sprites = [ "-", "\\", "-", "/" ]
-  
+  const sprites = ["-", "\\", "-", "/"]
+
   let count = 0
   const printDotsInterval = setInterval(() => {
     const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
     ColorConsole.create(Styles.Primary)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
-  
+
   return new Promise<void>((resolveFn) => {
     setTimeout(() => {
       clearInterval(printDotsInterval)
@@ -55,7 +55,7 @@ export type TruthyReceiverFn<T> = (it: T) => void
 export const _callIfTruthyWithReturn = <T, R>(
   ctxObject: Nullable<T>,
   onTrue: TruthyReceiverWithReturnValueFn<T, R>,
-  onFalse: SimpleReceiverWithReturnValueFn<R>,
+  onFalse: SimpleReceiverWithReturnValueFn<R>
 ): R => {
   if (ctxObject) return onTrue(ctxObject)
   return onFalse()
@@ -97,7 +97,7 @@ export type SimpleReceiverFn = () => void
 export const _callIfTrueWithReturn = <T>(
   ctxObject: boolean,
   onTrueReceiverFn: SimpleReceiverWithReturnValueFn<T>,
-  onFalseReceiverFn: SimpleReceiverWithReturnValueFn<T>,
+  onFalseReceiverFn: SimpleReceiverWithReturnValueFn<T>
 ): T => {
   if (ctxObject) return onTrueReceiverFn()
   return onFalseReceiverFn()
@@ -111,12 +111,12 @@ type EventListener = (name: EventName) => void
 
 export class LifecycleHelper extends EventEmitter {
   static instance = new LifecycleHelper()
-  
+
   static addStartListener = (listener: EventListener) => this.instance.on("start", listener)
   static addExitListener = (listener: EventListener) => this.instance.on("exit", listener)
-  
+
   static fireExit = () => this.instance.emit("exit")
   static fireStart = () => this.instance.emit("start")
-  
+
   static removeAll = () => this.instance.removeAllListeners()
 }

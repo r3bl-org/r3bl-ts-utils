@@ -52,7 +52,7 @@ type InputToKeyPressDictionary = Map<string, () => Keypress>
 
 export const keyCodeMap: InputToKeyPressDictionary = _also(
   new Map() as InputToKeyPressDictionary,
-  map => {
+  (map) => {
     map
       .set("[D", () => createMutableCopyOf(KeyCreator.leftKey, undefined))
       .set("[C", () => createMutableCopyOf(KeyCreator.rightKey, undefined))
@@ -67,7 +67,7 @@ export const keyCodeMap: InputToKeyPressDictionary = _also(
 
 export const keyNameMap: InputToKeyPressDictionary = _also(
   new Map() as InputToKeyPressDictionary,
-  map => {
+  (map) => {
     map
       .set("space", () => createMutableCopyOf(KeyCreator.spaceKey, undefined))
       .set("backspace", () => createMutableCopyOf(KeyCreator.backspaceKey, undefined))
@@ -80,7 +80,7 @@ export const keyNameMap: InputToKeyPressDictionary = _also(
 
 export const keySequenceMap: InputToKeyPressDictionary = _also(
   new Map() as InputToKeyPressDictionary,
-  map => {
+  (map) => {
     map
       .set("7F", () => createMutableCopyOf(KeyCreator.backspaceKey, undefined))
       .set("1B", () => createMutableCopyOf(KeyCreator.escapeKey, undefined))
@@ -96,10 +96,10 @@ export const keySequenceMap: InputToKeyPressDictionary = _also(
  * experimental) in order to see this in action.
  */
 export interface ReadlineKey {
-  sequence?: string,
-  name?: string,
-  code?: string,
-  ctrl: boolean,
-  meta: boolean,
-  shift: boolean,
+  sequence?: string
+  name?: string
+  code?: string
+  ctrl: boolean
+  meta: boolean
+  shift: boolean
 }

@@ -31,9 +31,7 @@ const DEBUG = false
  * https://www.npmjs.com/package/keypress
  * https://nodejs.org/api/readline.html#tty-keybindings
  */
-export const useNodeKeypress = (
-  fun: NodeKeypressFn
-): void => {
+export const useNodeKeypress = (fun: NodeKeypressFn): void => {
   const run: EffectCallback = () => {
     attachToReadlineKeypress(fun)
     return () => {
@@ -63,9 +61,7 @@ export type NodeKeypressFn = (input: string, key: ReadlineKey) => void
  * @return {boolean} false means that `fun` was not attached to stdin. true means that it was
  * and raw mode was switched on.
  */
-export const attachToReadlineKeypress = (
-  handleKeypressFn: NodeKeypressFn
-): boolean => {
+export const attachToReadlineKeypress = (handleKeypressFn: NodeKeypressFn): boolean => {
   if (isTTY()) {
     const { stdin } = process
     readline.emitKeypressEvents(stdin) // Starts process.stdin from emitting "keypress" events.
@@ -88,9 +84,7 @@ export const isTTYinRawMode = (): boolean => {
   return stdin?.isTTY && stdin?.isRaw
 }
 
-export const detachFromReadlineKeypress = (
-  fun?: NodeKeypressFn
-): void => {
+export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
   if (DEBUG) {
     console.log(TextColor.builder.red.bold.build()("before detach"))
     console.log("stdin.isRaw", process.stdin.isRaw)
@@ -98,14 +92,14 @@ export const detachFromReadlineKeypress = (
     console.log("isTTY()", isTTY())
     console.log("isTTYinRawMode()", isTTYinRawMode())
   }
-  
+
   const { stdin } = process
   if (stdin.isTTY) {
     stdin.setRawMode(false)
     fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
   }
-  
+
   if (DEBUG) {
     console.log(TextColor.builder.red.underline.bold.build()("after detach"))
     console.log("stdin.isRaw", process.stdin.isRaw)

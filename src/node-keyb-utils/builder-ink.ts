@@ -25,9 +25,8 @@ export const createFromInk = (
   argKeyNullable?: Key,
   argInputNullable?: string
 ): Readonly<Keypress> => {
-  const copyOfArgKey: SpecialKey & ModifierKey = _also(
-    KeyCreator.emptyKey,
-    emptyKey => _callIfTruthy(argKeyNullable, argKey => copyInkKey(argKey, emptyKey))
+  const copyOfArgKey: SpecialKey & ModifierKey = _also(KeyCreator.emptyKey, (emptyKey) =>
+    _callIfTruthy(argKeyNullable, (argKey) => copyInkKey(argKey, emptyKey))
   )
   const inputCopy: string | undefined = argInputNullable ? argInputNullable.slice() : undefined
   return Keypress.buildImmutable(copyOfArgKey, inputCopy)
@@ -35,10 +34,7 @@ export const createFromInk = (
 
 export const copyInkKey = (from: Key, to: SpecialKey & ModifierKey): void => {
   for (const propertyName in from)
-    _also(
-      propertyName as keyof Key,
-      inkPropName => {
-        if (from[inkPropName]) to[inkPropName] = Boolean(from[inkPropName])
-      }
-    )
+    _also(propertyName as keyof Key, (inkPropName) => {
+      if (from[inkPropName]) to[inkPropName] = Boolean(from[inkPropName])
+    })
 }
