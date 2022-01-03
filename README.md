@@ -519,7 +519,17 @@ expect(executed).toBeTruthy()
 This is similar to `_callIfTruthy` except that it will return the return value of the lambda that's
 passed.
 
+This is an interesting control flow expression. It is another way to represent an `if statement`.
+Three arguments need to be passed.
+
+1. The first is the condition variable which can evaluate to truthy or falsy.
+2. The 2nd is the lambda that is executed if the condition holds true. The return value of this
+   lamba is returned by the expression.
+3. The 3rd argument is the lambda that's executed if the condition holds false. The return value of
+   this lambda is returned by the expression.
+
 ```tsx
+// Condition is truthy.
 _also(
   {
     onTrueFlag: false,
@@ -541,6 +551,31 @@ _also(
     expect(returnValue).toEqual("true")
     expect(flags.onTrueFlag).toBeTruthy()
     expect(flags.onFalseFlag).toBeFalsy()
+  }
+)
+
+// Condition is falsy.
+_also(
+  {
+    onTrueFlag: false,
+    onFalseFlag: false,
+  },
+  (flags) => {
+    const returnValue = _callIfTruthyWithReturn(
+      undefined,
+      (it) => {
+        expect(it).toBeFalsy()
+        flags.onTrueFlag = false
+        return "true"
+      },
+      () => {
+        flags.onFalseFlag = true
+        return "false"
+      }
+    )
+    expect(returnValue).toEqual("false")
+    expect(flags.onTrueFlag).toBeFalsy()
+    expect(flags.onFalseFlag).toBeTruthy()
   }
 )
 ```
@@ -598,10 +633,12 @@ expect(flag).toBeFalsy()
 
 ### `_callIfTrueWithReturn()`
 
+This is similar to `_callIfTruthyWithReturn` except that it accepts a boolean condition expression.
+
 This is an interesting control flow expression. It is another way to represent an `if statement`.
 Three arguments need to be passed.
 
-1. The first is the condition variable.
+1. The first is the condition variable which can evaluate to true or false.
 2. The 2nd is the lambda that is executed if the condition holds true. The return value of this
    lamba is returned by the expression.
 3. The 3rd argument is the lambda that's executed if the condition holds false. The return value of
@@ -943,14 +980,15 @@ setTimeout(() => unmount(), 30_000)
 
 The `useStateSafely()` custom hook behaves like the "normal" `useState()` hook with the differences
 being that difference it won't update the state if its enclosing component has been unmounted. It
-also returns an object instead of an array. This is useful in CLI (command line interface) apps
-where a component could be unmounted (eg, via a keyboard shortcut to switch to a different tab or
-even exit the app). Here's an example of how to use it.
+also returns an object if you want (or an array if you like). This is useful in CLI (command line
+interface) apps where a component could be unmounted (eg, via a keyboard shortcut to switch to a
+different tab or even exit the app). Here's an example of how to use it.
 
 ```tsx
 import { _let } from "./kotlin-lang-utils"
 
 const UseTextInput: FC = () => _let(useStateSafely(""), createComponent)
+// To get an array, call `useStateSafely("").toArray()`.
 
 const createComponent = ({ value: query, setValue: setQuery }): ReactElement => (
   <Box flexDirection="column">

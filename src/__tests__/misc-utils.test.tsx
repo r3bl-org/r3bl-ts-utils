@@ -104,6 +104,7 @@ describe("misc-utils", () => {
   })
   
   test("_callIfTruthyWithReturn", () => {
+    // Condition is truthy.
     _also({
       onTrueFlag: false,
       onFalseFlag: false
@@ -125,6 +126,7 @@ describe("misc-utils", () => {
       expect(flags.onFalseFlag).toBeFalsy()
     })
     
+    // Condition is falsy.
     _also({
       onTrueFlag: false,
       onFalseFlag: false
