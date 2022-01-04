@@ -15,13 +15,13 @@
  *
  */
 
-import { Box, render, Text, useInput } from "ink"
+import { Box, render, Text } from "ink"
 import TextInput from "ink-text-input"
 import React, { EffectCallback, FC, useEffect, useState } from "react"
 import {
   _also, _callIfTrue, _callIfTruthyWithReturn, _let, createNewShortcutToActionMap, LifecycleHelper,
-  logTTYState, noop, ShortcutToActionMap, StateHolder, TextColor, TimerRegistry,
-  UseKeyboardReturnValue, useKeyboardWithMapCached,
+  logTTYState, ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, UseKeyboardReturnValue,
+  useKeyboardWithMapCached, usePreventUseInputFromSettingRawModeToFalseAndExiting,
 } from "../../index"
 
 // Constants & types.
@@ -94,7 +94,7 @@ const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
   // ⚠ This ensures that onSubmit or focus = false does not set raw mode to false, which will
   // make the Node.js process exit (due to way in which useKeyboard works).
   // Check out readme.md for more detailed information.
-  useInput(noop)
+  usePreventUseInputFromSettingRawModeToFalseAndExiting()
   
   const [ myTextInputState, setMyTextInputState ] = ctx.textInputStateHolder.asArray()
   const onSubmit = () => {
