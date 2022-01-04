@@ -46,7 +46,7 @@ export const reducerFn: ReducerFnType = (
       startTime: 0,
       stopTime: 0,
     }
-  
+
   const { runtimeStatus } = currentState
   const {
     CantStart_AlreadyStopped,
@@ -54,7 +54,7 @@ export const reducerFn: ReducerFnType = (
     CantStop_AlreadyStopped,
     CantStop_NotStarted,
   } = TimerErrors
-  
+
   if (action)
     switch (action.type) {
       case "start":
@@ -68,7 +68,7 @@ export const reducerFn: ReducerFnType = (
         if (runtimeStatus === "running") return stopFn(timer, currentState, action)
         break
     }
-  
+
   return currentState
 }
 

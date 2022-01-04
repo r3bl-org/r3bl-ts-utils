@@ -92,14 +92,14 @@ export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
     console.log("isTTY()", isTTY())
     console.log("isTTYinRawMode()", isTTYinRawMode())
   }
-  
+
   const { stdin } = process
   if (stdin.isTTY) {
     stdin.setRawMode(false)
     fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
   }
-  
+
   if (DEBUG) {
     console.log(TextColor.builder.red.underline.bold.build()("after detach"))
     console.log("stdin.isRaw", process.stdin.isRaw)

@@ -47,7 +47,7 @@ import {
 export class Keypress {
   readonly _key: (SpecialKey & ModifierKey) | undefined
   readonly _input: string | undefined
-  
+
   // Constructor and mutators.
   /**
    * Don't deep copy all the provided arguments, use them as is. Use builders instead.
@@ -56,47 +56,47 @@ export class Keypress {
     if (key) this._key = key
     if (input) this._input = input
   }
-  
+
   static buildMutable = (key?: SpecialKey & ModifierKey, input?: string): Keypress =>
     new Keypress(key, input)
-  
+
   /** @immutable */
   static buildImmutable = (key?: SpecialKey & ModifierKey, input?: string): Readonly<Keypress> =>
     Object.freeze(new Keypress(key, input))
-  
+
   /** @immutable */
   makeImmutable = (): Readonly<Keypress> => {
     return Object.freeze(this)
   }
-  
+
   /** @immutable */
   setModifierKey = (modifier: "shift" | "ctrl" | "meta", value: boolean): Readonly<Keypress> =>
     _let(createMutableCopyOf(this._key, this._input), (copyOfSelf) => {
       copyOfSelf._key ? (copyOfSelf._key[modifier] = value) : undefined
       return Object.freeze(copyOfSelf)
     })
-  
+
   // Accessors.
   get input(): string {
     return this._input ? this._input.toLowerCase() : "" /* falsy */
   }
-  
+
   get key(): string {
     return this._key ? this.convertKeyToString() : "" /* falsy */
   }
-  
+
   toString = (): string => {
     const { isSpecialKey, key: key_getter, input: input_getter } = this
-    
+
     if (isSpecialKey()) return `${key_getter}`
-    
+
     if (key_getter && input_getter) return `${key_getter}+${input_getter}`
     if (key_getter && !input_getter) return key_getter
     if (!key_getter && input_getter) return input_getter
-    
+
     return ""
   }
-  
+
   /** Key is special if it can be pressed independently of input, eg: "upArrow" and "downArrow". */
   isSpecialKey = (): boolean => {
     const { _key } = this
@@ -104,7 +104,7 @@ export class Keypress {
     for (const propertyName of specialKeysPropertyNames) if (_key[propertyName]) return true
     return false
   }
-  
+
   /**
    * Key is modifier if "ctrl", "meta", or "shift" is true.
    */
@@ -114,17 +114,17 @@ export class Keypress {
     for (const propertyName of modifierKeysPropertyNames) if (_key[propertyName]) return true
     return false
   }
-  
+
   matches = (selector: string): boolean => this.toString() === selector
-  
+
   /**
    * If _key is defined, then return it as a string (in lowercase), eg: "backspace", "downarrow".
    */
   private convertKeyToString = (): string => {
     const { _key } = this
-    
+
     if (!_key) return ""
-    
+
     return _let(new Array<string>(), (returnValue) => {
       specialKeysPropertyNames.forEach((propName: keyof SpecialKey) => {
         if (_key[propName]) returnValue.push(propName.toLowerCase())

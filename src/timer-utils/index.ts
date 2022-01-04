@@ -68,10 +68,10 @@ export const createTimer = (
 
 export class TimerRegistry {
   private static readonly timers: Timer[] = []
-  
+
   static killAll = () => TimerRegistry.timers.forEach(TimerRegistry.killIfRunning)
-  
+
   private static killIfRunning = (timer: Timer) => _callIfTrue(timer.isRunning, timer.stopTicking)
-  
+
   static add = (timer: Timer) => TimerRegistry.timers.push(timer)
 }

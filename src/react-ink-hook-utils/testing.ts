@@ -26,9 +26,9 @@ import { createTimer } from "../timer-utils"
  */
 export const usePreventProcessExitDuringTesting = (delayMs = 1_000): void => {
   const { isRawModeSupported: inRawMode } = useStdin()
-  
+
   if (inRawMode) return
-  
+
   const fun: EffectCallback = () => {
     // Start a timer that doesn't have a tickFn (just puts an event in Node.js event queue).
     const timer = _also(createTimer("usePreventProcessExitDuringTesting", delayMs), (it) => {
@@ -39,6 +39,6 @@ export const usePreventProcessExitDuringTesting = (delayMs = 1_000): void => {
       timer.stopTicking()
     }
   }
-  
+
   useEffect(fun, [])
 }

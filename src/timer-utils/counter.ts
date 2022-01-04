@@ -17,17 +17,17 @@
 
 export class Counter {
   private count: number
-  
+
   constructor(startCount = 0) {
     this.count = startCount
   }
-  
+
   get value(): number {
     return this.count
   }
-  
+
   increment = () => this.count++
-  
+
   getAndIncrement = () => {
     const { count: oldCount } = this
     this.count++
