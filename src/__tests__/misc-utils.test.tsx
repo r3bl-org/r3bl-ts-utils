@@ -21,7 +21,7 @@ import {
 } from "../index"
 
 describe("misc-utils", () => {
-  test("_callIfTruthy", () => {
+  test("_callIfTruthy(condition, fun)", () => {
     type CtxObjType = { foo: number }
     const contextObject: CtxObjType | undefined = { foo: 1 }
     
@@ -36,7 +36,7 @@ describe("misc-utils", () => {
     expect(executed).toBeTruthy()
   })
   
-  test("_callIfFalsy", () => {
+  test("_callIfFalsy(condition, fun)", () => {
     let executedIfNull = false
     let executedIfUndefined = false
     
@@ -51,7 +51,7 @@ describe("misc-utils", () => {
     expect(executedIfNull).toBeTruthy()
   })
   
-  test("_repeat", () => {
+  test("_repeat(count, fun)", () => {
     let count = 0
     _repeat(5, () => count++)
     expect(count).toEqual(5)
@@ -92,7 +92,7 @@ describe("misc-utils", () => {
     })
   })
   
-  test("_callIfFalse", () => {
+  test("_callIfFalse(condition, onTrueFun, onFalseFun)", () => {
     let flag = true
     const fun = () => {
       flag = false
@@ -103,7 +103,7 @@ describe("misc-utils", () => {
     expect(flag).toBeFalsy()
   })
   
-  test("_callIfTruthyWithReturn", () => {
+  test("_callIfTruthyWithReturn(condition, onTrueFunWithReturn, onFalseFunWithReturn)", () => {
     // Condition is truthy.
     _also({
       onTrueFlag: false,
@@ -149,7 +149,7 @@ describe("misc-utils", () => {
     })
   })
   
-  test("_callIfTrueWithReturn", () => {
+  test("_callIfTrueWithReturn(condition, onTrueFunWithReturn, onFalseFunWithReturn)", () => {
     // Condition is true.
     _also({
       onTrueFlag: false,
