@@ -24,6 +24,48 @@ import {
   createFromInk, createFromKeypress, isTTY, Keypress, NodeKeypressFn, ReadlineKey, useNodeKeypress,
 } from "./index"
 
+//region README.
+
+/**
+ Ink has a hook that is supposed to be used to get user input from the keyboard called `useInput`,
+ which comes from the `ink` package. `TextInput` is built on top of this hook. `TextInput` comes from
+ the npm package `ink-text-input`.
+ 
+ 1. [useInput sets raw mode to false](https://github.com/vadimdemedes/ink/blob/master/src/hooks/use-input.ts#L126)
+ 2. [TextInput uses useInput](https://github.com/vadimdemedes/ink-text-input/blob/master/source/index.tsx#L117)
+ 
+ The `useKeyboard` hook makes some assumptions.
+ 
+ 1. It will set raw mode to true when used.
+ 2. It will turn raw mode to false when unmounted.
+ 
+ The problem w/ `TextInput` using `useInput` and then turning raw mode to off when focus changes on
+ `TextInput` simply causes the Node.js process to exit, since there are no active listeners attached
+ to it 🤯.
+ 
+ To mitigate this problem is really simple - just make sure to call `useInput(noop)` somewhere in the
+ component that includes `TextInput`!
+ 
+ ⚠ However, this does not get rid of the default "ctrl+c" handling, which is to exit the app (this
+ is how useInput behaves by default). You can override it by wrapping your Ink components in a
+ Provider, like so:
+ ```
+ <StdinContext.Provider
+ value={{
+        stdin: process.stdin,
+        setRawMode: noop,
+        isRawModeSupported: true,
+        internal_exitOnCtrlC: false
+      }}
+ >
+ <App/>
+ </StdinContext.Provider>
+ ```
+ */
+export const usePreventUseInputFromSettingRawModeToFalseAndExiting = () => useInput(noop)
+
+//endregion
+
 //#region Types.
 
 export type KeyboardInputHandlerFn = (input: Readonly<Keypress>) => void
@@ -135,40 +177,3 @@ export const processKeyPress = (userInput: Readonly<Keypress>, map: ShortcutToAc
 
 //#endregion
 
-/**
- Ink has a hook that is supposed to be used to get user input from the keyboard called `useInput`,
- which comes from the `ink` package. `TextInput` is built on top of this hook. `TextInput` comes from
- the npm package `ink-text-input`.
- 
- 1. [useInput sets raw mode to false](https://github.com/vadimdemedes/ink/blob/master/src/hooks/use-input.ts#L126)
- 2. [TextInput uses useInput](https://github.com/vadimdemedes/ink-text-input/blob/master/source/index.tsx#L117)
- 
- I created a new hook `useKeyboard` which makes some assumptions.
- 
- 1. It will set raw mode to true when used.
- 2. It will turn raw mode to false when unmounted.
- 
- The problem w/ `TextInput` using `useInput` and then turning raw mode to off when focus changes on
- `TextInput` simply causes the Node.js process to exit, since there are no active listeners attached
- to it 🤯.
- 
- To mitigate this problem is really simple - just make sure to call `useInput(noop)` somewhere in the
- component that includes `TextInput`!
- 
- ⚠ However, this does not get rid of the default "ctrl+c" handling, which is to exit the app (this
- is how useInput behaves by default). You can override it by wrapping your Ink components in a
- Provider, like so:
- ```
- <StdinContext.Provider
- value={{
-        stdin: process.stdin,
-        setRawMode: () => true,
-        isRawModeSupported: true,
-        internal_exitOnCtrlC: false
-      }}
- >
- <App/>
- </StdinContext.Provider>
- ```
- */
-export const usePreventUseInputFromSettingRawModeToFalseAndExiting = () => useInput(noop)
