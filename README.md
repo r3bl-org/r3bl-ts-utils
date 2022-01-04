@@ -829,7 +829,7 @@ terminal.
    references or memory leaking or having strange side effects when doing keyboard input handling
    using this.
 
-> The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
+> 🧙 The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
 > compatibility version as well. Ink doesn't really handle some input events correctly, which is
 > what prompted the creation of this. To use the Ink compatible version of this hook, you can use
 > `useKeyboardCompatInk()`.
@@ -879,10 +879,13 @@ presses that should be matched in order to invoke an action. When combined w/ th
 [`useMemo()`](https://reactjs.org/docs/hooks-reference.html#usememo) React hook, this also caches
 this map which is expensive to re-create on every key press.
 
-> The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
+> 🧙 The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
 > compatibility version as well. Ink doesn't really handle some input events correctly, which is
 > what prompted the creation of this. To use the Ink compatible version of this hook, you can use
 > `useKeyboardCompatInkWithMap()`.
+
+> ⚡ In cases when you don't need the map to be generated every time your functional component is
+> rendered, you can cache the results using this variant of the hook `uesKeyboardWithMapCached()`.
 
 Here's an example.
 
