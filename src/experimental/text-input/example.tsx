@@ -21,7 +21,7 @@ import React, { EffectCallback, FC, useEffect, useState } from "react"
 import {
   _also, _callIfTrue, _callIfTruthyWithReturn, _let, createNewShortcutToActionMap, LifecycleHelper,
   logTTYState, ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, UseKeyboardReturnValue,
-  useKeyboardWithMapCached, usePreventUseInputFromSettingRawModeToFalseAndExiting,
+  useKeyboardWithMapCached, UseKeyboardWrapper,
 } from "../../index"
 
 // Constants & types.
@@ -79,22 +79,19 @@ const App: FC = () => {
   DEBUG && logTTYState("App render")
   
   return (
-    <Box flexDirection="column">
-      <RowDebug ctx={ctx}/>
-      {textInputState.isVisible ?
-        <TextInputComponent ctx={ctx}/> :
-        <Text>{TextColor.builder.cyan.underline.bold.build()(textInputState.text)}</Text>}
-    </Box>
+    <UseKeyboardWrapper>
+      <Box flexDirection="column">
+        <RowDebug ctx={ctx}/>
+        {textInputState.isVisible ?
+          <TextInputComponent ctx={ctx}/> :
+          <Text>{TextColor.builder.cyan.underline.bold.build()(textInputState.text)}</Text>}
+      </Box>
+    </UseKeyboardWrapper>
   )
 }
 
 const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
   const [ text, setText ] = useState("")
-  
-  // ⚠ This ensures that onSubmit or focus = false does not set raw mode to false, which will
-  // make the Node.js process exit (due to way in which useKeyboard works).
-  // Check out readme.md for more detailed information.
-  usePreventUseInputFromSettingRawModeToFalseAndExiting()
   
   const [ myTextInputState, setMyTextInputState ] = ctx.textInputStateHolder.asArray()
   const onSubmit = () => {
