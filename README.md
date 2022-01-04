@@ -843,15 +843,23 @@ string and the time in ms.
 >
 > ```
 > <StdinContext.Provider
-> value={{
->        stdin: process.stdin,
->        setRawMode: noop,
->        isRawModeSupported: true,
->        internal_exitOnCtrlC: false
->      }}
-> >
-> <App/>
+>     value={{
+>            stdin: process.stdin,
+>            setRawMode: noop,
+>            isRawModeSupported: true,
+>            internal_exitOnCtrlC: false
+>          }}
+>     >
+>     <App/>
 > </StdinContext.Provider>
+> ```
+>
+> or simply:
+>
+> ```
+> <UseKeyboardWrapper>
+>     <App/>
+> </UseKeyboardWrapper>
 > ```
 
 The `useKeyboard()` custom hook can be used to attach a function that responds to key presses in the
