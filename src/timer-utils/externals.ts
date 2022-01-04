@@ -1,5 +1,10 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * These types and interfaces are exported to the users of this API. They form the public facing
+ * interface of timer-utils.
+ */
+
+/*
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +18,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
-
-/*
- * These types and interfaces are exported to the users of this API. They form the public facing
- * interface of timer-utils.
  */
 
 import { Nullable } from "../misc-utils"

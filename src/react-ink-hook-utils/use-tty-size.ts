@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@ import { StateHook } from "../react-hook-utils"
 export const useTTYSize = (): TTYSize => {
   // Get the Node.js stdout stream.
   const { stdout } = useStdout()
-
+  
   // Initial size of the TTY window.
-  const [dimensions, setDimensions]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
-
+  const [ dimensions, setDimensions ]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
+  
   // Handle TTY resize events.
   useEffect(() => {
     if (!stdout) return
@@ -42,15 +42,15 @@ export const useTTYSize = (): TTYSize => {
     }
     stdout.on("resize", _resizeHandler)
     return removeEffectFn
-  }, [stdout])
-
+  }, [ stdout ])
+  
   return dimensions
 }
 
 export class TTYSize {
   rows = 0
   columns = 0
-
+  
   static getInstance = (stdout: NodeJS.WriteStream | undefined): TTYSize => {
     if (!stdout) return new TTYSize()
     return _also(new TTYSize(), (it) => {
@@ -58,6 +58,6 @@ export class TTYSize {
       it.columns = stdout.columns
     })
   }
-
+  
   toString = () => `rows: ${this.rows}, columns: ${this.columns}`
 }

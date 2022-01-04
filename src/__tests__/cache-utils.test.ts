@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,66 +26,66 @@ describe("Cache", () => {
     expect(cache.evictionPolicy).toEqual("least-frequently-used")
     expect(cache.size).toBe(0)
   })
-
+  
   test("Can put into and clear Cache", () => {
     const cache = createCache<string, string>("test", 2, "least-frequently-used")
-
+    
     // Put "foo" in cache.
     cache.put("foo", "foo_test")
     expect(cache.get("foo")).toEqual("foo_test")
-
+    
     // Clear the cache.
     cache.clear()
     expect(cache.size).toEqual(0)
   })
-
+  
   test("can getAndComputeIfAbsent from Cache", () => {
     const populateFn = (arg: string): string => arg + "_test"
     const cache = createCache<string, string>("test", 2, "least-frequently-used")
-
+    
     // Cache miss for "foo" -> insert.
     expect(cache.getAndComputeIfAbsent("foo", populateFn)).toEqual("foo_test")
     expect(cache.size).toEqual(1)
     expect(cache.contains("foo")).toBeTruthy()
-
+    
     // Cache miss for "bar" -> insert.
     expect(cache.getAndComputeIfAbsent("bar", populateFn)).toEqual("bar_test")
     expect(cache.size).toEqual(2)
     expect(cache.contains("bar")).toBeTruthy()
-
+    
     // Cache hit for "foo"!
     expect(cache.getAndComputeIfAbsent("foo", populateFn)).toEqual("foo_test")
     expect(cache.size).toEqual(2)
     expect(cache.contains("foo")).toBeTruthy()
-
+    
     // Cache hit for "bar"!
     expect(cache.getAndComputeIfAbsent("bar", populateFn)).toEqual("bar_test")
     expect(cache.size).toEqual(2)
     expect(cache.contains("bar")).toBeTruthy()
   })
-
+  
   test("Cache eviction policy least-recently-used works", () => {
     const populateFn = (arg: string): string => arg + "_test"
     const cache = createCache<string, string>("test", 2, "least-recently-used")
-
+    
     cache.getAndComputeIfAbsent("foo", populateFn)
     cache.getAndComputeIfAbsent("bar", populateFn)
     cache.getAndComputeIfAbsent("baz", populateFn)
-
+    
     expect(cache.size).toEqual(2)
     expect(cache.contains("foo")).toBeFalsy()
     expect(cache.contains("bar")).toBeTruthy()
     expect(cache.contains("baz")).toBeTruthy()
   })
-
+  
   test("Cache eviction policy least-frequently-used works", () => {
     const populateFn = (arg: string): string => arg + "_test"
     const cache = createCache<string, string>("test", 2, "least-frequently-used")
-
+    
     _repeat(3, () => cache.getAndComputeIfAbsent("foo", populateFn))
     _repeat(2, () => cache.getAndComputeIfAbsent("bar", populateFn))
     cache.getAndComputeIfAbsent("baz", populateFn)
-
+    
     expect(cache.size).toEqual(2)
     expect(cache.contains("foo")).toBeTruthy()
     expect(cache.contains("bar")).toBeTruthy()

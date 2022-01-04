@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
 
 export type RenderItemFn<T> = (input: T, index: number) => JSX.Element
 
-export const makeReactElementFromArray = <T,>(
+export const makeReactElementFromArray = <T, >(
   inputsArray: T[],
   itemRendererFn: RenderItemFn<T>
 ): JSX.Element => {

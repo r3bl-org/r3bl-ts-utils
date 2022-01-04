@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ import {
 
 export const printHeader = (message: string, postFix = defaultPostFix) => {
   const isTooWideChar = message.length > maxWidth ? "\n" : ""
-
+  
   const spans = _also(new Array<string>(3), (spans) => {
     const headerLine = getHeaderLine(message, defaultRepeatChar)
     const headerLineUnderscores = headerLine.replace(regExForDefaultRepeatChar, spaceChar)
-
+    
     let headerLeft, headerRight
     if (isTooWideChar) {
       headerLeft = Formatter.headerUnderlineFn(headerLineUnderscores)
@@ -43,14 +43,14 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
       headerLeft = Formatter.headerUnderlineFn(getHeaderLine(message, defaultShortLeftRepeatChar))
       headerRight = Formatter.headerFn(getHeaderLine(message, defaultShortRightRepeatChar))
     }
-
+    
     spans[0] = headerLeft
     spans[1] = Formatter.headerMessageFn(`${spaceChar}${message}${spaceChar}`)
     spans[2] = headerRight
   })
-
+  
   const output = spans.join(isTooWideChar ? "\n" : "")
-
+  
   console.log(output + postFix)
 }
 

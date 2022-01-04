@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import { ReactRef, SetState, StateHolder } from "../react-hook-utils"
  */
 export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
   const isComponentMounted: ReactRef<boolean> = useIsComponentMounted()
-  const [state, setState] = useState<T>(initialValue)
-
+  const [ state, setState ] = useState<T>(initialValue)
+  
   // https://stackoverflow.com/a/41085908/2085356
   const setStateOverride = (value: T) =>
     _callIfTruthy(isComponentMounted.current, (_) => setState(value))
-
+  
   return new StateHolder(state, setStateOverride as SetState<T>)
 }
 

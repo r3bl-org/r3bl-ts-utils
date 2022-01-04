@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ export const reducerFn: ReducerFnType = (
       startTime: 0,
       stopTime: 0,
     }
-
+  
   const { runtimeStatus } = currentState
   const {
     CantStart_AlreadyStopped,
@@ -54,7 +54,7 @@ export const reducerFn: ReducerFnType = (
     CantStop_AlreadyStopped,
     CantStop_NotStarted,
   } = TimerErrors
-
+  
   if (action)
     switch (action.type) {
       case "start":
@@ -68,7 +68,7 @@ export const reducerFn: ReducerFnType = (
         if (runtimeStatus === "running") return stopFn(timer, currentState, action)
         break
     }
-
+  
   return currentState
 }
 

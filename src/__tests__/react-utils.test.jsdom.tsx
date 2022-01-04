@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ test("makeReactElementFromArray works", () => {
   const renderEachInput: RenderItemFn<string> = function (inputItem, index) {
     return <li key={index}>{inputItem}</li>
   }
-  const inputArray = ["one", "two", "three"]
+  const inputArray = [ "one", "two", "three" ]
   const element = makeReactElementFromArray(inputArray, renderEachInput)
   expect(element.props.children).toHaveLength(3) // eslint-disable-line
 })

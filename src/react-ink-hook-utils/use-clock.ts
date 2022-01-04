@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import { StateHook } from "../react-hook-utils"
 import { createTimer } from "../timer-utils"
 
 export const useClock = (): number => {
-  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
-
+  const [ time, setTime ]: StateHook<number> = useState<number>(Date.now())
+  
   const fun: EffectCallback = () => {
     const timer = _also(createTimer("useClock", 1000), (it) => {
       it.onTick = () => setTime(Date.now())
@@ -33,9 +33,9 @@ export const useClock = (): number => {
       timer.stopTicking()
     }
   }
-
+  
   useEffect(fun, [])
-
+  
   return time
 }
 
@@ -46,8 +46,8 @@ export const useClock = (): number => {
 export const useClockWithLocalTimeFormat = (
   delayMs: number
 ): { localeTimeString: string; time: number } => {
-  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
-
+  const [ time, setTime ]: StateHook<number> = useState<number>(Date.now())
+  
   const fun: EffectCallback = () => {
     const timer = _also(createTimer("useClockWithLocalTimeFormat", delayMs), (it) => {
       it.onTick = () => setTime(Date.now())
@@ -58,8 +58,8 @@ export const useClockWithLocalTimeFormat = (
       timer.stopTicking()
     }
   }
-
+  
   useEffect(fun, [])
-
+  
   return { localeTimeString: new Date(time).toLocaleTimeString(), time }
 }

@@ -1,5 +1,7 @@
+// https://testing-library.com/docs/react-testing-library/api/#render
+
 /*
- * Copyright 2021 R3BL LLC. All rights reserved.
+ * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +17,6 @@
  *
  */
 
-// https://testing-library.com/docs/react-testing-library/api/#render
 import "@testing-library/jest-dom"
 import { fireEvent, render, RenderResult } from "@testing-library/react"
 import * as React from "react"
