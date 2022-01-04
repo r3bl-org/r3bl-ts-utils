@@ -88,7 +88,7 @@ export const specialKeysPropertyNames: Array<keyof SpecialKey> = [
   "home",
   "end",
 ]
-export const modifierKeysPropertyNames: Array<keyof ModifierKey> = ["shift", "ctrl", "meta"]
+export const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "shift", "ctrl", "meta" ]
 
 /** Data class that holds information about modifiery and special key. */
 export class KeyData implements ModifierKey, SpecialKey {
@@ -109,7 +109,7 @@ export class KeyData implements ModifierKey, SpecialKey {
   public upArrow = false
   public home = false
   public end = false
-
+  
   constructor(key?: SpecialKey & ModifierKey) {
     if (!key) return
     specialKeysPropertyNames.forEach((propName: keyof SpecialKey) =>
@@ -148,7 +148,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get homeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -170,7 +170,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get endKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -192,7 +192,7 @@ export class KeyCreator {
       end: true, // 👍
     })
   }
-
+  
   static get upKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -214,7 +214,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get downKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -236,7 +236,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get leftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -258,7 +258,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get rightKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -280,7 +280,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get pageUpKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -302,7 +302,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get pageDownKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -324,7 +324,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get escapeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -346,7 +346,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get returnKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -368,7 +368,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get tabKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -390,7 +390,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get backspaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -412,7 +412,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get spaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: true, // 👍
@@ -434,7 +434,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get deleteKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -456,7 +456,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   // Modifier keys.
   static get ctrlKey(): SpecialKey & ModifierKey {
     return new KeyData({
@@ -479,7 +479,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get metaKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -501,7 +501,7 @@ export class KeyCreator {
       end: false,
     })
   }
-
+  
   static get shiftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -523,4 +523,25 @@ export class KeyCreator {
       end: false,
     })
   }
+}
+
+// https://developerlife.com/2021/07/02/nodejs-typescript-handbook/#user-defined-type-guards
+export const isKeyType = (param: any): param is SpecialKey & ModifierKey => {
+  const key = param as SpecialKey & ModifierKey
+  return (
+    key.upArrow !== undefined &&
+    key.downArrow !== undefined &&
+    key.leftArrow !== undefined &&
+    key.rightArrow !== undefined &&
+    key.pageDown !== undefined &&
+    key.pageUp !== undefined &&
+    key.return !== undefined &&
+    key.escape !== undefined &&
+    key.ctrl !== undefined &&
+    key.shift !== undefined &&
+    key.tab !== undefined &&
+    key.backspace !== undefined &&
+    key.delete !== undefined &&
+    key.meta !== undefined
+  )
 }

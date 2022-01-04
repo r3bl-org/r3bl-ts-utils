@@ -19,26 +19,21 @@ import { useInput, useStdin } from "ink"
 import { DependencyList, useMemo, useState } from "react"
 import { _let } from "../kotlin-lang-utils"
 import { _callIfTruthy } from "../misc-utils"
-import {
-  createFromInk,
-  createFromKeypress,
-  isTTY,
-  Keypress,
-  NodeKeypressFn,
-  ReadlineKey,
-  useNodeKeypress,
-} from "../node-keyb-utils"
 import { StateHook } from "../react-hook-utils"
+import {
+  createFromInk, createFromKeypress, isTTY, Keypress, NodeKeypressFn, ReadlineKey, useNodeKeypress,
+} from "./index"
 
 //#region Types.
 
 export type KeyboardInputHandlerFn = (input: Readonly<Keypress>) => void
+export const createNewShortcutToActionMap = (): ShortcutToActionMap => new Map()
 
 export class UseKeyboardReturnValue {
   constructor(readonly keyPress: Readonly<Keypress> | undefined, readonly inRawMode: boolean) {}
-
+  
   toArray() {
-    return [this.keyPress, this.inRawMode]
+    return [ this.keyPress, this.inRawMode ]
   }
 }
 
@@ -55,18 +50,18 @@ export type ShortcutToActionMap = Map<Shortcut, ActionFn>
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
 export const useKeyboardCompatInk = (fun: KeyboardInputHandlerFn): UseKeyboardReturnValue => {
-  const [keyPress, setKeyPress]: StateHook<Readonly<Keypress> | undefined> = useState()
+  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
-
+  
   // Can only call useInput in raw mode.
   if (!inRawMode) return new UseKeyboardReturnValue(undefined, false)
-
+  
   useInput((input, key) => {
     const userInputKeyPress = createFromInk(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   })
-
+  
   return new UseKeyboardReturnValue(keyPress, inRawMode)
 }
 
@@ -86,10 +81,10 @@ export const useKeyboardCompatInkWithMap = (map: ShortcutToActionMap): UseKeyboa
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
 export const useKeyboard = (processFn: KeyboardInputHandlerFn): UseKeyboardReturnValue => {
-  const [keyPress, setKeyPress]: StateHook<Readonly<Keypress> | undefined> = useState()
-
+  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
+  
   if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
-
+  
   const onKeypress: NodeKeypressFn = (input: string, key: ReadlineKey) =>
     _let(createFromKeypress(key, input), (keyPress) => {
       setKeyPress(keyPress)
