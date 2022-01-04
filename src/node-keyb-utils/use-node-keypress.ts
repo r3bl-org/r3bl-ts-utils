@@ -102,7 +102,7 @@ export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
   logTTYState("after detach")
 }
 
-export function logTTYState(msg: string, em: boolean = false) {
+export function logTTYState(msg: string, em = false) {
   if (!DEBUG) return
   console.log(
     em
