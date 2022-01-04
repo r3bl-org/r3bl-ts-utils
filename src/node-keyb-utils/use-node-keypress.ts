@@ -62,14 +62,17 @@ export type NodeKeypressFn = (input: string, key: ReadlineKey) => void
  * and raw mode was switched on.
  */
 export const attachToReadlineKeypress = (handleKeypressFn: NodeKeypressFn): boolean => {
+  logTTYState("before attach")
   if (isTTY()) {
     const { stdin } = process
     readline.emitKeypressEvents(stdin) // Starts process.stdin from emitting "keypress" events.
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
+    logTTYState("after attach")
     return true
   } else {
+    logTTYState("didn't attach", true)
     return false
   }
 }
@@ -85,26 +88,31 @@ export const isTTYinRawMode = (): boolean => {
 }
 
 export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
-  if (DEBUG) {
-    console.log(TextColor.builder.red.bold.build()("before detach"))
-    console.log("stdin.isRaw", process.stdin.isRaw)
-    console.log("stdin.isTTY", process.stdin.isTTY)
-    console.log("isTTY()", isTTY())
-    console.log("isTTYinRawMode()", isTTYinRawMode())
-  }
-
+  logTTYState("before detach")
+  
   const { stdin } = process
   if (stdin.isTTY) {
     stdin.setRawMode(false)
     fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
+    
+    logTTYState("removing 1. keypress listener, 2. set raw mode false, 3. pause stdin", true)
   }
+  
+  logTTYState("after detach")
+}
 
-  if (DEBUG) {
-    console.log(TextColor.builder.red.underline.bold.build()("after detach"))
-    console.log("stdin.isRaw", process.stdin.isRaw)
-    console.log("stdin.isTTY", process.stdin.isTTY)
-    console.log("isTTY()", isTTY())
-    console.log("isTTYinRawMode()", isTTYinRawMode())
-  }
+export function logTTYState(
+  msg: string,
+  em: boolean = false
+) {
+  if (!DEBUG) return
+  console.log(
+    em ?
+      TextColor.builder.bgWhite.red.bold.build()(msg) :
+      TextColor.builder.red.underline.bold.build()(msg))
+  // console.log("stdin.isRaw", process.stdin.isRaw)
+  // console.log("stdin.isTTY", process.stdin.isTTY)
+  console.log("isTTY()", isTTY())
+  console.log("isTTYinRawMode()", isTTYinRawMode())
 }

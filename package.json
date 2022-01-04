@@ -21,9 +21,11 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
     "/*format-with-tsfmt*/": "https://github.com/vvakame/typescript-formatter",
     "format-with-tsfmt": "tsfmt -r",
-    "exp-ink": "node -r tsm src/experimental/node-keypress/ink.tsx",
-    "exp-readline": "node -r tsm src/experimental/node-keypress/readline.ts",
-    "exp-readline-react": "node -r tsm src/experimental/node-keypress/readline-react.tsx"
+    "exp-ink": "npm run build && node build/experimental/node-keypress/ink.js",
+    "exp-readline": "npm run build && node build/experimental/node-keypress/readline.js",
+    "exp-readline-react": "npm run build && node build/experimental/node-keypress/readline-react.js",
+    "exp-text-input-ink-compat": "npm run build && node build/experimental/text-input/example-ink-compat.js",
+    "exp-text-input": "npm run build && node build/experimental/text-input/example.js"
   },
   "repository": {
     "type": "git",
@@ -84,7 +86,8 @@
   "peerDependencies": {
     "@types/react": "^17.0.34",
     "react": "^17.0.2",
-    "ink": "^3.2.0"
+    "ink": "^3.2.0",
+    "ink-text-input": "^4.0.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {
