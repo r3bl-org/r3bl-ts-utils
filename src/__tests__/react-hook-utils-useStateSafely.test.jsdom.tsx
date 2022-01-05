@@ -1,5 +1,3 @@
-// https://testing-library.com/docs/react-testing-library/api/#render
-
 /*
  * Copyright (c) 2022 R3BL LLC. All rights reserved.
  *
@@ -19,10 +17,14 @@
 
 import "@testing-library/jest-dom"
 import { fireEvent, render, RenderResult } from "@testing-library/react"
+import { noop } from "lodash"
 import * as React from "react"
 import { FC } from "react"
-import { ReactRef, useIsComponentMounted, useStateSafely } from "../index"
+import { ReactRef, SetState, StateHolder, useIsComponentMounted, useStateSafely } from "../index"
 
+/**
+ * https://testing-library.com/docs/react-testing-library/api/#render
+ */
 describe("use-state-safely", () => {
   test("useIsComponentMounted works", () => {
     let isComponentMounted: ReactRef<boolean> | undefined = undefined
@@ -71,4 +73,14 @@ describe("use-state-safely", () => {
     fireEvent.click(result.getByText("click-me"))
     expect(result.getByText("bar")).toBeInTheDocument()
   })
+})
+
+test("StateHolder works", () => {
+  const value = ""
+  const setValue: SetState<string> = noop
+  
+  const sh = new StateHolder(value, setValue)
+  const array = sh.asArray()
+  expect(array[0]).toBe(sh.value)
+  expect(array[1]).toBe(sh.setValue)
 })

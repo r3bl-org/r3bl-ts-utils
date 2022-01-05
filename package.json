@@ -21,11 +21,12 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
     "/*format-with-tsfmt*/": "https://github.com/vvakame/typescript-formatter",
     "format-with-tsfmt": "tsfmt -r",
-    "exp-ink": "npm run build && node build/experimental/node-keypress/ink.js",
-    "exp-readline": "npm run build && node build/experimental/node-keypress/readline.js",
-    "exp-readline-react": "npm run build && node build/experimental/node-keypress/readline-react.js",
-    "exp-text-input-ink-compat": "npm run build && node build/experimental/text-input/example-ink-compat.js",
-    "exp-text-input": "npm run build && node build/experimental/text-input/example.js"
+    "flush-npm-cache": "rm -rf node_modules/ && npm cache clean --force && npm i",
+    "exp-node-readline-keypress-logger": "npm run build && node build/experimental/node-keypress/readline-keypress-logger.js",
+    "exp-usekeyboard-ink-compat": "npm run build && node build/experimental/node-keypress/ink-compat.js",
+    "exp-usekeyboard-node-keypress": "npm run build && node build/experimental/node-keypress/node-keypress.js",
+    "exp-textinput-ink-compat": "npm run build && node build/experimental/text-input/ink-compat.js",
+    "exp-textinput-node-keypress": "npm run build && node build/experimental/text-input/node-keypress.js"
   },
   "repository": {
     "type": "git",
@@ -81,7 +82,8 @@
     "ts-node": "latest",
     "typescript": "latest",
     "typescript-formatter": "latest",
-    "console-testing-library": "^0.6.1"
+    "console-testing-library": "^0.6.1",
+    "delay": "latest"
   },
   "peerDependencies": {
     "@types/react": "^17.0.34",

@@ -25,4 +25,5 @@ export class Flag {
   flag = false
   isSet = () => this.flag
   set = () => this.flag = true
+  reset = () => this.flag = false
 }

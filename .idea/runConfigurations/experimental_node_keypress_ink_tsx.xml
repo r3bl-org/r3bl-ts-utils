@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="experimental/node-keypress/ink.tsx" type="NodeJSConfigurationType" node-parameters="-r tsm" path-to-js-file="ink.tsx" working-dir="$PROJECT_DIR$/src/experimental/node-keypress/">
+  <configuration default="false" name="experimental/node-keypress/ink.tsx" type="NodeJSConfigurationType" node-parameters="-r tsm" path-to-js-file="$PROJECT_DIR$/src/experimental/node-keypress/ink-compat.tsx" working-dir="$PROJECT_DIR$/src/experimental/node-keypress/">
     <method v="2" />
   </configuration>
 </component>

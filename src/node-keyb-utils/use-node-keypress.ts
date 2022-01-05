@@ -62,17 +62,17 @@ export type NodeKeypressFn = (input: string, key: ReadlineKey) => void
  * and raw mode was switched on.
  */
 export const attachToReadlineKeypress = (handleKeypressFn: NodeKeypressFn): boolean => {
-  logTTYState("before attach")
+  DEBUG && logTTYState("before attach")
   if (isTTY()) {
     const { stdin } = process
     readline.emitKeypressEvents(stdin) // Starts process.stdin from emitting "keypress" events.
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
-    logTTYState("after attach")
+    DEBUG && logTTYState("after attach")
     return true
   } else {
-    logTTYState("didn't attach", true)
+    DEBUG && logTTYState("didn't attach", true)
     return false
   }
 }
@@ -88,22 +88,22 @@ export const isTTYinRawMode = (): boolean => {
 }
 
 export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
-  logTTYState("before detach")
-
+  DEBUG && logTTYState("before detach")
+  
   const { stdin } = process
   if (stdin.isTTY) {
     stdin.setRawMode(false)
     fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
-
+    
+    DEBUG &&
     logTTYState("removing 1. keypress listener, 2. set raw mode false, 3. pause stdin", true)
   }
-
-  logTTYState("after detach")
+  
+  DEBUG && logTTYState("after detach")
 }
 
 export function logTTYState(msg: string, em = false) {
-  if (!DEBUG) return
   console.log(
     em
       ? TextColor.builder.bgWhite.red.bold.build()(msg)

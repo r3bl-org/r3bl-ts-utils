@@ -16,11 +16,11 @@
  */
 
 import { Box, render, Text, useInput } from "ink"
-import React, { FC, useMemo, useState } from "react"
+import React, { FC, useState } from "react"
 import {
   _also, createNewShortcutToActionMap, Keypress, LifecycleHelper, ShortcutToActionMap, StateHook,
-  TimerRegistry, TTYSize, useClockWithLocalTimeFormat, useKeyboardCompatInkWithMap,
-  useKeyboardWithMap, usePreventProcessExitDuringTesting, useTTYSize,
+  TimerRegistry, TTYSize, useClockWithLocalTimeFormat, useKeyboardBuilder,
+  usePreventProcessExitDuringTesting, useTTYSize,
 } from "../../index"
 
 // Unique namespace ensures there will be no unintended collisions w/ other symbols of the codebase.
@@ -38,11 +38,8 @@ export namespace keyboard_debug_ui { // eslint-disable-line
     usePreventProcessExitDuringTesting() // For testing using `npm run start-dev-watch`.
     const ttySize: TTYSize = useTTYSize()
     const { localeTimeString: formattedTime } = useClockWithLocalTimeFormat(3_000)
-    
-    const map: ShortcutToActionMap = useMemo(() => createShortcutsMap(), [])
     const { keyPress, inRawMode } =
-      name === "ink-compat" ?
-        useKeyboardCompatInkWithMap(map) : useKeyboardWithMap(map)
+      useKeyboardBuilder({ type: name, args: { type: "map-cached", createShortcutsFn } })
     
     return {
       name,
@@ -55,7 +52,7 @@ export namespace keyboard_debug_ui { // eslint-disable-line
   //#endregion
   
   //#region handleKeyboard.
-  const createShortcutsMap = (): ShortcutToActionMap => _also(
+  const createShortcutsFn = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
     map => map
       .set("q", LifecycleHelper.fireExit)

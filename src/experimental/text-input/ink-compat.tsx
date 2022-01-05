@@ -17,10 +17,10 @@
 
 import { Box, render, Text } from "ink"
 import TextInput from "ink-text-input"
-import React, { EffectCallback, FC, useEffect, useState } from "react"
+import React, { EffectCallback, FC, useEffect } from "react"
 import {
   _also, _callIfTrue, _callIfTruthyWithReturn, _let, createNewShortcutToActionMap, LifecycleHelper,
-  ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, useKeyboardCompatInkWithMapCached,
+  ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, useKeyboardBuilder,
   UseKeyboardReturnValue, useStateSafely,
 } from "../../index"
 
@@ -50,7 +50,7 @@ type InternalProps = { ctx: HookOutput }
 // Hooks.
 
 export const runHooks = (): HookOutput => {
-  const createShortcuts = (): ShortcutToActionMap => _also(
+  const createShortcutsFn = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
     map => map
       .set("ctrl+x", LifecycleHelper.fireExit)
@@ -58,7 +58,10 @@ export const runHooks = (): HookOutput => {
   
   return {
     textInputStateHolder: useStateSafely(new TextInputState()),
-    useKeyboard: useKeyboardCompatInkWithMapCached(createShortcuts),
+    useKeyboard: useKeyboardBuilder({
+      type: "ink-compat",
+      args: { type: "map-cached", createShortcutsFn }
+    }),
     uid: `${count++}`
   }
 }
@@ -88,7 +91,7 @@ const App: FC = () => {
 }
 
 const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
-  const [ text, setText ] = useState("")
+  const [ text, setText ] = useStateSafely("").asArray()
   
   const [ myTextInputState, setMyTextInputState ] = ctx.textInputStateHolder.asArray()
   const onSubmit = () => {

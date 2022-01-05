@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="experimental/node-keypress/readline.ts" type="NodeJSConfigurationType" node-parameters="-r tsm" path-to-js-file="readline.ts" working-dir="$PROJECT_DIR$/src/experimental/node-keypress/">
+  <configuration default="false" name="experimental/node-keypress/readline.ts" type="NodeJSConfigurationType" node-parameters="-r tsm" path-to-js-file="$PROJECT_DIR$/src/experimental/node-keypress/readline-keypress-logger.ts" working-dir="$PROJECT_DIR$/src/experimental/node-keypress/">
     <method v="2" />
   </configuration>
 </component>

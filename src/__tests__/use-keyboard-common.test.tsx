@@ -15,15 +15,10 @@
  *
  */
 
-import { Box, Text } from "ink"
-import { render } from "ink-testing-library"
-import * as React from "react"
-import { FC, useMemo } from "react"
 import {
   _also, _let, createMutableCopyOf, createNewShortcutToActionMap, KeyCreator, Keypress,
-  processKeyPress, ShortcutToActionMap, useKeyboardCompatInkWithMap
+  processKeyPress
 } from "../index"
-import { delay, Flag } from "./test-use-keyboard-helpers"
 
 test("KeyPress works", () => {
   _also(
@@ -193,41 +188,3 @@ test("KeyPress modifier keys work", () => {
   })
 })
 
-test("useKeyboard works", async done => {
-  const flag = new Flag()
-  
-  const Test: FC = () => {
-    const createShortcutsMap = () =>
-      _also(
-        createNewShortcutToActionMap(),
-        map => map
-          .set("q", flag.set)
-          .set("ctrl+q", flag.set)
-          .set("x", flag.set)
-          .set("ctrl+x", flag.set)
-      )
-    const map: ShortcutToActionMap = useMemo(createShortcutsMap, [])
-    const { keyPress, inRawMode } = useKeyboardCompatInkWithMap(map)
-    
-    return (<Box flexDirection="column">
-      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
-      <Text>"Your example goes here!"</Text>
-    </Box>)
-  }
-  
-  const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
-    keyPress, inRawMode,
-  }) =>
-    inRawMode ?
-      (<Text color="magenta">keyPress: {keyPress}</Text>) :
-      (<Text color="gray">keyb disabled</Text>)
-  
-  const ink = render(<Test/>)
-  
-  await delay(100)
-  ink.stdin.emit("data", "q")
-  await delay(100)
-  
-  expect(flag.isSet()).toBeTruthy()
-  done()
-})

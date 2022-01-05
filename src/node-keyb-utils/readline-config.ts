@@ -92,8 +92,8 @@ export const keySequenceMap: InputToKeyPressDictionary = _also(
 
 /**
  * This describes a keypress event that comes in from Node.js readline. The sequence, name, and code
- * properties are optional. Run the `npm run exp-readline` script (which runs readline.ts in
- * experimental) in order to see this in action.
+ * properties are optional. Run the `npm run exp-node-readline-keypress-logger` script (which runs
+ * readline-keypress-logger.ts in experimental) in order to see this in action.
  */
 export interface ReadlineKey {
   sequence?: string
