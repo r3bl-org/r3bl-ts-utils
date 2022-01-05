@@ -89,17 +89,17 @@ export const isTTYinRawMode = (): boolean => {
 
 export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
   DEBUG && logTTYState("before detach")
-  
+
   const { stdin } = process
   if (stdin.isTTY) {
     stdin.setRawMode(false)
     fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
-    
+
     DEBUG &&
-    logTTYState("removing 1. keypress listener, 2. set raw mode false, 3. pause stdin", true)
+      logTTYState("removing 1. keypress listener, 2. set raw mode false, 3. pause stdin", true)
   }
-  
+
   DEBUG && logTTYState("after detach")
 }
 
