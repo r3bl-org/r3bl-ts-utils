@@ -21,7 +21,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
     "/*format-with-tsfmt*/": "https://github.com/vvakame/typescript-formatter",
     "format-with-tsfmt": "tsfmt -r",
-    "flush-npm-cache": "rm -rf node_modules/ && npm cache clean --force && npm i",
+    "flush-npm-cache": "rm package-lock.json && rm -rf node_modules/ && npm cache clean --force && npm i",
     "exp-node-readline-keypress-logger": "npm run build && node build/experimental/node-keypress/readline-keypress-logger.js",
     "exp-usekeyboard-ink-compat": "npm run build && node build/experimental/node-keypress/ink-compat.js",
     "exp-usekeyboard-node-keypress": "npm run build && node build/experimental/node-keypress/node-keypress.js",
