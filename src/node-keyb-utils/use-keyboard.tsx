@@ -23,7 +23,8 @@ import React, { DependencyList, EffectCallback, FC, useEffect, useMemo, useState
 import { _let } from "../kotlin-lang-utils"
 import { StateHook } from "../react-hook-utils"
 import {
-  createFromInk, createFromKeypress, isTTY, Keypress, NodeKeypressFn, ReadlineKey, useNodeKeypress,
+  createFromInk, createFromKeypress, HandleNodeKeypressFn, isTTY, Keypress, ReadlineKey,
+  useNodeKeypress,
 } from "./index"
 import { tryToRunActionForShortcut } from "./use-keyboard-internal"
 
@@ -176,7 +177,7 @@ export const useKeyboard = (
 ): UseKeyboardReturnValue => {
   const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
   
-  const onKeypress: NodeKeypressFn = (input: string, key: ReadlineKey) =>
+  const onKeypress: HandleNodeKeypressFn = (input: string, key: ReadlineKey) =>
     _let(createFromKeypress(key, input), keyPress => {
       setKeyPress(keyPress)
       processKeypressFn(keyPress)

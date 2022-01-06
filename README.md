@@ -824,11 +824,11 @@ The following custom hooks make it easier to work w/ Ink and React function comp
 > `TextInput` simply causes the Node.js process to exit, since there are no active listeners
 > attached to it 🤯.
 >
-> To mitigate this problem is really simple - just make sure to call `useInput(noop)` somewhere in
-> the component that includes `TextInput`!
+> 🤔 To mitigate this problem one approach could to be call `useInput(noop)` somewhere in the
+> component that includes `TextInput`.
 >
-> ⚡ However, this does not get rid of the default "ctrl+c" handling, which is to exit the app (this
-> is how useInput behaves by default). You can override it by wrapping your Ink components in a
+> 🤔 However, this does not get rid of the default "ctrl+c" handling, which is to exit the app (this
+> is how `useInput` behaves by default). You can override it by wrapping your Ink components in a
 > Provider, like so:
 >
 > ```

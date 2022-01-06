@@ -31,18 +31,16 @@ const DEBUG = false
  * https://www.npmjs.com/package/keypress
  * https://nodejs.org/api/readline.html#tty-keybindings
  */
-export const useNodeKeypress = (fun: NodeKeypressFn): void => {
+export const useNodeKeypress = (fun: HandleNodeKeypressFn): void => {
   const run: EffectCallback = () => {
-    attachToReadlineKeypress(fun)
-    return () => {
-      detachFromReadlineKeypress(fun)
-    }
+    const isAttached: boolean = attachToReadlineKeypress(fun)
+    return isAttached ? () => detachFromReadlineKeypress(fun) : undefined
   }
   useEffect(run, [])
 }
 
 /** Note this function signature can't be changed, this is defined by Node.js. */
-export type NodeKeypressFn = (input: string, key: ReadlineKey) => void
+export type HandleNodeKeypressFn = (input: string, key: ReadlineKey) => void
 
 /**
  * Node.js process.stdin "raw mode" is true means that every single keypress event will be fired as
@@ -61,14 +59,18 @@ export type NodeKeypressFn = (input: string, key: ReadlineKey) => void
  * @return {boolean} false means that `fun` was not attached to stdin. true means that it was
  * and raw mode was switched on.
  */
-export const attachToReadlineKeypress = (handleKeypressFn: NodeKeypressFn): boolean => {
+export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn): boolean => {
   DEBUG && logTTYState("before attach")
   if (isTTY()) {
     const { stdin } = process
-    readline.emitKeypressEvents(stdin) // Starts process.stdin from emitting "keypress" events.
+    
+    // Starts process.stdin from emitting "keypress" events.
+    readline.emitKeypressEvents(stdin)
+    
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
+    
     DEBUG && logTTYState("after attach")
     return true
   } else {
@@ -77,29 +79,19 @@ export const attachToReadlineKeypress = (handleKeypressFn: NodeKeypressFn): bool
   }
 }
 
-export const isTTY = (): boolean => {
-  const { stdin } = process
-  return stdin?.isTTY
-}
-
-export const isTTYinRawMode = (): boolean => {
-  const { stdin } = process
-  return stdin?.isTTY && stdin?.isRaw
-}
-
-export const detachFromReadlineKeypress = (fun?: NodeKeypressFn): void => {
+export const detachFromReadlineKeypress = (fun: HandleNodeKeypressFn): void => {
   DEBUG && logTTYState("before detach")
-
+  
   const { stdin } = process
-  if (stdin.isTTY) {
-    stdin.setRawMode(false)
-    fun ? stdin.removeListener("keypress", fun) : stdin.removeAllListeners("keypress")
+  
+  stdin.removeListener("keypress", fun)
+  DEBUG && logTTYState("1. remove keypress listener", true)
+  
+  if (stdin.listenerCount("keypress") === 0) {
+    DEBUG && logTTYState("2. pause stdin", true)
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
-
-    DEBUG &&
-      logTTYState("removing 1. keypress listener, 2. set raw mode false, 3. pause stdin", true)
   }
-
+  
   DEBUG && logTTYState("after detach")
 }
 
@@ -114,3 +106,6 @@ export function logTTYState(msg: string, em = false) {
   console.log("isTTY()", isTTY())
   console.log("isTTYinRawMode()", isTTYinRawMode())
 }
+
+export const isTTY = () => process?.stdin?.isTTY
+export const isTTYinRawMode = () => process?.stdin?.isTTY && process?.stdin?.isRaw
