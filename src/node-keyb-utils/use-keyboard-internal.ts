@@ -25,5 +25,5 @@ export const tryToRunActionForShortcut = (
   userInput: Readonly<Keypress>,
   map: ShortcutToActionMap
 ): void => {
-  _callIfTruthy(map.get(userInput.toString()), actionFn => actionFn())
+  _callIfTruthy(map.get(userInput.toString()), (actionFn) => actionFn())
 }
