@@ -159,11 +159,6 @@ _let(render(<Wrapper/>), instance => {
   LifecycleHelper.addExitListener(() => {
     DEBUG && logTTYState("exitListener 1 -> stdin.isRaw")
     
-    TimerRegistry.killAll()
-    instance.unmount()
-    
-    DEBUG && logTTYState("exitListener 2 -> stdin.isRaw")
-    
     instance.waitUntilExit()
       .then(() => {
         console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))
@@ -172,5 +167,9 @@ _let(render(<Wrapper/>), instance => {
         console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
       })
     
+    TimerRegistry.killAll()
+    instance.unmount()
+    
+    DEBUG && logTTYState("exitListener 2 -> stdin.isRaw")
   })
 })

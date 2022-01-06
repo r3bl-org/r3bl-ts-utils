@@ -54,6 +54,7 @@ export const ConfirmInput: FC<Props> =
     
     return (
       <TextInput
+        focus={showCursor}
         showCursor={showCursor}
         placeholder={showCursor ? placeholderBeforeSubmit : placeholderAfterSubmit}
         value={value}
