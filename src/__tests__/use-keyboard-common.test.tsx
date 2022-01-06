@@ -17,8 +17,8 @@
 
 import {
   _also, _let, createMutableCopyOf, createNewShortcutToActionMap, KeyCreator, Keypress,
-  processKeyPress
 } from "../index"
+import { tryToRunActionForShortcut } from "../node-keyb-utils/use-keyboard-internal"
 
 test("KeyPress works", () => {
   _also(
@@ -105,20 +105,20 @@ test("processKeyPress works", () => {
     .set("@", fun2.bind(this, "2"))
     .set("#", fun2.bind(this, "3")))
   
-  processKeyPress(createMutableCopyOf(undefined, "q"), shortcutsToActionMap)
+  tryToRunActionForShortcut(createMutableCopyOf(undefined, "q"), shortcutsToActionMap)
   expect(fun1Flag).toBeTruthy()
   
   fun1Flag = false
-  processKeyPress(createMutableCopyOf(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
+  tryToRunActionForShortcut(createMutableCopyOf(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
   expect(fun1Flag).toBeTruthy()
   
-  processKeyPress(createMutableCopyOf(undefined, "!"), shortcutsToActionMap)
+  tryToRunActionForShortcut(createMutableCopyOf(undefined, "!"), shortcutsToActionMap)
   expect(fun2State).toEqual("1")
   
-  processKeyPress(createMutableCopyOf(undefined, "@"), shortcutsToActionMap)
+  tryToRunActionForShortcut(createMutableCopyOf(undefined, "@"), shortcutsToActionMap)
   expect(fun2State).toEqual("2")
   
-  processKeyPress(createMutableCopyOf(undefined, "#"), shortcutsToActionMap)
+  tryToRunActionForShortcut(createMutableCopyOf(undefined, "#"), shortcutsToActionMap)
   expect(fun2State).toEqual("3")
 })
 
