@@ -29,7 +29,6 @@ interface Props {
   onSubmit: (answer: boolean) => void
 }
 
-// TODO add this to README
 export const ConfirmInput: FC<Props> =
   ({ defaultValue, onSubmit, placeholderBeforeSubmit, placeholderAfterSubmit }) => {
     const [ value, setValue ]: StateHook<string> = useStateSafely("").asArray()

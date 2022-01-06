@@ -28,11 +28,15 @@
   - [`LifecycleHelper`](#lifecyclehelper)
 - [React utils](#react-utils)
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
-- [React Ink Hook utils](#react-ink-hook-utils)
-  - [`useClock()`](#useclock)
-  - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
+- [React Ink UI components](#react-ink-ui-components)
+  - [`ConfirmInput`](#confirminput)
+- [React Ink Hooks](#react-ink-hooks)
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
+  - [`useKeyboardWithMapCached()`](#usekeyboardwithmapcached)
+  - [`useKeyboardBuilder()`](#usekeyboardbuilder)
+  - [`useClock()`](#useclock)
+  - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
   - [`useTTYSize()`](#usettysize)
   - [`useStateSafely()`](#usestatesafely)
 - [React Hook utils](#react-hook-utils)
@@ -761,60 +765,45 @@ const Row_Instructions: FC = function (): JSX.Element {
 }
 ```
 
-## React Ink Hook utils
+## React Ink UI components
+
+### `ConfirmInput`
+
+This UI component allows the user to input a single "y" or "n" response. And then submit that w/
+pressing the enter key. A default value can be provided when the user just presses enter. Also only
+the "y" or "n" keys can be entered, no other alphanumeric characters will be accepted. Backspace and
+delete can also be used to clear the selection out. Here's an example of how it can be used.
+
+```tsx
+import { ConfirmInput } from "r3bl-ts-utils"
+
+const UnicornQuestion: FC<InternalProps> = ({ ctx }) => {
+  const [text, setText] = ctx.answer.asArray()
+
+  const onSubmit = (answer: boolean) => {
+    setText(answer ? "You love unicorns :)" : "You don't like unicorns :(")
+  }
+
+  return (
+    <Box flexDirection="column">
+      <Text>Do you like unicorns? (Y/n)</Text>
+
+      <ConfirmInput
+        placeholderBeforeSubmit="Type y/n, then press enter to submit"
+        placeholderAfterSubmit="Thank you"
+        defaultValue={false}
+        onSubmit={onSubmit}
+      />
+
+      <Text>Your answer: {text}</Text>
+    </Box>
+  )
+}
+```
+
+## React Ink Hooks
 
 The following custom hooks make it easier to work w/ Ink and React function components.
-
-### `useClock()`
-
-The `useClock()` custom hook can be used start a clock that ticks every 1 second and updates the
-state. The hook returns a `number` that can be used to render a UI in React.
-
-Here's an example.
-
-```tsx
-/** App function component. */
-export const appFn: FC<{ name: string }> = ({ name }) => render(runHooks(name))
-
-function runHooks(name: string): LocalVars {
-  const time = useClock()
-  return {
-    time,
-  }
-}
-
-interface LocalVars {
-  time: number
-}
-
-function render(locals: LocalVars) {
-  const { time } = locals
-  return <Text>{new Date(time).toLocaleTimeString()}</Text>
-}
-```
-
-The hook does clean up after itself (it will kill its internal `Timer` when it's enclosing component
-is unmounted). You can also call `TimerRegistry.killAll()` when you exit your app to make sure.
-Here's an example of doing this for a command line interface app built using Ink.
-
-```tsx
-_also(render(createElement(appFn, { name: !name ? "Stranger" : name })), (ink) => {
-  ink
-    .waitUntilExit()
-    .then(() => {
-      TimerRegistry.killAll()
-    })
-    .catch(() => {
-      console.error("Problem with exiting ink")
-    })
-})
-```
-
-### `useClockWithLocalTimeFormat()`
-
-This is very similar to `useClock()` except that it takes a `delayMs` argument that sets the delay
-that is used to tick the clock. It returns an object that contains both the locale formatted time
-string and the time in ms.
 
 ### `useKeyboard()`
 
@@ -822,13 +811,14 @@ string and the time in ms.
 > `useInput`, which comes from the `ink` package. `TextInput` is built on top of this hook.
 > `TextInput` comes from the npm package `ink-text-input`.
 >
-> 1. [useInput sets raw mode to false](https://github.com/vadimdemedes/ink/blob/master/src/hooks/use-input.ts#L126)
-> 2. [TextInput uses useInput](https://github.com/vadimdemedes/ink-text-input/blob/master/source/index.tsx#L117)
+> 1. [Source code for useInput sets raw mode to false](https://github.com/vadimdemedes/ink/blob/master/src/hooks/use-input.ts#L126)
+> 2. [Source code for TextInput uses useInput](https://github.com/vadimdemedes/ink-text-input/blob/master/source/index.tsx#L117)
 >
-> The `useKeyboard` hook makes some assumptions.
+> The `useKeyboard` hook does not use `useInput` from Ink. It does the following things.
 >
 > 1. It will set raw mode to true when used.
 > 2. It will turn raw mode to false when unmounted.
+> 3. It uses Node.js readline keypress events to better detect key presses (instead of `useInput`).
 >
 > The problem w/ `TextInput` using `useInput` and then turning raw mode to off when focus changes on
 > `TextInput` simply causes the Node.js process to exit, since there are no active listeners
@@ -854,7 +844,7 @@ string and the time in ms.
 > </StdinContext.Provider>
 > ```
 >
-> or simply:
+> 🧙 or simply:
 >
 > ```
 > <UseKeyboardWrapper>
@@ -889,11 +879,13 @@ const UseFocusExample: FC = () => {
   )
 
   return (
-    <Box flexDirection="column">
-      {keyPress && <Row_Debug keyPressed={keyPress?.key} inputPressed={keyPress?.input} />}
-      <Row_Instructions />
-      <Row_FocusableItems />
-    </Box>
+    <UseKeyboardWrapper>
+      <Box flexDirection="column">
+        {keyPress && <Row_Debug keyPressed={keyPress?.key} inputPressed={keyPress?.input} />}
+        <Row_Instructions />
+        <Row_FocusableItems />
+      </Box>
+    </UseKeyboardWrapper>
   )
 }
 
@@ -974,10 +966,12 @@ const runHooks = (): RenderContext => {
 const render = (ctx: RenderContext) => {
   const { keyPress, inRawMode } = ctx
   return (
-    <Box flexDirection="column">
-      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
-      <Text>{TextColor.builder.rainbow.build()("Your example goes here!")}</Text>
-    </Box>
+    <UseKeyboardWrapper>
+      <Box flexDirection="column">
+        {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
+        <Text>{TextColor.builder.rainbow.build()("Your example goes here!")}</Text>
+      </Box>
+    </UseKeyboardWrapper>
   )
 }
 
@@ -995,6 +989,92 @@ const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
 
 ink.render(createElement(functionComponent))
 ```
+
+### `useKeyboardWithMapCached()`
+
+This is even easier to use than the [previous one](#usekeyboardwithmap). You don't even have to call
+`useMemo()`. Here's a simplification of the `runHooks()` function from the example above.
+
+> 🧙 The `Keypress` class works with Node.js readline `keypress` events, and there's an Ink
+> compatibility version as well. Ink doesn't really handle some input events correctly, which is
+> what prompted the creation of this. To use the Ink compatible version of this hook, you can use
+> `useKeyboardCompatInkWithMapCached()`.
+
+```tsx
+import { useKeyboardWithMapCached } from "r3bl-ts-utils"
+
+const runHooks = (): RenderContext => {
+  const app = useApp()
+
+  const createShortcuts = () =>
+    _also(createNewShortcutToActionMap(), (map) =>
+      map.set("q", app.exit).set("x", app.exit).set("ctrl+q", app.exit).set("ctrl+x", app.exit)
+    )
+
+  return useKeyboardWithMapCached(createShortcuts)
+}
+```
+
+### `useKeyboardBuilder()`
+
+To simplify the management of 6 variants of the `useKeyboard` hook, this builder provides a succinct
+way of creating any of them. And it supports testing mode as well! You can browse the source code
+and tests to see how to use this.
+
+1. [use-keyboard.tsx](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/node-keyb-utils/use-keyboard.tsx)
+2. [Test for ink-compat versions](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/__tests__/use-keyboard-ink-compat.test.tsx)
+3. [Test for node-keypress versions](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/__tests__/use-keyboard-ink-node-keypress.test.tsx)
+
+### `useClock()`
+
+The `useClock()` custom hook can be used start a clock that ticks every 1 second and updates the
+state. The hook returns a `number` that can be used to render a UI in React.
+
+Here's an example.
+
+```tsx
+/** App function component. */
+export const appFn: FC<{ name: string }> = ({ name }) => render(runHooks(name))
+
+function runHooks(name: string): LocalVars {
+  const time = useClock()
+  return {
+    time,
+  }
+}
+
+interface LocalVars {
+  time: number
+}
+
+function render(locals: LocalVars) {
+  const { time } = locals
+  return <Text>{new Date(time).toLocaleTimeString()}</Text>
+}
+```
+
+The hook does clean up after itself (it will kill its internal `Timer` when it's enclosing component
+is unmounted). You can also call `TimerRegistry.killAll()` when you exit your app to make sure.
+Here's an example of doing this for a command line interface app built using Ink.
+
+```tsx
+_also(render(createElement(appFn, { name: !name ? "Stranger" : name })), (ink) => {
+  ink
+    .waitUntilExit()
+    .then(() => {
+      TimerRegistry.killAll()
+    })
+    .catch(() => {
+      console.error("Problem with exiting ink")
+    })
+})
+```
+
+### `useClockWithLocalTimeFormat()`
+
+This is very similar to `useClock()` except that it takes a `delayMs` argument that sets the delay
+that is used to tick the clock. It returns an object that contains both the locale formatted time
+string and the time in ms.
 
 ### `useTTYSize()`
 
