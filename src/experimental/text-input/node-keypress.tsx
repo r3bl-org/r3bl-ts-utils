@@ -20,8 +20,8 @@ import TextInput from "ink-text-input"
 import React, { EffectCallback, FC, useEffect } from "react"
 import {
   _also, _callIfTrue, _callIfTruthyWithReturn, _let, createNewShortcutToActionMap, LifecycleHelper,
-  logTTYState, ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, useKeyboardBuilder,
-  UseKeyboardReturnValue, UseKeyboardWrapper, useStateSafely,
+  logTTYState, ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, UseKeyboardReturnValue,
+  useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely,
 } from "../../index"
 
 // Constants & types.
@@ -41,7 +41,8 @@ class TextInputState {
 
 type HookOutput = {
   useKeyboard: UseKeyboardReturnValue
-  textInputStateHolder: StateHolder<TextInputState>
+  textInput1_StateHolder: StateHolder<TextInputState>
+  textInput2_StateHolder: StateHolder<TextInputState>
   uid: string
 }
 
@@ -50,32 +51,34 @@ type InternalProps = { ctx: HookOutput }
 // Hooks.
 
 export const runHooks = (): HookOutput => {
-  const createShortcutsFn = (): ShortcutToActionMap => _also(
+  const createShortcuts = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
     map => map
       .set("ctrl+x", LifecycleHelper.fireExit)
   )
   
   return {
-    textInputStateHolder: useStateSafely(new TextInputState()),
-    useKeyboard: useKeyboardBuilder({
-      type: "node-keypress",
-      args: { type: "map-cached", createShortcutsFn }
-    }),
+    textInput1_StateHolder: useStateSafely(new TextInputState()),
+    textInput2_StateHolder: useStateSafely(new TextInputState()),
+    useKeyboard: useKeyboardWithMapCached(createShortcuts),
     uid: `${count++}`
   }
 }
 
 // Function component.
 
+/**
+ * No need for usePreventUseInputFromSettingRawModeToFalseAndExiting() since Provider is used.
+ */
 const App: FC = () => {
   const ctx: HookOutput = runHooks()
-  const { useKeyboard, textInputStateHolder, uid } = ctx
-  const [ textInputState ] = textInputStateHolder.asArray()
+  const { useKeyboard, textInput1_StateHolder, textInput2_StateHolder, uid } = ctx
+  const [ textInput1_State ] = textInput1_StateHolder.asArray()
+  const [ textInput2_State ] = textInput2_StateHolder.asArray()
   
   // Debug.
   _callIfTrue(DEBUG, () => {
-    useEffect(getDebugLogSideEffectFn(textInputState, useKeyboard, uid))
+    useEffect(getDebugLogSideEffectFn(textInput1_State, useKeyboard, uid))
     useEffect(getDebugMountLoggerEffectFn(), [])
   })
   
@@ -83,23 +86,53 @@ const App: FC = () => {
   
   return (
     <UseKeyboardWrapper>
+      <Text color="gray">Press ctrl+x to exit</Text>
       <Box flexDirection="column">
         <RowDebug ctx={ctx}/>
-        {textInputState.isVisible ?
-          <TextInputComponent ctx={ctx}/> :
-          <Text>{TextColor.builder.cyan.underline.bold.build()(textInputState.text)}</Text>}
+        {textInput1_State.isVisible ?
+          <TextInputComponentChangeVisible ctx={ctx}/> :
+          <Text>{TextColor.builder.cyan.underline.bold.build()(textInput1_State.text)}</Text>}
+        {textInput2_State.isVisible ?
+          <TextInputComponentChangeFocus ctx={ctx}/> :
+          <Text>{TextColor.builder.cyan.underline.bold.build()(textInput1_State.text)}</Text>}
       </Box>
     </UseKeyboardWrapper>
   )
 }
 
-const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
+const TextInputComponentChangeVisible: FC<InternalProps> = ({ ctx }) => {
   const [ text, setText ] = useStateSafely("").asArray()
   
-  const [ myTextInputState, setMyTextInputState ] = ctx.textInputStateHolder.asArray()
+  const [ myTextInputState, setMyTextInputState ] = ctx.textInput1_StateHolder.asArray()
   const onSubmit = () => {
-    setMyTextInputState(new TextInputState(false, true, text)) // same as (false, true, text)
-    console.log(TextColor.builder.bold.black.bgYellow.build()("onSubmit called!"))
+    setMyTextInputState(new TextInputState(true, false, text))
+    console.log(TextColor.builder.bold.black.bgYellow.build()(
+      "TextInputComponentChangeVisible onSubmit called!"))
+  }
+  
+  return (
+    <Box>
+      <Box marginRight={1}>
+        <Text>Enter your query:</Text>
+      </Box>
+      
+      <TextInput
+        focus={myTextInputState.hasFocus}
+        value={text}
+        onChange={setText}
+        onSubmit={onSubmit}/>
+    </Box>
+  )
+}
+
+const TextInputComponentChangeFocus: FC<InternalProps> = ({ ctx }) => {
+  const [ text, setText ] = useStateSafely("").asArray()
+  
+  const [ myTextInputState, setMyTextInputState ] = ctx.textInput2_StateHolder.asArray()
+  const onSubmit = () => {
+    setMyTextInputState(new TextInputState(false, true, text))
+    console.log(TextColor.builder.bold.black.bgYellow.build()(
+      "TextInputComponentChangeFocus onSubmit called!"))
   }
   
   return (
@@ -122,7 +155,6 @@ const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
 // Allows multiple App components to be added.
 const Wrapper: FC = () =>
   <>
-    <Text color="gray">Press ctrl+x to exit</Text>
     <App/>
   </>
 
@@ -159,6 +191,11 @@ _let(render(<Wrapper/>), instance => {
   LifecycleHelper.addExitListener(() => {
     DEBUG && logTTYState("exitListener 1 -> stdin.isRaw")
     
+    TimerRegistry.killAll()
+    instance.unmount()
+    
+    DEBUG && logTTYState("exitListener 2 -> stdin.isRaw")
+    
     instance.waitUntilExit()
       .then(() => {
         console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))
@@ -167,9 +204,5 @@ _let(render(<Wrapper/>), instance => {
         console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
       })
     
-    TimerRegistry.killAll()
-    instance.unmount()
-    
-    DEBUG && logTTYState("exitListener 2 -> stdin.isRaw")
   })
 })
