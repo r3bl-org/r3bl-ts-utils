@@ -16,7 +16,7 @@
  */
 
 import { useStdout } from "ink"
-import { useEffect, useState } from "react"
+import { EffectCallback, useEffect, useState } from "react"
 import { _also } from "../kotlin-lang-utils"
 import { StateHook } from "../react-hook-utils"
 
@@ -27,12 +27,12 @@ import { StateHook } from "../react-hook-utils"
 export const useTTYSize = (): TTYSize => {
   // Get the Node.js stdout stream.
   const { stdout } = useStdout()
-
+  
   // Initial size of the TTY window.
-  const [dimensions, setDimensions]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
-
+  const [ dimensions, setDimensions ]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
+  
   // Handle TTY resize events.
-  useEffect(() => {
+  const attachResizeListenerOnMountAndDetachOnUnmountEffectFn: EffectCallback = () => {
     if (!stdout) return
     const _resizeHandler = () => {
       setDimensions(TTYSize.getInstance(stdout))
@@ -42,15 +42,16 @@ export const useTTYSize = (): TTYSize => {
     }
     stdout.on("resize", _resizeHandler)
     return removeEffectFn
-  }, [stdout])
-
+  }
+  useEffect(attachResizeListenerOnMountAndDetachOnUnmountEffectFn, [ stdout ])
+  
   return dimensions
 }
 
 export class TTYSize {
   rows = 0
   columns = 0
-
+  
   static getInstance = (stdout: NodeJS.WriteStream | undefined): TTYSize => {
     if (!stdout) return new TTYSize()
     return _also(new TTYSize(), (it) => {
@@ -58,6 +59,6 @@ export class TTYSize {
       it.columns = stdout.columns
     })
   }
-
+  
   toString = () => `rows: ${this.rows}, columns: ${this.columns}`
 }

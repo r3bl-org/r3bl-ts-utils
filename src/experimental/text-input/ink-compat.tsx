@@ -60,7 +60,7 @@ export const runHooks = (): HookOutput => {
     textInputStateHolder: useStateSafely(new TextInputState()),
     useKeyboard: useKeyboardBuilder({
       type: "ink-compat",
-      args: { type: "map-cached", createShortcutsFn }
+      args: { type: "map-cached", createShortcutsFn, options: { isActive: true } }
     }),
     uid: `${count++}`
   }

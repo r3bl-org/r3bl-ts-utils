@@ -20,15 +20,15 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC } from "react"
 import {
-  _also, createNewShortcutToActionMap, KeyboardInputHandlerFn, ShortcutToActionMap,
-  useKeyboardBuilder, UseKeyboardOptions
+  _also, createNewShortcutToActionMap, IsActive, KeyboardInputHandlerFn, ShortcutToActionMap,
+  useKeyboardBuilder, UseKeyboardConfig
 } from "../index"
 import { delay, Flag } from "./test-use-keyboard-helpers"
 
 test("useKeyboard ink-compat works", async done => {
   const flag = new Flag()
   
-  const Test: FC<{ options: UseKeyboardOptions, index: number }> = ({ options, index }) => {
+  const Test: FC<{ options: UseKeyboardConfig, index: number }> = ({ options, index }) => {
     const { keyPress, inRawMode } = useKeyboardBuilder(options)
     return (<Box flexDirection="column">
       {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
@@ -55,13 +55,15 @@ test("useKeyboard ink-compat works", async done => {
     if (input.matches("q")) flag.set()
   }
   
-  const optionsArray: UseKeyboardOptions[] = [
-    { type: "ink-compat", args: { type: "fun", matchKeypressFn, deps: [] } },
-    { type: "ink-compat", args: { type: "map", map: createShortcutsFn(), deps: [] } },
-    { type: "ink-compat", args: { type: "map-cached", createShortcutsFn, deps: [] } },
+  const options: IsActive = { isActive: true }
+  
+  const configArray: UseKeyboardConfig[] = [
+    { type: "ink-compat", args: { type: "fun", matchKeypressFn, options } },
+    { type: "ink-compat", args: { type: "map", map: createShortcutsFn(), options } },
+    { type: "ink-compat", args: { type: "map-cached", createShortcutsFn, options } },
   ]
   
-  for (const [ index, options ] of optionsArray.entries()) {
+  for (const [ index, options ] of configArray.entries()) {
     flag.reset()
     const ink = render(<Test index={index} options={options}/>)
     await delay(100)

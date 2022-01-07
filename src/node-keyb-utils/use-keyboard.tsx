@@ -19,11 +19,11 @@ import EventEmitter from "events"
 import { useInput, useStdin } from "ink"
 import StdinContext from "ink/build/components/StdinContext"
 import { noop } from "lodash"
-import React, { DependencyList, EffectCallback, FC, useEffect, useMemo, useState } from "react"
+import React, { EffectCallback, FC, useEffect, useMemo, useState } from "react"
 import { _let } from "../kotlin-lang-utils"
 import { StateHook } from "../react-hook-utils"
 import {
-  createFromInk, createFromKeypress, HandleNodeKeypressFn, isTTY, Keypress, ReadlineKey,
+  createFromInk, createFromKeypress, HandleNodeKeypressFn, IsActive, isTTY, Keypress, ReadlineKey,
   useNodeKeypress,
 } from "./index"
 import { tryToRunActionForShortcut } from "./use-keyboard-internal"
@@ -113,54 +113,62 @@ type NodeKeypressTesting = {
   eventName: string,
 }
 
-type Args =
-  { type: "fun", matchKeypressFn: KeyboardInputHandlerFn, deps: DependencyList } |
-  { type: "map", map: ShortcutToActionMap, deps: DependencyList } |
-  { type: "map-cached", createShortcutsFn: () => ShortcutToActionMap, deps?: DependencyList }
+type Common =
+  { type: "fun", matchKeypressFn: KeyboardInputHandlerFn, options: IsActive } |
+  { type: "map", map: ShortcutToActionMap, options: IsActive } |
+  { type: "map-cached", createShortcutsFn: () => ShortcutToActionMap, options: IsActive }
 
-interface UseKeyboardOptionsInkCompat {
+interface UseKeyboardConfigInkCompat {
   type: "ink-compat"
-  args: Args
+  args: Common
 }
 
-interface UseKeyboardOptionsNodeKeypress {
+interface UseKeyboardConfigNodeKeypress {
   type: "node-keypress"
-  args: Args
+  args: Common
   testing?: NodeKeypressTesting
 }
 
-export type UseKeyboardOptions = UseKeyboardOptionsInkCompat | UseKeyboardOptionsNodeKeypress
+export type UseKeyboardConfig = UseKeyboardConfigInkCompat | UseKeyboardConfigNodeKeypress
 
 // Hooks.
 
-export const useKeyboardBuilder = (options: UseKeyboardOptions): UseKeyboardReturnValue => {
-  switch (options.type) {
-    case "ink-compat": {
-      switch (options.args.type) {
+export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturnValue => {
+  switch (config.type) {
+    case "node-keypress": {
+      switch (config.args.type) {
         case "fun":
-          return useKeyboardCompatInk(options.args.matchKeypressFn)
+          return useKeyboard(
+            config.args.matchKeypressFn,
+            config.args.options,
+            config.testing
+          )
         case "map-cached":
-          return useKeyboardCompatInkWithMapCached(
-            options.args.createShortcutsFn,
-            options.args.deps
+          return useKeyboardWithMapCached(
+            config.args.createShortcutsFn,
+            config.args.options,
+            config.testing
           )
         case "map":
-          return useKeyboardCompatInkWithMap(options.args.map)
+          return useKeyboardWithMap(
+            config.args.map,
+            config.args.options,
+            config.testing
+          )
       }
       break
     }
-    case "node-keypress": {
-      switch (options.args.type) {
+    case "ink-compat": {
+      switch (config.args.type) {
         case "fun":
-          return useKeyboard(options.args.matchKeypressFn, options.args.deps, options.testing)
+          return useKeyboardCompatInk(config.args.matchKeypressFn)
         case "map-cached":
-          return useKeyboardWithMapCached(
-            options.args.createShortcutsFn,
-            options.args.deps,
-            options.testing
+          return useKeyboardCompatInkWithMapCached(
+            config.args.createShortcutsFn,
+            config.args.options
           )
         case "map":
-          return useKeyboardWithMap(options.args.map, options.args.deps, options.testing)
+          return useKeyboardCompatInkWithMap(config.args.map)
       }
       break
     }
@@ -173,7 +181,7 @@ export const useKeyboardBuilder = (options: UseKeyboardOptions): UseKeyboardRetu
  */
 export const useKeyboard = (
   processKeypressFn: KeyboardInputHandlerFn,
-  deps: DependencyList = [],
+  options: IsActive = { isActive: true },
   testing?: NodeKeypressTesting
 ): UseKeyboardReturnValue => {
   const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
@@ -184,19 +192,19 @@ export const useKeyboard = (
       processKeypressFn(keyPress)
     })
   
+  // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
   if (testing) {
-    // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
-    const attachListenerToEmitter: EffectCallback = () => {
+    const attachListenerToEmitterEffectFn: EffectCallback = () => {
       const { emitter, eventName } = testing
       emitter.on(eventName, onKeypress)
     }
-    useEffect(attachListenerToEmitter, deps) // Attach only once.
-  } else {
-    // Production code.
-    if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
-    useNodeKeypress(onKeypress, deps)
+    useEffect(attachListenerToEmitterEffectFn, []) // Attach only once.
+    return new UseKeyboardReturnValue(keyPress, true)
   }
   
+  // Production code.
+  if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
+  useNodeKeypress(onKeypress, options)
   return new UseKeyboardReturnValue(keyPress, true)
 }
 
@@ -206,10 +214,14 @@ export const useKeyboard = (
  */
 export const useKeyboardWithMap = (
   map: ShortcutToActionMap,
-  deps: DependencyList = [],
+  options: IsActive = { isActive: true },
   testing?: NodeKeypressTesting
 ): UseKeyboardReturnValue =>
-  useKeyboard(keyPress => tryToRunActionForShortcut(keyPress, map), deps, testing)
+  useKeyboard(
+    keyPress => tryToRunActionForShortcut(keyPress, map),
+    options,
+    testing
+  )
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
@@ -217,11 +229,11 @@ export const useKeyboardWithMap = (
  */
 export const useKeyboardWithMapCached = (
   createMapFn: () => ShortcutToActionMap,
-  deps?: DependencyList,
+  options: IsActive = { isActive: true },
   testing?: NodeKeypressTesting
 ): UseKeyboardReturnValue => {
-  const cachedMap: ShortcutToActionMap = useMemo(() => createMapFn(), deps ? deps : [])
-  return useKeyboardWithMap(cachedMap, deps, testing)
+  const cachedMap: ShortcutToActionMap = useMemo(() => createMapFn(), [ options.isActive ])
+  return useKeyboardWithMap(cachedMap, options, testing)
 }
 
 
@@ -258,9 +270,9 @@ export const useKeyboardCompatInkWithMap = (map: ShortcutToActionMap): UseKeyboa
  */
 export const useKeyboardCompatInkWithMapCached = (
   createMapFn: () => ShortcutToActionMap,
-  depsList?: DependencyList
+  options: IsActive = { isActive: true },
 ): UseKeyboardReturnValue => {
-  const cachedMap: ShortcutToActionMap = useMemo(() => createMapFn(), depsList ? depsList : [])
+  const cachedMap: ShortcutToActionMap = useMemo(() => createMapFn(), [ options.isActive ])
   return useKeyboardCompatInkWithMap(cachedMap)
 }
 

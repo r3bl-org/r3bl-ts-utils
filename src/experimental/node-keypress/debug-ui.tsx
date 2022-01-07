@@ -39,7 +39,10 @@ export namespace keyboard_debug_ui { // eslint-disable-line
     const ttySize: TTYSize = useTTYSize()
     const { localeTimeString: formattedTime } = useClockWithLocalTimeFormat(3_000)
     const { keyPress, inRawMode } =
-      useKeyboardBuilder({ type: name, args: { type: "map-cached", createShortcutsFn } })
+      useKeyboardBuilder({
+        type: name,
+        args: { type: "map-cached", createShortcutsFn, options: { isActive: true } }
+      })
     
     return {
       name,
