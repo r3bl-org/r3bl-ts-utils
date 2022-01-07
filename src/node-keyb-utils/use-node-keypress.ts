@@ -37,39 +37,44 @@ export const useNodeKeypress = (
   options: IsActive = { isActive: true }
 ): void => {
   _callIfTrue(DEBUG, () => {
-    const formatter =
-      options.isActive ?
-        TextColor.builder.bgGreen.black.build() :
-        TextColor.builder.bgRed.black.build()
-    console.log(formatter(
-      "useNodeKeypress - run hook, isActive="), options.isActive)
+    const formatter = options.isActive
+      ? TextColor.builder.bgGreen.black.build()
+      : TextColor.builder.bgRed.black.build()
+    console.log(formatter("useNodeKeypress - run hook, isActive="), options.isActive)
   })
-  
+
   const manageListenerForKeypressEffectFn: EffectCallback = () => {
-    DEBUG && console.log(TextColor.builder.bgYellow.gray.build()(
-      "useNodeKeypress -> manageListenerForKeypressEffectFn"))
-    
+    DEBUG &&
+      console.log(
+        TextColor.builder.bgYellow.gray.build()(
+          "useNodeKeypress -> manageListenerForKeypressEffectFn"
+        )
+      )
+
     const isAttached = _callIfTrueWithReturn(
       options.isActive,
       () => {
-        DEBUG && console.log(TextColor.builder.bgYellow.gray.build()(
-          "isActive:true -> call attachToReadlineKeypress"))
+        DEBUG &&
+          console.log(
+            TextColor.builder.bgYellow.gray.build()(
+              "isActive:true -> call attachToReadlineKeypress"
+            )
+          )
         return attachToReadlineKeypress(fun)
       },
       () => {
-        DEBUG && console.log(TextColor.builder.bgYellow.gray.build()(
-          "isActive:false -> noop"))
+        DEBUG && console.log(TextColor.builder.bgYellow.gray.build()("isActive:false -> noop"))
         return false
       }
     )
-    
+
     return _callIfTrueWithReturn<ReturnType<EffectCallback>>(
       isAttached,
       () => {
         return () => {
           detachFromReadlineKeypress(fun)
-          DEBUG && console.log(TextColor.builder.bgYellow.gray.build()(
-            "useNodeKeypress - effect cleanup"))
+          DEBUG &&
+            console.log(TextColor.builder.bgYellow.gray.build()("useNodeKeypress - effect cleanup"))
         }
       },
       () => {
@@ -77,8 +82,8 @@ export const useNodeKeypress = (
       }
     )
   }
-  
-  useEffect(manageListenerForKeypressEffectFn, [ options.isActive ])
+
+  useEffect(manageListenerForKeypressEffectFn, [options.isActive])
 }
 
 /** Note this function signature can't be changed, this is defined by Node.js. */
@@ -103,21 +108,19 @@ export type IsActive = { isActive: boolean }
  * @return {boolean} false means that `fun` was not attached to stdin. true means that it was
  * and raw mode was switched on.
  */
-export const attachToReadlineKeypress = (
-  handleKeypressFn: HandleNodeKeypressFn,
-): boolean => {
+export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn): boolean => {
   DEBUG && logTTYState("before attach")
-  
+
   if (isTTY()) {
     const { stdin } = process
-    
+
     // Starts process.stdin from emitting "keypress" events.
     readline.emitKeypressEvents(stdin)
-    
+
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
-    
+
     DEBUG && logTTYState("after attach")
     return true
   } else {
@@ -128,17 +131,17 @@ export const attachToReadlineKeypress = (
 
 export const detachFromReadlineKeypress = (fun: HandleNodeKeypressFn): void => {
   DEBUG && logTTYState("before detach")
-  
+
   const { stdin } = process
-  
+
   stdin.removeListener("keypress", fun)
   DEBUG && logTTYState("1. remove keypress listener", true)
-  
+
   if (stdin.listenerCount("keypress") === 0) {
     DEBUG && logTTYState("2. pause stdin", true)
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
   }
-  
+
   DEBUG && logTTYState("after detach")
 }
 

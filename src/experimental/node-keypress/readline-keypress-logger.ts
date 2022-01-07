@@ -16,15 +16,20 @@
  */
 
 import {
-  attachToReadlineKeypress, createFromKeypress, detachFromReadlineKeypress, HandleNodeKeypressFn,
-  Keypress, ReadlineKey, TextColor,
+  attachToReadlineKeypress,
+  createFromKeypress,
+  detachFromReadlineKeypress,
+  HandleNodeKeypressFn,
+  Keypress,
+  ReadlineKey,
+  TextColor,
 } from "../../index"
 
 // eslint-disable-next-line
 namespace node_readline_keypress {
   // Data.
   let isAttached = false
-  
+
   // Main program.
   export const main = () => {
     printInstructions()
@@ -35,14 +40,14 @@ namespace node_readline_keypress {
         : TextColor.builder.bold.red.build()("not raw mode & listener not attached")
     )
   }
-  
+
   // Handle keypress events from Node.js.
   const onKeypress: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {
     printInputAndKey(input, key)
     const keyPress = createFromKeypress(key, input)
     keyPress.isSpecialKey() ? printSpKey(keyPress) : printRegularKey(keyPress)
     keyPress.matches("ctrl+c") ? exit() : undefined
-    
+
     function exit() {
       if (isAttached) {
         detachFromReadlineKeypress(onKeypress)
@@ -51,12 +56,12 @@ namespace node_readline_keypress {
       process.exit()
     }
   }
-  
+
   // Debug.
   const printInstructions = (): void => {
     console.log(TextColor.builder.gray.build()("Type any key, press ctrl+c to exit"))
   }
-  
+
   const printInputAndKey = (input: string, key: ReadlineKey): void => {
     console.log(
       TextColor.builder.magenta.build()("input"),
@@ -64,11 +69,11 @@ namespace node_readline_keypress {
     )
     console.log(TextColor.builder.magenta.build()("key"), key ? key : "")
   }
-  
+
   const printSpKey = (spKey: Readonly<Keypress>): void => {
     console.log(TextColor.builder.bgYellow.black.underline.build()(spKey.toString()))
   }
-  
+
   const printRegularKey = (spKey: Readonly<Keypress>): void => {
     console.log(
       TextColor.builder.bold.bgWhite.black.underline.build()(" " + spKey.toString() + " ")
