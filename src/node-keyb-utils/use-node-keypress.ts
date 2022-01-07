@@ -15,7 +15,7 @@
  *
  */
 
-import { EffectCallback, useEffect } from "react"
+import { DependencyList, EffectCallback, useEffect } from "react"
 import readline from "readline"
 import { TextColor } from "../color-console-utils"
 import { ReadlineKey } from "./readline-config"
@@ -31,12 +31,12 @@ const DEBUG = false
  * https://www.npmjs.com/package/keypress
  * https://nodejs.org/api/readline.html#tty-keybindings
  */
-export const useNodeKeypress = (fun: HandleNodeKeypressFn): void => {
+export const useNodeKeypress = (fun: HandleNodeKeypressFn, deps: DependencyList = []): void => {
   const run: EffectCallback = () => {
     const isAttached: boolean = attachToReadlineKeypress(fun)
     return isAttached ? () => detachFromReadlineKeypress(fun) : undefined
   }
-  useEffect(run, [])
+  useEffect(run, deps)
 }
 
 /** Note this function signature can't be changed, this is defined by Node.js. */
@@ -63,14 +63,14 @@ export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn)
   DEBUG && logTTYState("before attach")
   if (isTTY()) {
     const { stdin } = process
-
+    
     // Starts process.stdin from emitting "keypress" events.
     readline.emitKeypressEvents(stdin)
-
+    
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
-
+    
     DEBUG && logTTYState("after attach")
     return true
   } else {
@@ -81,17 +81,17 @@ export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn)
 
 export const detachFromReadlineKeypress = (fun: HandleNodeKeypressFn): void => {
   DEBUG && logTTYState("before detach")
-
+  
   const { stdin } = process
-
+  
   stdin.removeListener("keypress", fun)
   DEBUG && logTTYState("1. remove keypress listener", true)
-
+  
   if (stdin.listenerCount("keypress") === 0) {
     DEBUG && logTTYState("2. pause stdin", true)
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
   }
-
+  
   DEBUG && logTTYState("after detach")
 }
 

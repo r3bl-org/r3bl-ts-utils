@@ -56,9 +56,9 @@ test("useKeyboard ink-compat works", async done => {
   }
   
   const optionsArray: UseKeyboardOptions[] = [
-    { type: "ink-compat", args: { type: "fun", matchKeypressFn } },
-    { type: "ink-compat", args: { type: "map", map: createShortcutsFn() } },
-    { type: "ink-compat", args: { type: "map-cached", createShortcutsFn } },
+    { type: "ink-compat", args: { type: "fun", matchKeypressFn, deps: [] } },
+    { type: "ink-compat", args: { type: "map", map: createShortcutsFn(), deps: [] } },
+    { type: "ink-compat", args: { type: "map-cached", createShortcutsFn, deps: [] } },
   ]
   
   for (const [ index, options ] of optionsArray.entries()) {

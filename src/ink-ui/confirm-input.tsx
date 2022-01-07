@@ -16,11 +16,11 @@
  */
 
 import TextInput from "ink-text-input"
+import _ from "lodash"
 import React, { FC } from "react"
-import {
-  _also, createNewShortcutToActionMap, ShortcutToActionMap, StateHook, useKeyboardWithMapCached,
-  useStateSafely
-} from "../index"
+import { _callIfTrue, StateHook, useKeyboard, useStateSafely } from "../index"
+
+const DEBUG = false
 
 interface Props {
   placeholderBeforeSubmit: string
@@ -34,13 +34,14 @@ export const ConfirmInput: FC<Props> =
     const [ value, setValue ]: StateHook<string> = useStateSafely("").asArray()
     const [ showCursor, setShowCursor ]: StateHook<boolean> = useStateSafely(true).asArray()
     
-    const createShortcutsFn = (): ShortcutToActionMap => _also(
-      createNewShortcutToActionMap(),
-      map => map
-        .set("backspace", () => setValue(""))
-        .set("delete", () => setValue(""))
-    )
-    useKeyboardWithMapCached(createShortcutsFn)
+    useKeyboard(input => _callIfTrue(
+      _.includes([ "backspace", "delete" ], input.toString()),
+      () => {
+        if (!showCursor) return
+        setValue("")
+        DEBUG && console.log("ConfirmInput ... keypress detected")
+      }
+    ), [ showCursor ])
     
     const onSubmitHandler = (userInput: string) => {
       onSubmit(userInput ? userInput === "y" : defaultValue)

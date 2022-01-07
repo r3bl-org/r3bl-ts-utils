@@ -56,9 +56,9 @@ test("useKeyboard node-keypress works", async done => {
   
   const optionsArray: UseKeyboardOptions[] =
     [
-      { type: "node-keypress", args: { type: "fun", matchKeypressFn } },
-      { type: "node-keypress", args: { type: "map", map: createShortcutsFn() } },
-      { type: "node-keypress", args: { type: "map-cached", createShortcutsFn } },
+      { type: "node-keypress", args: { type: "fun", matchKeypressFn, deps: [] } },
+      { type: "node-keypress", args: { type: "map", map: createShortcutsFn(), deps: [] } },
+      { type: "node-keypress", args: { type: "map-cached", createShortcutsFn, deps: [] } },
     ]
   
   for (const [ index, options ] of optionsArray.entries()) {
