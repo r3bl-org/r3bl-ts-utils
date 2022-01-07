@@ -63,14 +63,14 @@ export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn)
   DEBUG && logTTYState("before attach")
   if (isTTY()) {
     const { stdin } = process
-    
+
     // Starts process.stdin from emitting "keypress" events.
     readline.emitKeypressEvents(stdin)
-    
+
     stdin.setRawMode(true)
     stdin.setEncoding("utf-8")
     stdin.on("keypress", handleKeypressFn)
-    
+
     DEBUG && logTTYState("after attach")
     return true
   } else {
@@ -81,17 +81,17 @@ export const attachToReadlineKeypress = (handleKeypressFn: HandleNodeKeypressFn)
 
 export const detachFromReadlineKeypress = (fun: HandleNodeKeypressFn): void => {
   DEBUG && logTTYState("before detach")
-  
+
   const { stdin } = process
-  
+
   stdin.removeListener("keypress", fun)
   DEBUG && logTTYState("1. remove keypress listener", true)
-  
+
   if (stdin.listenerCount("keypress") === 0) {
     DEBUG && logTTYState("2. pause stdin", true)
     stdin.pause() // Stops process.stdin from emitting "keypress" events.
   }
-  
+
   DEBUG && logTTYState("after detach")
 }
 
