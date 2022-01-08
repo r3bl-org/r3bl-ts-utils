@@ -31,6 +31,7 @@
 - [React Ink UI components](#react-ink-ui-components)
   - [`ConfirmInput`](#confirminput)
 - [React Ink Hooks](#react-ink-hooks)
+  - [`useNodeKeypress()`](#usenodekeypress)
   - [`useKeyboard()`](#usekeyboard)
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useKeyboardWithMapCached()`](#usekeyboardwithmapcached)
@@ -805,8 +806,40 @@ const UnicornQuestion: FC<InternalProps> = ({ ctx }) => {
 
 The following custom hooks make it easier to work w/ Ink and React function components.
 
-### `useKeyboard()`
+### `useNodeKeypress()`
 
+This hook is an alternative to the `useInput()` hook from `ink`. Both are meant to capture key
+presses from a terminal. It uses Node.js readline package which emits `keypress` events which are
+different from the `data` events that `useInput()` relies on. This means that a few more key events
+are available using this approach which is useful for command line interface (CLI) apps that rely on
+keyboard shortcuts for doing most things. However, the limitations on what key events a TTY can even
+get in Node.js is limited by Node.js itself. For this reason we hope to provide our own native Rust
+based keypress input event handling plugin for Node.js in the future
+([here's the issue](https://github.com/r3bl-org/r3bl-cmdr/issues/1)).
+
+There is one side effect that happens when this hook in addition to `useInput()`, which comes from
+how one actually uses `keypress` events and the other uses `data` events, which is that they both
+manage the raw mode of the TTY stdin stream (from Node.js). And this can lead to CLI apps quitting
+unexpectedly and issues w/ keyboard focus management. In order to solve this, there are 2
+approaches:
+
+1. You can use ink compat versions of all the hooks in this section and bypass `useNodeKeypress()`
+   all together.
+2. You can wrap your main app w/ a `Provider` that configures Ink correctly and lets it know that
+   `useNodeKeypress()` will be managing raw mode for the terminal. The easiest way to do this is to
+   wrap your entire application w/ `UseKeyboardWrapper` component.
+
+> ⚡ For a full example, please check out
+> [/src/experimental/confirm-input/node-keypress.tsx][node-keypress-src].
+
+<!-- prettier-ignore-start -->
+
+[node-keypress-src]: https://github.com/r3bl-org/r3bl-ts-utils/blob/e030062271135fae049c63af1dc11bd21a8c1833/src/experimental/confirm-input/node-keypress.tsx
+
+<!-- prettier-ignore-end -->
+
+> #### Implementation details
+>
 > 💡 Ink has a hook that is supposed to be used to get user input from the keyboard called
 > `useInput`, which comes from the `ink` package. `TextInput` is built on top of this hook.
 > `TextInput` comes from the npm package `ink-text-input`.
@@ -831,26 +864,28 @@ The following custom hooks make it easier to work w/ Ink and React function comp
 > is how `useInput` behaves by default). You can override it by wrapping your Ink components in a
 > Provider, like so:
 >
-> ```
+> ```tsx
 > <StdinContext.Provider
->     value={{
->            stdin: process.stdin,
->            setRawMode: noop,
->            isRawModeSupported: true,
->            internal_exitOnCtrlC: false
->          }}
->     >
->     <App/>
+>   value={{
+>     stdin: process.stdin,
+>     setRawMode: noop,
+>     isRawModeSupported: true,
+>     internal_exitOnCtrlC: false,
+>   }}
+> >
+>   <App />
 > </StdinContext.Provider>
 > ```
 >
 > 🧙 or simply:
 >
-> ```
+> ```tsx
 > <UseKeyboardWrapper>
->     <App/>
+>   <App />
 > </UseKeyboardWrapper>
 > ```
+
+### `useKeyboard()`
 
 The `useKeyboard()` custom hook can be used to attach a function that responds to key presses in the
 terminal.

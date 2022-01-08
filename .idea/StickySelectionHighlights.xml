@@ -3,36 +3,6 @@
   <component name="StickySelectionHighlights">
     <option name="editorHighlights">
       <map>
-        <entry key="$PROJECT_DIR$/README.md">
-          <value>
-            <PaintGroupHighlightMap>
-              <option name="paintGroups">
-                <map>
-                  <entry key="0">
-                    <value>
-                      <EditorHighlightsForPaintGroup />
-                    </value>
-                  </entry>
-                  <entry key="1">
-                    <value>
-                      <EditorHighlightsForPaintGroup />
-                    </value>
-                  </entry>
-                  <entry key="2">
-                    <value>
-                      <EditorHighlightsForPaintGroup />
-                    </value>
-                  </entry>
-                  <entry key="3">
-                    <value>
-                      <EditorHighlightsForPaintGroup />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </PaintGroupHighlightMap>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/src/__tests__/misc-utils.test.tsx">
           <value>
             <PaintGroupHighlightMap>
@@ -190,16 +160,7 @@
                 <map>
                   <entry key="0">
                     <value>
-                      <EditorHighlightsForPaintGroup>
-                        <option name="highlights">
-                          <list>
-                            <HighlightOffset>
-                              <option name="start" value="1053" />
-                              <option name="end" value="1092" />
-                            </HighlightOffset>
-                          </list>
-                        </option>
-                      </EditorHighlightsForPaintGroup>
+                      <EditorHighlightsForPaintGroup />
                     </value>
                   </entry>
                 </map>
