@@ -16,7 +16,7 @@
  */
 
 export * from "./testing"
-export * from "../node-keyb-utils/use-keyboard"
 export * from "./use-tty-size"
 export * from "./use-clock"
 export * from "./use-state-safely"
+export * from "./ink-main-helper"

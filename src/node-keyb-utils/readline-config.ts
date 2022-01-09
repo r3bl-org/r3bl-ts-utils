@@ -16,8 +16,8 @@
  */
 
 import { _also } from "../kotlin-lang-utils"
-import { createMutableCopyOf } from "./builder-general"
 import { Keypress } from "./keypress"
+import { createMutableCopyOf } from "./keypress-builder-general"
 import { KeyCreator } from "./keypress-constants"
 
 /*

@@ -37,6 +37,7 @@
   - [`useKeyboardWithMap()`](#usekeyboardwithmap)
   - [`useKeyboardWithMapCached()`](#usekeyboardwithmapcached)
   - [`useKeyboardBuilder()`](#usekeyboardbuilder)
+  - [`inkCLIAppMainFn()`](#inkcliappmainfn)
   - [`useClock()`](#useclock)
   - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
   - [`useTTYSize()`](#usettysize)
@@ -1081,6 +1082,29 @@ and tests to see how to use this.
 1. [use-keyboard.tsx](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/node-keyb-utils/use-keyboard.tsx)
 2. [Test for ink-compat versions](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/__tests__/use-keyboard-ink-compat.test.tsx)
 3. [Test for node-keypress versions](https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/__tests__/use-keyboard-ink-node-keypress.test.tsx)
+
+### `inkCLIAppMainFn()`
+
+This launches a CLI app. This is the "bootloader" equivalent for a CLI app.
+
+> 💡 If you have any event listeners attached (eg, using `useKeyboard()`, or `useNodeKeypress()`)
+> then your app won't exit if you don't call `LifecycleHelper.fireExit()`.
+
+Usage example:
+
+```tsx
+const App: FC = () => {
+  const createShortcutsFn = (): ShortcutToActionMap =>
+    _also(createNewShortcutToActionMap(), (map) => map.set("q", LifecycleHelper.fireExit))
+  useKeyboardWithMapCached(createShortcutsFn)
+  return <Text>"Hello"</Text>
+}
+
+inkCLIAppMainFn(() => {
+  const args = processCommandLineArgs()
+  return createInkApp(args)
+}).catch(console.error)
+```
 
 ### `useClock()`
 
