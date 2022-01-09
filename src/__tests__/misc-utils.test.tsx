@@ -17,7 +17,7 @@
 
 import {
   _also, _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTrueWithReturn, _callIfTruthy,
-  _callIfTruthyWithReturn, _repeat
+  _callIfTruthyWithReturn, _repeat, Data
 } from "../index"
 
 describe("misc-utils", () => {
@@ -192,4 +192,35 @@ describe("misc-utils", () => {
       expect(flags.onFalseFlag).toBeTruthy()
     })
   })
+})
+
+test("Data class works", () => {
+  class MapData extends Data {
+    constructor(
+      readonly name: string = "MapData contains properties: string, string, Map, Array",
+      readonly type: string = "string",
+      readonly map: Map<string, string> = new Map().set("foo", "1").set("bar", "2"),
+      readonly array: Array<string> = [ "one", "two", "three" ]
+    ) {
+      super()
+    }
+  }
+  
+  const mapData = new MapData()
+  const toString = mapData.toString()
+  
+  expect(toString).toEqual(
+    "{\n" +
+    "  \"name\": \"MapData contains properties: string, string, Map, Array\",\n" +
+    "  \"type\": \"string\",\n" +
+    "  \"map\": {\n" +
+    "    \"foo\": \"1\",\n" +
+    "    \"bar\": \"2\"\n" +
+    "  },\n" +
+    "  \"array\": [\n" +
+    "    \"one\",\n" +
+    "    \"two\",\n" +
+    "    \"three\"\n" +
+    "  ]\n" +
+    "}")
 })
