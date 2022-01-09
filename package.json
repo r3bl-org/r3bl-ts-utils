@@ -30,7 +30,7 @@
     "exp-textinput-ink-compat": "npm run build && node build/experimental/text-input/ink-compat.js",
     "exp-textinput-node-keypress": "npm run build && node build/experimental/text-input/node-keypress.js",
     "exp-confirminput-node-keypress": "npm run build && node build/experimental/confirm-input/node-keypress.js",
-    "exp-usekeyboard-node-keypress-suite": "npm run exp-node-readline-keypress-logger && npm run exp-usekeyboard-node-keypress && npm run exp-textinput-node-keypress && npm run exp-confirminput-node-keypress"
+    "exp-usekeyboard-node-keypress-suite": "npm run exp-node-readline-keypress-logger && npm run exp-usekeyboard-node-keypress && npm run exp-usekeyboard-ink-compat && npm run exp-textinput-node-keypress && npm run exp-confirminput-node-keypress"
   },
   "repository": {
     "type": "git",

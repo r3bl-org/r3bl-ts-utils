@@ -18,9 +18,8 @@
 import { Box, render, Text, useApp } from "ink"
 import React, { FC } from "react"
 import {
-  _also, ConfirmInput, createNewShortcutToActionMap, LifecycleHelper, ShortcutToActionMap,
-  StateHolder, TextColor, TimerRegistry, UseKeyboardReturnValue, useKeyboardWithMapCached,
-  UseKeyboardWrapper, useStateSafely,
+  _also, ConfirmInput, createNewShortcutToActionMap, inkCLIAppMainFn, ShortcutToActionMap,
+  StateHolder, UseKeyboardReturnValue, useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely,
 } from "../../index"
 
 // Types & data classes.
@@ -98,22 +97,9 @@ const UnicornQuestion: FC<InternalProps> =
     )
   }
 
-
-// main().
-const main = async (): Promise<void> => {
-  const instance = render(<App/>)
-  
-  LifecycleHelper.addExitListener(() => {
-    TimerRegistry.killAll()
-    instance.unmount()
-  })
-  
-  try {
-    await instance.waitUntilExit()
-    console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))
-  } catch (err) {
-    console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
-  }
-}
-
-main().catch(console.log)
+// Main.
+inkCLIAppMainFn(
+  () => render(<App/>),
+  "Exiting ink",
+  "Problem w/ exiting ink"
+).catch(console.error)

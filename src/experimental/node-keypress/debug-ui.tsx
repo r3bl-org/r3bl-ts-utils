@@ -18,8 +18,8 @@
 import { Box, render, Text, useInput } from "ink"
 import React, { FC, useState } from "react"
 import {
-  _also, createNewShortcutToActionMap, Keypress, LifecycleHelper, ShortcutToActionMap, StateHook,
-  TimerRegistry, TTYSize, useClockWithLocalTimeFormat, useKeyboardBuilder,
+  _also, createNewShortcutToActionMap, inkCLIAppMainFn, Keypress, LifecycleHelper,
+  ShortcutToActionMap, StateHook, TTYSize, useClockWithLocalTimeFormat, useKeyboardBuilder,
   usePreventProcessExitDuringTesting, useTTYSize,
 } from "../../index"
 
@@ -105,18 +105,11 @@ export namespace keyboard_debug_ui { // eslint-disable-line
   //#region main().
   type MainParams = "node-keypress" | "ink-compat"
   export const main = (arg: MainParams) => {
-    const instance = render(<App arg={arg}/>)
-    LifecycleHelper.addExitListener(() => {
-      instance.waitUntilExit()
-        .then(() => {
-          console.log("Exiting ink")
-        })
-        .catch(() => {
-          console.error("Problem with exiting ink")
-        })
-      TimerRegistry.killAll()
-      instance.unmount()
-    })
+    inkCLIAppMainFn(
+      () => render(<App arg={arg}/>),
+      "Exiting ink",
+      "Problem w/ exiting ink"
+    ).catch(console.error)
   }
   //#endregion
 }

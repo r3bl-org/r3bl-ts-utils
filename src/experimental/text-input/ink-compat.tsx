@@ -19,8 +19,8 @@ import { Box, render, Text } from "ink"
 import TextInput from "ink-text-input"
 import React, { EffectCallback, FC, useEffect } from "react"
 import {
-  _also, _callIfTrue, _callIfTruthyWithReturn, _let, createNewShortcutToActionMap, LifecycleHelper,
-  ShortcutToActionMap, StateHolder, TextColor, TimerRegistry, useKeyboardBuilder,
+  _also, _callIfTrue, _callIfTruthyWithReturn, createNewShortcutToActionMap, inkCLIAppMainFn,
+  LifecycleHelper, ShortcutToActionMap, StateHolder, TextColor, useKeyboardBuilder,
   UseKeyboardReturnValue, useStateSafely,
 } from "../../index"
 
@@ -150,18 +150,9 @@ const getDebugLogSideEffectFn = (
   console.log(TextColor.builder.randomFgColor.build()(text))
 }
 
-// main().
-
-_let(render(<Wrapper/>), instance => {
-  LifecycleHelper.addExitListener(() => {
-    instance.waitUntilExit()
-      .then(() => {
-        console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))
-      })
-      .catch(() => {
-        console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
-      })
-    TimerRegistry.killAll()
-    instance.unmount()
-  })
-})
+// Main.
+inkCLIAppMainFn(
+  () => render(<Wrapper/>),
+  "Exiting ink",
+  "Problem w/ exiting ink"
+).catch(console.error)

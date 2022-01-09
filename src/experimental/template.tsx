@@ -15,19 +15,18 @@
  *
  */
 
-import { Box, render, Text, useApp } from "ink"
+import { Box, render, Text } from "ink"
 import React, { FC } from "react"
 import {
-  _also, createNewShortcutToActionMap, LifecycleHelper, ShortcutToActionMap, TextColor,
-  TimerRegistry, UseKeyboardReturnValue, useKeyboardWithMapCached,
+  _also, createNewShortcutToActionMap, inkCLIAppMainFn, LifecycleHelper, ShortcutToActionMap,
+  TextColor, UseKeyboardReturnValue, useKeyboardWithMapCached,
 } from "../index"
 
 // Types & data classes.
 
 type HookInput = { name: string }
 type HookOutput = {
-  useKeyboard: UseKeyboardReturnValue,
-  greeting: string
+  useKeyboard: UseKeyboardReturnValue, greeting: string
 }
 type InternalProps = { ctx: HookOutput }
 
@@ -35,16 +34,10 @@ type InternalProps = { ctx: HookOutput }
 
 const runHooks = (input: HookInput): HookOutput => {
   const { name } = input
-  const app = useApp()
-  const createShortcutsFn = (): ShortcutToActionMap =>
-    _also(
-      createNewShortcutToActionMap(),
-      map => map
-        .set("q", app.exit)
-        .set("ctrl+q", app.exit)
-        .set("x", app.exit)
-        .set("ctrl+x", app.exit)
-    )
+  const createShortcutsFn = (): ShortcutToActionMap => _also(
+    createNewShortcutToActionMap(),
+    map => map.set("q", LifecycleHelper.fireExit)
+  )
   return {
     greeting: TextColor.builder.rainbow.build()(name),
     useKeyboard: useKeyboardWithMapCached(createShortcutsFn)
@@ -56,36 +49,21 @@ const runHooks = (input: HookInput): HookOutput => {
 const App: FC = () => {
   const output = runHooks({ name: "Your example goes here!" })
   const { greeting } = output
-  return (
-    <Box flexDirection="column">
-      <Row_Debug ctx={output}/>
-      <Text>{greeting}</Text>
-    </Box>
-  )
+  return (<Box flexDirection="column">
+    <Row_Debug ctx={output}/>
+    <Text>{greeting}</Text>
+  </Box>)
 }
 
 const Row_Debug: FC<InternalProps> = ({ ctx }) => {
   const { keyPress: kp, inRawMode: mode } = ctx.useKeyboard
-  return mode ?
-    <Text color="magenta">keyPress: {kp ? `${kp.toString()}` : "n/a"}</Text> :
+  return mode ? <Text color="magenta">keyPress: {kp ? `${kp.toString()}` : "n/a"}</Text> :
     <Text color="gray">keyb disabled</Text>
 }
 
 // Main.
-const main = async (): Promise<void> => {
-  const instance = render(<App/>)
-  
-  LifecycleHelper.addExitListener(() => {
-    TimerRegistry.killAll()
-    instance.unmount()
-  })
-  
-  try {
-    await instance.waitUntilExit()
-    console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))
-  } catch (err) {
-    console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
-  }
-}
-
-main().catch(console.log)
+inkCLIAppMainFn(
+  () => render(<App/>),
+  "Exiting ink",
+  "Problem w/ exiting ink"
+).catch(console.error)

@@ -185,8 +185,7 @@ const getDebugLogSideEffectFn = (
   console.log(TextColor.builder.randomFgColor.build()(text))
 }
 
-// main().
-
+// Main.
 _let(render(<Wrapper/>), instance => {
   LifecycleHelper.addExitListener(() => {
     DEBUG && logTTYState("exitListener 1 -> stdin.isRaw")
@@ -203,6 +202,5 @@ _let(render(<Wrapper/>), instance => {
       .catch(() => {
         console.error(TextColor.builder.bgYellow.black.build()("Problem with exiting ink"))
       })
-    
   })
 })
