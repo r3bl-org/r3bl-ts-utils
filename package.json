@@ -1,6 +1,6 @@
 {
   "name": "r3bl-ts-utils",
-  "version": "1.0.82",
+  "version": "1.0.83",
   "description": "TypeScript language utilities inspired by Kotlin stdlib, color console, React hook helpers, timer helpers, and other misc utilities",
   "main": "build/index.js",
   "types": "build/index.d.ts",
