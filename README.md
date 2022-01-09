@@ -17,6 +17,7 @@
   - [`_apply`](#_apply)
   - [`_with`](#_with)
 - [Misc utils](#misc-utils)
+  - [`Data` class and `anyToString()`](#data-class-and-anytostring)
   - [`sleep()`](#sleep)
   - [`_repeat()`](#_repeat)
   - [`_callIfTruthy()`](#_calliftruthy)
@@ -455,6 +456,27 @@ expect(returnValue).toEqual(hardcodedReceiverReturnValue)
 > `this` to be rebound.
 
 ## Misc utils
+
+### `Data` class and `anyToString()`
+
+Inspired by Kotlin's data classes, the `Data` class is provided which makes it really easy to get a
+`toString()` implementation that pretty formats the string for free. It makes use of the
+`anyToString()` function that you can choose to use instead of using the class. Here's an example.
+
+```tsx
+class MapData extends Data {
+  constructor(
+    readonly name: string = "MapData contains properties: string, string, Map, Array",
+    readonly type: string = "string",
+    readonly map: Map<any, any> = new Map().set("foo", "1").set("bar", "2"),
+    readonly array: Array<string> = ["one", "two", "three"]
+  ) {
+    super()
+  }
+}
+
+console.log(new MapData().toString())
+```
 
 ### `sleep()`
 
