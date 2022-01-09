@@ -199,7 +199,7 @@ test("Data class works", () => {
     constructor(
       readonly name: string = "MapData contains properties: string, string, Map, Array",
       readonly type: string = "string",
-      readonly map: Map<string, string> = new Map().set("foo", "1").set("bar", "2"),
+      readonly map: Map<any, any> = new Map().set("foo", "1").set("bar", "2"),
       readonly array: Array<string> = [ "one", "two", "three" ]
     ) {
       super()
