@@ -25,7 +25,7 @@ import {
 } from "../index"
 import { delay, Flag } from "./test-use-keyboard-helpers"
 
-test("useKeyboard ink-compat works", async done => {
+test("useKeyboard ink-compat works", async () => {
   const flag = new Flag()
   
   const Test: FC<{ options: UseKeyboardConfig, index: number }> = ({ options, index }) => {
@@ -73,5 +73,4 @@ test("useKeyboard ink-compat works", async done => {
     ink.unmount()
   }
   
-  done()
 })

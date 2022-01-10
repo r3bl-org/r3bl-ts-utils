@@ -27,7 +27,7 @@ import {
 } from "../index"
 import { Flag } from "./test-use-keyboard-helpers"
 
-test("useKeyboard node-keypress works", async done => {
+test("useKeyboard node-keypress works", async () => {
   const flag = new Flag()
   
   const Test: FC<{ options: UseKeyboardConfig, index: number }> = (
@@ -87,5 +87,4 @@ test("useKeyboard node-keypress works", async done => {
     emitter.removeAllListeners()
   }
   
-  done()
 })

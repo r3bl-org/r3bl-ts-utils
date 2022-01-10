@@ -17,4 +17,5 @@
 
 export * from "./color-console"
 export * from "./helpers"
+export * from "./colors"
 export * from "./style-builder"

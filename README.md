@@ -165,20 +165,16 @@ Styles.Primary(`Wrote file successfully. 👍`).consoleLog()
 Styles.Secondary(`Failed to write file! ⛔`).consoleError()
 ```
 
-To override on the default styles, here's an example. The [`colors`][cc-2] library is used under the
-hood, so you can use all its styling rules, objects, functions, and classes.
+To override on the default styles, here's an example.
 
 <!-- prettier-ignore-start -->
 
 [cc-1]: https://github.com/r3bl-org/r3bl-ts-utils/blob/main/src/
-
-[cc-2]: https://github.com/Marak/colors.js
 <!-- prettier-ignore-end -->
 
 Here's how you can use the `ColorConsole` class to do more powerful things.
 
 ```typescript
-import colors from "colors/safe"
 import { printHeader, Styles, ColorConsole } from "r3bl-ts-utils"
 
 printHeader(`Example 2`)
