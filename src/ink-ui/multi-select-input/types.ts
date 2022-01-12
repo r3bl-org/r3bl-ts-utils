@@ -59,6 +59,9 @@ export type MultiSelectInputProps = {
   /** Enable or disable whether this component can accept user input via keyboard. */
   hasFocus?: boolean;
   
+  /** Enable single selection mode (default is multi selection mode). */
+  singleSelectionMode?: boolean;
+  
   /** Limit the max number of items to display. */
   maxRows?: number;
   

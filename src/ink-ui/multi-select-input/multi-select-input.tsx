@@ -41,7 +41,8 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   onSelect,
   onUnselect,
   onSubmit,
-  testing
+  testing,
+  singleSelectionMode
 }) => {
   // Generate state from props.
   const [ rotateIndex, setRotateIndex ] = useStateSafely(0).asArray()
@@ -212,7 +213,11 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     
     function select(): void {
       _callIfTruthy(onSelect, onSelect => onSelect(selectedItem))
-      setSelected([ ...selected, selectedItem ])
+      if (singleSelectionMode && selected.length > 0) {
+        setSelected([ selectedItem ])
+      } else {
+        setSelected([ ...selected, selectedItem ])
+      }
     }
     
     function unselect(): void {
@@ -221,7 +226,6 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       setSelected(selectedWithItemRemoved)
     }
   }
-  
 }
 
 export function isItemSelected(
