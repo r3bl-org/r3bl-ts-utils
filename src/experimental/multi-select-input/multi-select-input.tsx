@@ -15,9 +15,9 @@
  *
  */
 
-import { Box, Text, useInput } from "ink"
+import { Box, Text } from "ink"
 import React, { FC } from "react"
-import { _callIfTrue, _callIfTruthy, TextColor, useStateSafely } from "../../index"
+import { _callIfTrue, _callIfTruthy, TextColor, useKeyboard, useStateSafely } from "../../index"
 import { CheckBox } from "./checkbox"
 import { Indicator } from "./indicator"
 import { Item } from "./item"
@@ -38,7 +38,8 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   onHighlight,
   onSelect,
   onUnselect,
-  onSubmit
+  onSubmit,
+  testing
 }) => {
   // Generate state from props.
   const [ rotateIndex, setRotateIndex ] = useStateSafely(0).asArray()
@@ -51,27 +52,17 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   const slicedItemsToDisplay = sliceItemsIfScrollable()
   
   // Wire up keyboard shortcuts.
-  // The following code does not work! Fails to update state!
-  // useKeyboardWithMapCached(
-  //   () => createNewShortcutToActionMap()
-  //     .set("uparrow", uparrowPressed)
-  //     .set("downarrow", downarrowPressed)
-  //     .set("return", returnPressed)
-  //     .set("space", spacePressed),
-  //   { isActive: hasFocus }
-  // )
-  
-  useInput(
-    (input, key) => {
-      if (key.upArrow) uparrowPressed()
-      if (key.downArrow) downarrowPressed()
-      if (key.return) returnPressed()
-      if (input === " ") spacePressed()
+  useKeyboard(
+    keypress => {
+      if (keypress.matches("return")) returnPressed()
+      if (keypress.matches("downarrow")) downarrowPressed()
+      if (keypress.matches("uparrow")) uparrowPressed()
+      if (keypress.matches("space")) spacePressed()
     },
-    { isActive: hasFocus }
+    { isActive: hasFocus },
+    testing
   )
   
-  // Render.
   return (
     <Box flexDirection="column">
       {slicedItemsToDisplay.map(
@@ -122,7 +113,7 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   }
   
   function uparrowPressed(): void {
-    DEBUG && console.log("uparrowPressed")
+    DEBUG && console.log(TextColor.builder.magenta.build()("uparrowPressed"))
     
     const lastIndex = (isScrollable() ? getRowsToDisplay() : items.length) - 1
     const atFirstIndex = highlightedIndex === 0
@@ -153,7 +144,7 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   }
   
   function downarrowPressed(): void {
-    DEBUG && console.log("downarrowPressed")
+    DEBUG && console.log(TextColor.builder.magenta.build()("downarrowPressed"))
     
     const lastIndex = (isScrollable() ? getRowsToDisplay() : items.length) - 1
     const atLastIndex = highlightedIndex === lastIndex
@@ -184,14 +175,14 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   }
   
   function spacePressed(): void {
-    DEBUG && console.log("spacePressed")
+    DEBUG && console.log(TextColor.builder.magenta.build()("spacePressed"))
     
     const highlightedItem: ListItem | undefined = slicedItemsToDisplay[highlightedIndex]
     if (highlightedItem) toggleSelectionFor(highlightedItem)
   }
   
   function returnPressed(): void {
-    DEBUG && console.log("enterPressed")
+    DEBUG && console.log(TextColor.builder.magenta.build()("enterPressed"))
     
     if (onSubmit && selected) onSubmit(selected)
   }

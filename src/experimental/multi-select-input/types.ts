@@ -17,6 +17,7 @@
 
 import * as React from "react"
 import { Data, generateUID } from "../../misc-utils"
+import { NodeKeypressTesting } from "../../node-keyb-utils"
 
 /**
  * Props for custom indicator component.
@@ -87,4 +88,8 @@ export type MultiSelectInputProps = {
   
   /** Custom component to override the default item component. */
   itemComponent?: React.ComponentType<ItemProps>;
+  
+  /** Optional argument that enables test mode. */
+  testing?: NodeKeypressTesting
+  
 };

@@ -106,7 +106,7 @@ export type ActionFn = () => void
 export type Shortcut = string // "Shortcut" aka "KeyBinding".
 export type ShortcutToActionMap = Map<Shortcut, ActionFn>
 
-type NodeKeypressTesting = {
+export type NodeKeypressTesting = {
   /** Replaces Node.js process.stdin keypress source. */
   emitter: EventEmitter,
   /** Choice of event name representing keypress, to fire and listen for. */
@@ -161,14 +161,20 @@ export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturn
     case "ink-compat": {
       switch (config.args.type) {
         case "fun":
-          return useKeyboardCompatInk(config.args.matchKeypressFn)
+          return useKeyboardCompatInk(
+            config.args.matchKeypressFn,
+            config.args.options,
+          )
         case "map-cached":
           return useKeyboardCompatInkWithMapCached(
             config.args.createShortcutsFn,
             config.args.options
           )
         case "map":
-          return useKeyboardCompatInkWithMap(config.args.map)
+          return useKeyboardCompatInkWithMap(
+            config.args.map,
+            config.args.options,
+          )
       }
       break
     }
@@ -241,7 +247,10 @@ export const useKeyboardWithMapCached = (
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
-export const useKeyboardCompatInk = (fun: KeyboardInputHandlerFn): UseKeyboardReturnValue => {
+export const useKeyboardCompatInk = (
+  fun: KeyboardInputHandlerFn,
+  options: IsActive = { isActive: true },
+): UseKeyboardReturnValue => {
   const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
   
@@ -252,7 +261,7 @@ export const useKeyboardCompatInk = (fun: KeyboardInputHandlerFn): UseKeyboardRe
     const userInputKeyPress = createFromInk(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
-  })
+  }, options)
   
   return new UseKeyboardReturnValue(keyPress, inRawMode)
 }
@@ -261,8 +270,11 @@ export const useKeyboardCompatInk = (fun: KeyboardInputHandlerFn): UseKeyboardRe
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
-export const useKeyboardCompatInkWithMap = (map: ShortcutToActionMap): UseKeyboardReturnValue =>
-  useKeyboardCompatInk(keyPress => tryToRunActionForShortcut(keyPress, map))
+export const useKeyboardCompatInkWithMap = (
+  map: ShortcutToActionMap,
+  options: IsActive = { isActive: true },
+): UseKeyboardReturnValue =>
+  useKeyboardCompatInk(keyPress => tryToRunActionForShortcut(keyPress, map), options)
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
