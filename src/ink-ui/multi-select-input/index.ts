@@ -15,6 +15,8 @@
  *
  */
 
-export * from "./figures"
-export * from "./confirm-input"
+export * from "./types"
 export * from "./multi-select-input"
+export * from "./indicator"
+export * from "./item"
+export * from "./checkbox"

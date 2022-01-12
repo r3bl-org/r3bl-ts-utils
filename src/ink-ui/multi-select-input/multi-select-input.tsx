@@ -16,8 +16,10 @@
  */
 
 import { Box, Text } from "ink"
-import React, { FC } from "react"
-import { _callIfTrue, _callIfTruthy, TextColor, useKeyboard, useStateSafely } from "../../index"
+import React, { EffectCallback, FC, useEffect } from "react"
+import {
+  _callIfTrue, _callIfTruthy, Keypress, TextColor, useKeyboard, useStateSafely
+} from "../../index"
 import { CheckBox } from "./checkbox"
 import { Indicator } from "./indicator"
 import { Item } from "./item"
@@ -51,17 +53,24 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   const isScrollActive = isScrollable()
   const slicedItemsToDisplay = sliceItemsIfScrollable()
   
-  // Wire up keyboard shortcuts.
-  useKeyboard(
-    keypress => {
-      if (keypress.matches("return")) returnPressed()
-      if (keypress.matches("downarrow")) downarrowPressed()
-      if (keypress.matches("uparrow")) uparrowPressed()
-      if (keypress.matches("space")) spacePressed()
-    },
-    { isActive: hasFocus },
-    testing
-  )
+  // Handle keyboard inputs.
+  function onKeypress(keypress: Readonly<Keypress>) {
+    if (keypress.matches("return")) returnPressed()
+    if (keypress.matches("downarrow")) downarrowPressed()
+    if (keypress.matches("uparrow")) uparrowPressed()
+    if (keypress.matches("space")) spacePressed()
+  }
+  
+  // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
+  if (testing) {
+    const attachListenerToEmitterEffectFn: EffectCallback = () => {
+      const { emitter, eventName } = testing
+      emitter.on(eventName, onKeypress)
+    }
+    useEffect(attachListenerToEmitterEffectFn, []) // Attach only once.
+  } else {
+    useKeyboard(onKeypress, { isActive: hasFocus }, testing)
+  }
   
   return (
     <Box flexDirection="column">

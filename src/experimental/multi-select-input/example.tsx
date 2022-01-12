@@ -18,11 +18,9 @@
 import { Box, render, Text } from "ink"
 import React, { FC, useMemo } from "react"
 import {
-  _also, createNewShortcutToActionMap, inkCLIAppMainFn, LifecycleHelper, ShortcutToActionMap,
-  TextColor, useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely
+  _also, createNewShortcutToActionMap, inkCLIAppMainFn, LifecycleHelper, ListItem, MultiSelectInput,
+  ShortcutToActionMap, TextColor, useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely
 } from "../../index"
-import { MultiSelectInput } from "./multi-select-input"
-import { ListItem } from "./types"
 
 // Function component.
 
@@ -32,12 +30,12 @@ const App: FC<{ items: ListItem[] }> = ({ items }) => {
   const [ hasFocus, setHasFocus ] = useStateSafely(true).asArray()
   
   const selectionStr = selection ?
-    selection?.map(({ label }) => label).join(", ") :
-    "n/a"
+    "selection=[" + selection?.map(({ label }) => label).join(", ") + "]" :
+    "empty-selection"
   
   return (
     <Box flexDirection="column">
-      <Text color="gray">Selection: {selectionStr}</Text>
+      <Text color="gray">{selectionStr}</Text>
       <Text>
         {hasFocus ?
           TextColor.builder.green.build()("hasFocus") :

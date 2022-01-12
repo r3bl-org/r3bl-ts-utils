@@ -91,5 +91,4 @@ export type MultiSelectInputProps = {
   
   /** Optional argument that enables test mode. */
   testing?: NodeKeypressTesting
-  
 };

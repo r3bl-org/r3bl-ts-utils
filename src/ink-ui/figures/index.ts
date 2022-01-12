@@ -15,6 +15,4 @@
  *
  */
 
-export * from "./figures"
-export * from "./confirm-input"
-export * from "./multi-select-input"
+export { figures } from "./figures"
