@@ -31,6 +31,7 @@
   - [`makeReactElementFromArray()`](#makereactelementfromarray)
 - [React Ink UI components](#react-ink-ui-components)
   - [`ConfirmInput`](#confirminput)
+  - [`MultiSelectInput`](#multiselectinput)
 - [React Ink Hooks](#react-ink-hooks)
   - [`useNodeKeypress()`](#usenodekeypress)
   - [`useKeyboard()`](#usekeyboard)
@@ -818,6 +819,50 @@ const UnicornQuestion: FC<InternalProps> = ({ ctx }) => {
       <Text>Your answer: {text}</Text>
     </Box>
   )
+}
+```
+
+### `MultiSelectInput`
+
+This UI component allows the user to select one or more items from a list of displayed items. Single
+and multiple selection modes are supported. Scrolling of really long inputs is also supported.
+
+Please don't forget to wrap this component w/ the `UseKeyboardWrapper` to maintain compatibility w/
+Ink's `useInput()` since this UI component uses `useKeyboard()`. Here is the simplest way to use
+this component.
+
+> 🧙 A TypeScript version of [`figures` npm package](https://www.npmjs.com/package/figures) is
+> included here. This became necessary since there are issues supporting TypeScript with `figures`
+> (and `chalk`, which is why `TextColor` is provided above).
+
+```tsx
+const App: FC<{ items: ListItem[] }> = ({ items }) => {
+  const [selection, setSelection] = useStateSafely<undefined | ListItem[]>(undefined).asArray()
+  const [hasFocus, setHasFocus] = useStateSafely(true).asArray()
+
+  const selectionStr = selection
+    ? "selection=[" + selection?.map(({ label }) => label).join(", ") + "]"
+    : "empty-selection"
+
+  return (
+    <UseKeyboardWrapper>
+      <Box flexDirection="column">
+        <Text color="gray">{selectionStr}</Text>
+        <Text>
+          {hasFocus
+            ? TextColor.builder.green.build()("hasFocus")
+            : TextColor.builder.red.build()("!hasFocus")}
+        </Text>
+
+        <MultiSelectInput items={items} hasFocus={hasFocus} onSubmit={onSubmit} />
+      </Box>
+    </UseKeyboardWrapper>
+  )
+
+  function onSubmit(selectedItems: ListItem[]) {
+    setSelection(selectedItems)
+    setHasFocus(false)
+  }
 }
 ```
 
