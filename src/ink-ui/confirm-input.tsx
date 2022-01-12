@@ -15,12 +15,10 @@
  *
  */
 
+import { Key, useInput } from "ink"
 import TextInput from "ink-text-input"
-import _ from "lodash"
 import React, { FC } from "react"
-import {
-  _callIfTrue, KeyboardInputHandlerFn, Keypress, StateHook, useKeyboard, useStateSafely
-} from "../index"
+import { StateHook, useStateSafely } from "../index"
 
 const DEBUG = false
 
@@ -36,22 +34,21 @@ export const ConfirmInput: FC<Props> =
     const [ value, setValue ]: StateHook<string> = useStateSafely("").asArray()
     const [ showCursor, setShowCursor ]: StateHook<boolean> = useStateSafely(true).asArray()
     
-    // Equivalent code via useInput:
-    // const onKeyFn = (_input: string, key: Key) => {
-    //   if (key.backspace || key.delete) setValue("")
-    //   DEBUG && console.log("ConfirmInput ... keypress detected")
-    // }
-    // useInput(onKeyFn, { isActive: showCursor })
+    const onKeyFn = (_input: string, key: Key) => {
+      if (key.backspace || key.delete) setValue("")
+      DEBUG && console.log("ConfirmInput ... keypress detected")
+    }
+    useInput(onKeyFn, { isActive: showCursor })
     
-    const onKeypressFn: KeyboardInputHandlerFn = (input: Readonly<Keypress>) => _callIfTrue(
-      _.includes([ "backspace", "delete" ], input.toString()),
-      () => {
-        // if (!showCursor) return // TODO make it so this isn't needed.
-        setValue("")
-        DEBUG && console.log("ConfirmInput ... keypress detected")
-      }
-    )
-    useKeyboard(onKeypressFn, { isActive: showCursor })
+    // Equivalent code via useKeypress:
+    // const onKeypressFn: KeyboardInputHandlerFn = (input: Readonly<Keypress>) => _callIfTrue(
+    //   _.includes([ "backspace", "delete" ], input.toString()),
+    //   () => {
+    //     setValue("")
+    //     DEBUG && console.log("ConfirmInput ... keypress detected")
+    //   }
+    // )
+    // useKeyboard(onKeypressFn, { isActive: showCursor })
     
     // Equivalent code via useNodeKeypress:
     // const onNodeKeypressFn: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {

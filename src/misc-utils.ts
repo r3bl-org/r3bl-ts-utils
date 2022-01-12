@@ -16,17 +16,18 @@
  */
 
 import EventEmitter from "events"
+import { v4 as uuidv4 } from "uuid"
 import { ColorConsole, Styles } from "./color-console-utils/color-console"
 
 export const sleep = (ms = 500) => {
-  const sprites = ["-", "\\", "-", "/"]
-
+  const sprites = [ "-", "\\", "-", "/" ]
+  
   let count = 0
   const printDotsInterval = setInterval(() => {
     const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
     ColorConsole.create(Styles.Primary)("Sleep " + sprite).consoleLogInPlace()
   }, 100)
-
+  
   return new Promise<void>((resolveFn) => {
     setTimeout(() => {
       clearInterval(printDotsInterval)
@@ -111,13 +112,13 @@ type EventListener = (name: EventName) => void
 
 export class LifecycleHelper extends EventEmitter {
   static instance = new LifecycleHelper()
-
+  
   static addStartListener = (listener: EventListener) => this.instance.on("start", listener)
   static addExitListener = (listener: EventListener) => this.instance.on("exit", listener)
-
+  
   static fireExit = () => this.instance.emit("exit")
   static fireStart = () => this.instance.emit("start")
-
+  
   static removeAll = () => this.instance.removeAllListeners()
 }
 
@@ -138,19 +139,19 @@ export class Data {
 export function anyToString(arg: any) {
   if (!arg || typeof arg === "function") return ""
   if (typeof arg === "string") return `"${arg}"`
-
+  
   const strings = new Array<string>()
-
+  
   if (arg instanceof Map) strings.push(mapToString(arg))
   else if (Array.isArray(arg)) strings.push(arrayToString(arg))
   else if (typeof arg === "object") strings.push(objectToString(arg as Record<string, unknown>))
-
+  
   return strings.join(", ")
 }
 
 function mapToString(map: Map<any, any>): string {
   const strings = new Array<string>()
-  for (const [key, value] of map.entries())
+  for (const [ key, value ] of map.entries())
     strings.push(`${anyToString(key)}:${anyToString(value)}`)
   return `{ ${strings.join(", ")} }`
 }
@@ -163,9 +164,12 @@ function arrayToString(array: Array<any>): string {
 
 function objectToString(object: Record<string, unknown>): string {
   const strings = new Array<string>()
-  for (const [key, value] of Object.entries(object)) {
+  for (const [ key, value ] of Object.entries(object)) {
     if (!value || typeof value === "function") continue // Skip functions & falsy values.
     strings.push(`${anyToString(key)}:${anyToString(value)}`)
   }
   return `{ ${strings.join(", ")} }`
 }
+
+// Generate UUID.
+export const generateUID = () => uuidv4()
