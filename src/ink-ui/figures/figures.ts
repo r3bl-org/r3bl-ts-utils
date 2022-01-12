@@ -26,19 +26,20 @@ export const figures: FigureSet = shouldUseMain ? mainSymbols : fallbackSymbols
 const isFallbackSymbol = (key: keyof FigureSet, mainSymbol: string): boolean =>
   fallbackSymbols[key] !== mainSymbol
 
-const getFigureRegExp = (key: keyof FigureSet, mainSymbol: string): [ RegExp, string ] => [
-  new RegExp(escapeStringRegexp(mainSymbol), "g"), fallbackSymbols[key]
+const getFigureRegExp = (key: keyof FigureSet, mainSymbol: string): [RegExp, string] => [
+  new RegExp(escapeStringRegexp(mainSymbol), "g"),
+  fallbackSymbols[key],
 ]
 
-let replacements: [ RegExp, string ][] = []
+let replacements: [RegExp, string][] = []
 const getReplacements = () => {
   if (replacements.length > 0) {
     return replacements
   }
-  
+
   replacements = Object.entries(mainSymbols)
-    .filter(([ key, mainSymbol ]) => isFallbackSymbol(key as keyof FigureSet, mainSymbol as string))
-    .map(([ key, mainSymbol ]) => getFigureRegExp(key as keyof FigureSet, mainSymbol as string))
+    .filter(([key, mainSymbol]) => isFallbackSymbol(key as keyof FigureSet, mainSymbol as string))
+    .map(([key, mainSymbol]) => getFigureRegExp(key as keyof FigureSet, mainSymbol as string))
   return replacements
 }
 
@@ -62,8 +63,8 @@ const getReplacements = () => {
  */
 export function replaceSymbols(arg: string): string {
   if (shouldUseMain) return arg
-  
-  for (const [ figureRegExp, fallbackSymbol ] of getReplacements()) {
+
+  for (const [figureRegExp, fallbackSymbol] of getReplacements()) {
     arg = arg.replace(figureRegExp, fallbackSymbol)
   }
   return arg
@@ -73,25 +74,24 @@ function isUnicodeSupported(): boolean {
   if (process.platform !== "win32") {
     return process.env["TERM"] !== "linux" // Linux console (kernel)
   }
-  
-  return Boolean(process.env["CI"]) ||
-         Boolean(process.env["WT_SESSION"]) || // Windows Terminal
-         process.env["ConEmuTask"] === "{cmd::Cmder}" || // ConEmu and cmder
-         process.env["TERM_PROGRAM"] === "vscode" ||
-         process.env["TERM"] === "xterm-256color" ||
-         process.env["TERM"] === "alacritty"
+
+  return (
+    Boolean(process.env["CI"]) ||
+    Boolean(process.env["WT_SESSION"]) || // Windows Terminal
+    process.env["ConEmuTask"] === "{cmd::Cmder}" || // ConEmu and cmder
+    process.env["TERM_PROGRAM"] === "vscode" ||
+    process.env["TERM"] === "xterm-256color" ||
+    process.env["TERM"] === "alacritty"
+  )
 }
 
 function escapeStringRegexp(arg: string): string {
   if (typeof arg !== "string") {
     throw new TypeError("Expected a string")
   }
-  
+
   // Escape characters with special meaning either inside or outside character sets.
   // Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler
   // form would be disallowed by Unicode patterns’ stricter grammar.
-  return arg
-    .replace(/[|\\{}()[\]^$+*?.]/g, "\\$&")
-    .replace(/-/g, "\\x2d")
+  return arg.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d")
 }
-

@@ -209,7 +209,7 @@ export const common = {
   lineUpDownLeftDoubleRightDouble: "╪",
   lineCross: "╳",
   lineBackslash: "╲",
-  lineSlash: "╱"
+  lineSlash: "╱",
 }
 
 const { platform } = process
@@ -218,17 +218,15 @@ const { platform } = process
 export const mainSymbols: FigureSet = {
   ...common,
   // The main symbols for those do not look that good on Ubuntu.
-  ...(
-    platform === "linux" ?
-      {
+  ...(platform === "linux"
+    ? {
         circleQuestionMark: "?⃝",
-        questionMarkPrefix: "?⃝"
-      } :
-      {
-        circleQuestionMark: "?",
-        questionMarkPrefix: "?"
+        questionMarkPrefix: "?⃝",
       }
-  ),
+    : {
+        circleQuestionMark: "?",
+        questionMarkPrefix: "?",
+      }),
   tick: "✔",
   info: "ℹ",
   warning: "⚠",
@@ -262,7 +260,7 @@ export const mainSymbols: FigureSet = {
   nodejs: "⬢",
   oneSeventh: "⅐",
   oneNinth: "⅑",
-  oneTenth: "⅒"
+  oneTenth: "⅒",
 }
 
 export const fallbackSymbols = {
@@ -302,6 +300,5 @@ export const fallbackSymbols = {
   nodejs: "♦",
   oneSeventh: "1/7",
   oneNinth: "1/9",
-  oneTenth: "1/10"
+  oneTenth: "1/10",
 }
-
