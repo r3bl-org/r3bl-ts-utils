@@ -16,9 +16,10 @@
  */
 
 import { Box, Text } from "ink"
-import React, { EffectCallback, FC, useEffect } from "react"
+import React, { FC, useEffect } from "react"
 import {
-  _callIfTrue, _callIfTruthy, Keypress, TextColor, useKeyboard, useStateSafely
+  _callIfTrue, _callIfTruthy, _callIfTruthyWithReturn, Keypress, TextColor, useKeyboard,
+  useStateSafely
 } from "../../index"
 import { CheckBox } from "./checkbox"
 import { Indicator } from "./indicator"
@@ -63,21 +64,19 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   }
   
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
-  if (testing) {
-    const attachListenerToEmitterEffectFn: EffectCallback = () => {
-      const { emitter, eventName } = testing
-      emitter.on(eventName, onKeypress)
+  _callIfTruthyWithReturn(
+    testing,
+    ({ emitter, eventName }) => {
+      useEffect(() => {emitter.on(eventName, onKeypress)}, [])
+    },
+    () => {
+      useKeyboard(onKeypress, { isActive: hasFocus }, testing)
     }
-    useEffect(attachListenerToEmitterEffectFn, []) // Attach only once.
-  } else {
-    useKeyboard(onKeypress, { isActive: hasFocus }, testing)
-  }
+  )
   
   return (
     <Box flexDirection="column">
-      {slicedItemsToDisplay.map(
-        (item: ListItem, index: number) =>
-          renderListItem(item, index))}
+      {slicedItemsToDisplay.map(renderListItem)}
       {DEBUG && <DebugRow/>}
     </Box>
   )
@@ -114,12 +113,16 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     return isScrollable() ? arrRotate(items, rotateIndex).slice(0, getRowsToDisplay()) : items
   }
   
+  function isMaxRowsDefined(): boolean {
+    return maxRows !== -1
+  }
+  
   function isScrollable(): boolean {
-    return maxRows !== -1 && items.length > maxRows
+    return isMaxRowsDefined() && items.length > maxRows
   }
   
   function getRowsToDisplay(): number {
-    return maxRows === -1 ? items.length : maxRows
+    return isMaxRowsDefined() ? items.length : maxRows
   }
   
   function uparrowPressed(): void {
@@ -145,12 +148,13 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       )
     })
     
-    if (onHighlight) {
+    _callIfTruthy(onHighlight, onHighlight => {
       const slicedItems = isScrollable() ?
-        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) : items
+        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
+        items
       const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
-      if (highlightedItem) onHighlight(highlightedItem)
-    }
+      _callIfTruthy(highlightedItem, onHighlight)
+    })
   }
   
   function downarrowPressed(): void {
@@ -176,54 +180,55 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       )
     })
     
-    if (onHighlight) {
+    _callIfTruthy(onHighlight, onHighlight => {
       const slicedItems = isScrollable() ?
-        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) : items
+        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
+        items
       const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
-      if (highlightedItem) onHighlight(highlightedItem)
-    }
+      _callIfTruthy(highlightedItem, onHighlight)
+    })
   }
   
   function spacePressed(): void {
     DEBUG && console.log(TextColor.builder.magenta.build()("spacePressed"))
     
     const highlightedItem: ListItem | undefined = slicedItemsToDisplay[highlightedIndex]
-    if (highlightedItem) toggleSelectionFor(highlightedItem)
+    _callIfTruthy(highlightedItem, toggleSelectionFor)
   }
   
   function returnPressed(): void {
     DEBUG && console.log(TextColor.builder.magenta.build()("enterPressed"))
     
-    if (onSubmit && selected) onSubmit(selected)
+    if (onSubmit) onSubmit(selected)
   }
   
   function toggleSelectionFor(selectedItem: ListItem): void {
     const isSelected = isItemSelected(selected, selectedItem.key)
     
     _callIfTruthy(DEBUG, () => {
+      const green = TextColor.builder.green.build()
+      const red = TextColor.builder.red.build()
       console.log(
         "| selectedItem.key:", selectedItem.key,
         "| selectedItem.label:", selectedItem.label,
-        "| isSelected", isSelected ?
-          TextColor.builder.green.build()("true") : TextColor.builder.red.build()("false")
+        "| isSelected", isSelected ? green("true") : red("false")
       )
     })
     
     return isSelected ? unselect() : select()
     
     function select(): void {
-      _callIfTruthy(onSelect, onSelect => onSelect(selectedItem))
-      if (singleSelectionMode && selected.length > 0) {
-        setSelected([ selectedItem ])
-      } else {
-        setSelected([ ...selected, selectedItem ])
-      }
+      if (singleSelectionMode && selected.length > 0) setSelected([ selectedItem ])
+      else setSelected([ ...selected, selectedItem ])
+      
+      if (onSelect) onSelect(selectedItem)
     }
     
     function unselect(): void {
-      _callIfTruthy(onUnselect, onUnselect => onUnselect(selectedItem))
       const selectedWithItemRemoved = selected.filter(it => it.key !== selectedItem.key)
       setSelected(selectedWithItemRemoved)
+      
+      if (onUnselect) onUnselect(selectedItem)
     }
   }
 }
@@ -234,6 +239,6 @@ export function isItemSelected(
 ):
   boolean {
   const arrayOfKeys = selected.map(({ key }) => key)
-  const isFound: boolean = arrayOfKeys.includes(itemKey)
+  const isFound = arrayOfKeys.includes(itemKey)
   return isFound
 }

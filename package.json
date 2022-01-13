@@ -48,7 +48,14 @@
     "setInterval",
     "Kotlin scope functions",
     "TypeScript",
-    "sleep"
+    "sleep",
+    "ink ui components",
+    "single select input",
+    "multi select input",
+    "figures",
+    "colors.js",
+    "chalk",
+    "node keypress"
   ],
   "author": "Nazmul Idris",
   "license": "Apache-2.0",
