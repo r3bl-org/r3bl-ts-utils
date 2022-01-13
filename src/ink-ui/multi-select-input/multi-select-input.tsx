@@ -67,11 +67,21 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   }
   
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
+  // @see use-keyboard.tsx
   _callIfTruthyWithReturn(
     testing,
+    // Testing mode.
     ({ emitter, eventName }) => {
-      useEffect(() => {emitter.on(eventName, onKeypress)}, [])
+      // https://stackoverflow.com/questions/53898810/executing-async-code-on-update-of-state-with-react-hooks
+      // https://github.com/r3bl-org/r3bl-ts-utils/commit/a3248540ea325d3896ee56a84d003f15529169cd
+      // http://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#custom-hooks
+      useEffect(
+        () => {emitter.on(eventName, onKeypress)},
+        // Provide states that are affected by this effect, so they can update!
+        [ highlightedIndex, selected ]
+      )
     },
+    // Production mode.
     () => {
       useKeyboard(onKeypress, { isActive: hasFocus }, testing)
     }

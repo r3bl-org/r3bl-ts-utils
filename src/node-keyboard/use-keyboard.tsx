@@ -19,8 +19,9 @@ import EventEmitter from "events"
 import { useInput, useStdin } from "ink"
 import StdinContext from "ink/build/components/StdinContext"
 import { noop } from "lodash"
-import React, { EffectCallback, FC, useEffect, useMemo, useState } from "react"
+import React, { FC, useEffect, useMemo, useState } from "react"
 import { _let } from "../kotlin-lang-utils"
+import { _callIfTruthyWithReturn } from "../misc-utils"
 import { StateHook } from "../react-hook-utils"
 import { Keypress } from "./keypress"
 import { createFromInk } from "./keypress-builder-ink"
@@ -201,19 +202,27 @@ export const useKeyboard = (
     })
   
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
-  if (testing) {
-    const attachListenerToEmitterEffectFn: EffectCallback = () => {
-      const { emitter, eventName } = testing
-      emitter.on(eventName, onKeypress)
+  // @see multi-select-input.tsx
+  return _callIfTruthyWithReturn(
+    testing,
+    // Testing mode.
+    ({ emitter, eventName }) => {
+      // https://stackoverflow.com/questions/53898810/executing-async-code-on-update-of-state-with-react-hooks
+      // https://github.com/r3bl-org/r3bl-ts-utils/commit/a3248540ea325d3896ee56a84d003f15529169cd
+      // http://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#custom-hooks
+      useEffect(
+        () => {emitter.on(eventName, onKeypress)},
+        [ keyPress ] // Provide state that is affected by this effect, so it can update!
+      )
+      return new UseKeyboardReturnValue(keyPress, true)
+    },
+    // Production mode.
+    () => {
+      if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
+      useNodeKeypress(onKeypress, options)
+      return new UseKeyboardReturnValue(keyPress, true)
     }
-    useEffect(attachListenerToEmitterEffectFn, []) // Attach only once.
-    return new UseKeyboardReturnValue(keyPress, true)
-  }
-  
-  // Production code.
-  if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
-  useNodeKeypress(onKeypress, options)
-  return new UseKeyboardReturnValue(keyPress, true)
+  )
 }
 
 /**
