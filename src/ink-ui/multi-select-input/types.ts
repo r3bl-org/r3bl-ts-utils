@@ -38,7 +38,7 @@ export class ListItem extends Data {
   constructor(readonly label: string, readonly value?: any, readonly key: string = generateUID()) {
     super()
   }
-  
+
   static createFromArray(array: string[]) {
     return array.map((value) => new ListItem(value))
   }
@@ -50,43 +50,43 @@ export type OperateOnManyItemsFn = (items: ListItem[]) => void
 export type MultiSelectInputProps = {
   /** Items to display in a list. Each item must be an object and have `label`. */
   items: ListItem[]
-  
+
   /** Enable or disable whether this component can accept user input via keyboard. */
   hasFocus?: boolean
-  
+
   /** Enable single selection mode (default is multi selection mode). */
   singleSelectionMode?: boolean
-  
+
   /** Limit the max number of items to display. */
   maxRows?: number
-  
+
   /** Items set as selected by default. */
   initialSelected?: ListItem[]
-  
+
   /** Index of initially highlighted item in `items` array. */
   initialHighlightedIndex?: number
-  
+
   /** Function to call when user selects an item. */
   onSelect?: OperateOnOneItemFn
-  
+
   /** Function to call when user's cursor is over an item. */
   onHighlight?: OperateOnOneItemFn
-  
+
   /** Function to call when user unselects an item. */
   onUnselect?: OperateOnOneItemFn
-  
+
   /** Function to call when user submits selected items. */
   onSubmit?: OperateOnManyItemsFn
-  
+
   /** Custom component to override the default indicator component. */
   indicatorComponent?: React.ComponentType<IndicatorProps>
-  
+
   /** Custom component to override the default check box component. */
   checkboxComponent?: React.ComponentType<CheckBoxProps>
-  
+
   /** Custom component to override the default item component. */
   itemComponent?: React.ComponentType<ItemProps>
-  
+
   /** Optional argument that enables test mode. */
   testing?: NodeKeypressTesting
 }

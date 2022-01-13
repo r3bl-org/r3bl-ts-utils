@@ -55,12 +55,12 @@ export const inkCLIAppMainFn = async (
   errExitMsg = ""
 ): Promise<void> => {
   const instance = runFn()
-  
+
   LifecycleHelper.addExitListener(() => {
     TimerRegistry.killAll()
     instance.unmount()
   })
-  
+
   try {
     await instance.waitUntilExit()
     if (okExitMsg) console.log(TextColor.builder.bgYellow.black.build()(okExitMsg))
