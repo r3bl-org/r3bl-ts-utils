@@ -20,9 +20,14 @@ import React, { FC } from "react"
 import { figures } from "../figures"
 import { CheckBoxProps } from "./types"
 
-export const CheckBox: FC<CheckBoxProps> = ({ isSelected }) => (
-  <Box marginRight={1}>
-    <Text color="green">{isSelected ? figures.circleFilled : figures.circle}</Text>
-  </Box>
-)
+export const CheckBox: FC<CheckBoxProps> = ({ isSelected, singleSelectionMode }) => {
+  const empty: string = singleSelectionMode ? figures.circle : figures.checkboxOff
+  const filled: string = singleSelectionMode ? figures.circleFilled : figures.checkboxOn
+  return (
+    
+    <Box marginRight={1}>
+      <Text color="green">{isSelected ? filled : empty}</Text>
+    </Box>
+  )
+}
 

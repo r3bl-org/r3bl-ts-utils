@@ -16,6 +16,7 @@
  */
 
 import { Box, Text } from "ink"
+import { noop } from "lodash"
 import React, { FC, useEffect } from "react"
 import {
   _callIfTrue, _callIfTruthy, _callIfTruthyWithReturn, Keypress, TextColor, useKeyboard,
@@ -30,20 +31,20 @@ import { arrRotate } from "./utils"
 const DEBUG = false
 
 export const MultiSelectInput: FC<MultiSelectInputProps> = ({
-  items,
+  items, /* Only required prop. */
+  hasFocus = true,
+  singleSelectionMode = false,
   maxRows = -1,
   initialHighlightedIndex = 0,
   initialSelected = new Array<ListItem>(),
-  hasFocus = true,
   indicatorComponent = Indicator,
   itemComponent = Item,
   checkboxComponent = CheckBox,
-  onHighlight,
-  onSelect,
-  onUnselect,
-  onSubmit,
-  testing,
-  singleSelectionMode
+  onHighlight = noop,
+  onSelect = noop,
+  onUnselect = noop,
+  onSubmit = noop,
+  testing = undefined,
 }) => {
   // Generate state from props.
   const [ rotateIndex, setRotateIndex ] = useStateSafely(0).asArray()
@@ -61,6 +62,8 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     if (keypress.matches("downarrow")) downarrowPressed()
     if (keypress.matches("uparrow")) uparrowPressed()
     if (keypress.matches("space")) spacePressed()
+    if (keypress.matches("delete")) deletePressed()
+    if (keypress.matches("backspace")) deletePressed()
   }
   
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
@@ -103,7 +106,7 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     return (
       <Box key={key}>
         {React.createElement(indicatorComponent, { isHighlighted })}
-        {React.createElement(checkboxComponent, { isSelected })}
+        {React.createElement(checkboxComponent, { isSelected, singleSelectionMode })}
         {React.createElement(itemComponent, { label, isHighlighted })}
       </Box>
     )
@@ -148,13 +151,11 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       )
     })
     
-    _callIfTruthy(onHighlight, onHighlight => {
-      const slicedItems = isScrollable() ?
-        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
-        items
-      const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
-      _callIfTruthy(highlightedItem, onHighlight)
-    })
+    const slicedItems = isScrollable() ?
+      arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
+      items
+    const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
+    _callIfTruthy(highlightedItem, onHighlight)
   }
   
   function downarrowPressed(): void {
@@ -180,13 +181,11 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       )
     })
     
-    _callIfTruthy(onHighlight, onHighlight => {
-      const slicedItems = isScrollable() ?
-        arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
-        items
-      const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
-      _callIfTruthy(highlightedItem, onHighlight)
-    })
+    const slicedItems = isScrollable() ?
+      arrRotate(items, nextRotateIndex).slice(0, getRowsToDisplay()) :
+      items
+    const highlightedItem: ListItem | undefined = slicedItems[nextHighlightedIndex]
+    _callIfTruthy(highlightedItem, onHighlight)
   }
   
   function spacePressed(): void {
@@ -198,8 +197,11 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   
   function returnPressed(): void {
     DEBUG && console.log(TextColor.builder.magenta.build()("enterPressed"))
-    
-    if (onSubmit) onSubmit(selected)
+    onSubmit(selected)
+  }
+  
+  function deletePressed(): void {
+    setSelected([])
   }
   
   function toggleSelectionFor(selectedItem: ListItem): void {
@@ -220,15 +222,13 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     function select(): void {
       if (singleSelectionMode && selected.length > 0) setSelected([ selectedItem ])
       else setSelected([ ...selected, selectedItem ])
-      
-      if (onSelect) onSelect(selectedItem)
+      onSelect(selectedItem)
     }
     
     function unselect(): void {
       const selectedWithItemRemoved = selected.filter(it => it.key !== selectedItem.key)
       setSelected(selectedWithItemRemoved)
-      
-      if (onUnselect) onUnselect(selectedItem)
+      onUnselect(selectedItem)
     }
   }
 }

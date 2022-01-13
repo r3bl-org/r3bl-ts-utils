@@ -23,7 +23,10 @@ import { NodeKeypressTesting } from "../../node-keyboard"
 export type IndicatorProps = { isHighlighted: boolean }
 
 /** Props for custom check box component. */
-export type CheckBoxProps = { isSelected: boolean }
+export type CheckBoxProps = {
+  isSelected: boolean
+  singleSelectionMode: boolean
+}
 
 /** Props for custom item component. */
 export type ItemProps = {
