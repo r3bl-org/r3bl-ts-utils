@@ -17,10 +17,14 @@
 
 import { Box, render, Text, useApp } from "ink"
 import React, { FC } from "react"
+import { ConfirmInput } from "../../ink-ui"
+import { _also } from "../../kotlin-lang-utils"
 import {
-  _also, ConfirmInput, createNewShortcutToActionMap, inkCLIAppMainFn, ShortcutToActionMap,
-  StateHolder, UseKeyboardReturnValue, useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely,
-} from "../../index"
+  createNewShortcutToActionMap, ShortcutToActionMap, UseKeyboardReturnValue,
+  useKeyboardWithMapCached, UseKeyboardWrapper
+} from "../../node-keyboard"
+import { StateHolder } from "../../react-hook-utils"
+import { inkCLIAppMainFn, useStateSafely } from "../../react-ink-hook-utils"
 
 // Types & data classes.
 export type HookOutput = {

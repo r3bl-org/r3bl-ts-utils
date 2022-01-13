@@ -23,7 +23,7 @@ import * as React from "react"
 import { FC } from "react"
 import { TextColor } from "../color-console-utils"
 import { ListItem, MultiSelectInput } from "../ink-ui"
-import { KeyCreator, Keypress, UseKeyboardWrapper } from "../node-keyb-utils"
+import { KeyCreator, Keypress, UseKeyboardWrapper } from "../node-keyboard"
 import { useStateSafely } from "../react-ink-hook-utils"
 import { Flag } from "./test-use-keyboard-helpers"
 

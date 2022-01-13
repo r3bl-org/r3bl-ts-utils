@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="src-no-tests" pattern="(file[r3bl-ts-utils]:src/**/*||file:jestconfig.json)&amp;&amp;!file[r3bl-ts-utils]:src/__tests__//*" />
+</component>

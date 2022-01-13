@@ -15,6 +15,7 @@
  *
  */
 
+export * from "./utils"
 export * from "./keypress-constants"
 export * from "./readline-config"
 export * from "./keypress"

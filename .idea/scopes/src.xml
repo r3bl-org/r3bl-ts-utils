@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="src" pattern="file[r3bl-ts-utils]:src/*||file[r3bl-ts-utils]:src/__tests__/*||file:package.json||file:jestconfig.json||file:.gitignore||file:.npmignore||file:tsconfig.json" />
+</component>

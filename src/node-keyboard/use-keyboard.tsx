@@ -22,11 +22,13 @@ import { noop } from "lodash"
 import React, { EffectCallback, FC, useEffect, useMemo, useState } from "react"
 import { _let } from "../kotlin-lang-utils"
 import { StateHook } from "../react-hook-utils"
-import {
-  createFromInk, createFromKeypress, HandleNodeKeypressFn, IsActive, isTTY, Keypress, ReadlineKey,
-  useNodeKeypress,
-} from "./index"
+import { Keypress } from "./keypress"
+import { createFromInk } from "./keypress-builder-ink"
+import { createFromKeypress } from "./keypress-builder-readline"
+import { ReadlineKey } from "./readline-config"
 import { tryToRunActionForShortcut } from "./use-keyboard-internal"
+import { HandleNodeKeypressFn, IsActive, useNodeKeypress } from "./use-node-keypress"
+import { isTTY } from "./utils"
 
 /**
  Ink has a hook that is supposed to be used to get user input from the keyboard called `useInput`,

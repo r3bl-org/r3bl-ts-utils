@@ -17,10 +17,14 @@
 
 import { Box, render, Text } from "ink"
 import React, { FC } from "react"
+import { TextColor } from "../color-console-utils"
+import { _also } from "../kotlin-lang-utils"
+import { LifecycleHelper } from "../misc-utils"
 import {
-  _also, createNewShortcutToActionMap, inkCLIAppMainFn, LifecycleHelper, ShortcutToActionMap,
-  TextColor, UseKeyboardReturnValue, useKeyboardWithMapCached,
-} from "../index"
+  createNewShortcutToActionMap, ShortcutToActionMap, UseKeyboardReturnValue,
+  useKeyboardWithMapCached
+} from "../node-keyboard"
+import { inkCLIAppMainFn } from "../react-ink-hook-utils"
 
 // Types & data classes.
 

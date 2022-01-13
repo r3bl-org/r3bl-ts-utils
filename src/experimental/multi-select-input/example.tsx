@@ -17,10 +17,14 @@
 
 import { Box, render, Text } from "ink"
 import React, { FC, useMemo } from "react"
+import { TextColor } from "../../color-console-utils"
+import { ListItem, MultiSelectInput } from "../../ink-ui"
+import { _also } from "../../kotlin-lang-utils"
+import { LifecycleHelper } from "../../misc-utils"
 import {
-  _also, createNewShortcutToActionMap, inkCLIAppMainFn, LifecycleHelper, ListItem, MultiSelectInput,
-  ShortcutToActionMap, TextColor, useKeyboardWithMapCached, UseKeyboardWrapper, useStateSafely
-} from "../../index"
+  createNewShortcutToActionMap, ShortcutToActionMap, useKeyboardWithMapCached, UseKeyboardWrapper
+} from "../../node-keyboard"
+import { inkCLIAppMainFn, useStateSafely } from "../../react-ink-hook-utils"
 
 // Function component.
 

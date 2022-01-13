@@ -16,7 +16,9 @@
  */
 
 import { render } from "ink"
-import { LifecycleHelper, TextColor, TimerRegistry } from "../index"
+import { TextColor } from "../color-console-utils"
+import { LifecycleHelper } from "../misc-utils"
+import { TimerRegistry } from "../timer-utils"
 
 /**
  * Launches a CLI app. This is the "bootloader" equivalent for a CLI app.
@@ -53,12 +55,12 @@ export const inkCLIAppMainFn = async (
   errExitMsg = ""
 ): Promise<void> => {
   const instance = runFn()
-
+  
   LifecycleHelper.addExitListener(() => {
     TimerRegistry.killAll()
     instance.unmount()
   })
-
+  
   try {
     await instance.waitUntilExit()
     if (okExitMsg) console.log(TextColor.builder.bgYellow.black.build()(okExitMsg))

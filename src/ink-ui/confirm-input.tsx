@@ -18,9 +18,10 @@
 import TextInput from "ink-text-input"
 import _ from "lodash"
 import React, { FC } from "react"
-import {
-  _callIfTrue, KeyboardInputHandlerFn, Keypress, StateHook, useKeyboard, useStateSafely
-} from "../index"
+import { _callIfTrue } from "../misc-utils"
+import { KeyboardInputHandlerFn, Keypress, useKeyboard } from "../node-keyboard"
+import { StateHook } from "../react-hook-utils"
+import { useStateSafely } from "../react-ink-hook-utils"
 
 const DEBUG = false
 

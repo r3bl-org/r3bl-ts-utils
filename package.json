@@ -23,15 +23,15 @@
     "format-with-tsfmt": "tsfmt -r",
     "flush-npm-cache": "rm package-lock.json && rm -rf node_modules/ && npm cache clean --force && npm i",
     "/*experimental*/": "These scripts allow you to run experimental projects",
-    "exp-template": "npm run build && node build/experimental/template.js",
-    "exp-node-readline-keypress-logger": "npm run build && node build/experimental/node-keypress/readline-keypress-logger.js",
-    "exp-usekeyboard-ink-compat": "npm run build && node build/experimental/node-keypress/ink-compat.js",
-    "exp-usekeyboard-node-keypress": "npm run build && node build/experimental/node-keypress/node-keypress.js",
-    "exp-textinput-ink-compat": "npm run build && node build/experimental/text-input/ink-compat.js",
-    "exp-textinput-node-keypress": "npm run build && node build/experimental/text-input/node-keypress.js",
-    "exp-confirminput-node-keypress": "npm run build && node build/experimental/confirm-input/node-keypress.js",
+    "exp-template": "node -r tsm src/experimental/template.tsx",
+    "exp-node-readline-keypress-logger": "node -r tsm src/experimental/node-keypress/readline-keypress-logger.ts",
+    "exp-usekeyboard-ink-compat": "node -r tsm src/experimental/node-keypress/ink-compat.tsx",
+    "exp-usekeyboard-node-keypress": "node -r tsm src/experimental/node-keypress/node-keypress.tsx",
+    "exp-textinput-ink-compat": "node -r tsm src/experimental/text-input/ink-compat.tsx",
+    "exp-textinput-node-keypress": "node -r tsm src/experimental/text-input/node-keypress.tsx",
+    "exp-confirminput-node-keypress": "node -r tsm src/experimental/confirm-input/node-keypress.tsx",
     "exp-usekeyboard-node-keypress-suite": "npm run exp-node-readline-keypress-logger && npm run exp-usekeyboard-node-keypress && npm run exp-usekeyboard-ink-compat && npm run exp-textinput-node-keypress && npm run exp-confirminput-node-keypress",
-    "exp-multi-select-input": "npm run build && node build/experimental/multi-select-input/example.js"
+    "exp-multi-select-input": "node -r tsm src/experimental/multi-select-input/example.tsx"
   },
   "repository": {
     "type": "git",

@@ -18,7 +18,7 @@
 import {
   _also, _let, createMutableCopyOf, createNewShortcutToActionMap, KeyCreator, Keypress,
 } from "../index"
-import { tryToRunActionForShortcut } from "../node-keyb-utils/use-keyboard-internal"
+import { tryToRunActionForShortcut } from "../node-keyboard/use-keyboard-internal"
 
 test("KeyPress works", () => {
   _also(

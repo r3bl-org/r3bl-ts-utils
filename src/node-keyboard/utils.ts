@@ -15,15 +15,19 @@
  *
  */
 
-export * from "./color-console-utils"
-export * from "./cache-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./node-keyboard"
-export * from "./react-hook-utils"
-export * from "./react-ink-hook-utils"
-export * from "./react-utils"
-export * from "./timer-utils"
-export * from "./ink-ui"
+import { TextColor } from "../color-console-utils"
 
-// Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html
+export function logTTYState(msg: string, em = false) {
+  console.log(
+    em
+      ? TextColor.builder.bgWhite.red.bold.build()(msg)
+      : TextColor.builder.red.underline.bold.build()(msg)
+  )
+  // console.log("stdin.isRaw", process.stdin.isRaw)
+  // console.log("stdin.isTTY", process.stdin.isTTY)
+  console.log("isTTY()", isTTY())
+  console.log("isTTYinRawMode()", isTTYinRawMode())
+}
+
+export const isTTY = () => process?.stdin?.isTTY
+export const isTTYinRawMode = () => process?.stdin?.isTTY && process?.stdin?.isRaw
