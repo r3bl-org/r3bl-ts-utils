@@ -25,6 +25,7 @@ import {
 import { CheckBox } from "./checkbox"
 import { Indicator } from "./indicator"
 import { Item } from "./item"
+import { SelectionModel } from "./selection-model"
 import { ListItem, MultiSelectInputProps } from "./types"
 import { arrRotate } from "./utils"
 
@@ -48,9 +49,10 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
 }) => {
   // Generate state from props.
   const [ rotateIndex, setRotateIndex ] = useStateSafely(0).asArray()
+  const [ selectionModel, setSelectionModel ] = useStateSafely(
+    new SelectionModel(initialSelected, singleSelectionMode)).asArray()
   const [ highlightedIndex, setHighlightedIndex ] =
     useStateSafely(initialHighlightedIndex).asArray()
-  const [ selected, setSelected ] = useStateSafely(initialSelected).asArray()
   
   // Check whether scrolling is active and item needs to be sliced based on "viewport".
   const isScrollActive = isScrollable()
@@ -79,7 +81,7 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       useEffect(
         () => {emitter.on(eventName, onKeypress)},
         // Provide states that are affected by this effect, so they can update!
-        [ highlightedIndex, selected ]
+        [ highlightedIndex, selectionModel ]
       )
     },
     // Production mode.
@@ -96,7 +98,6 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
   )
   
   function DebugRow() {
-    const selectedStr = selected?.map(({ label }) => label).join(", ")
     return (
       <Box flexDirection="column">
         <Text>hasFocus: {hasFocus ? "true" : "false"}</Text>
@@ -105,14 +106,14 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
         <Text>getRowsToDisplay: {getRowsToDisplay()}</Text>
         <Text>rotateIndex: {rotateIndex}</Text>
         <Text>highlightedIndex: {TextColor.builder.red.bold.build()(`${highlightedIndex}`)}</Text>
-        <Text>selected: {selectedStr}</Text>
+        <Text>selected: {selectionModel.toString()}</Text>
       </Box>)
   }
   
   function renderListItem(item: ListItem, index: number) {
     const { key, label } = item
     const isHighlighted = index === highlightedIndex
-    const isSelected = isItemSelected(selected, key)
+    const isSelected = selectionModel.isItemSelected(item)
     
     return (
       <Box key={key}>
@@ -203,53 +204,18 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     DEBUG && console.log(TextColor.builder.magenta.build()("spacePressed"))
     
     const highlightedItem: ListItem | undefined = slicedItemsToDisplay[highlightedIndex]
-    _callIfTruthy(highlightedItem, toggleSelectionFor)
+    _callIfTruthy(
+      highlightedItem,
+      item => setSelectionModel(selectionModel.toggleSelectionFor(item, onSelect, onUnselect))
+    )
   }
   
   function returnPressed(): void {
     DEBUG && console.log(TextColor.builder.magenta.build()("enterPressed"))
-    onSubmit(selected)
+    onSubmit(selectionModel.getSelection())
   }
   
   function deletePressed(): void {
-    setSelected([])
+    setSelectionModel(selectionModel.clearAllSelections())
   }
-  
-  function toggleSelectionFor(selectedItem: ListItem): void {
-    const isSelected = isItemSelected(selected, selectedItem.key)
-    
-    _callIfTruthy(DEBUG, () => {
-      const green = TextColor.builder.green.build()
-      const red = TextColor.builder.red.build()
-      console.log(
-        "| selectedItem.key:", selectedItem.key,
-        "| selectedItem.label:", selectedItem.label,
-        "| isSelected", isSelected ? green("true") : red("false")
-      )
-    })
-    
-    return isSelected ? unselect() : select()
-    
-    function select(): void {
-      if (singleSelectionMode && selected.length > 0) setSelected([ selectedItem ])
-      else setSelected([ ...selected, selectedItem ])
-      onSelect(selectedItem)
-    }
-    
-    function unselect(): void {
-      const selectedWithItemRemoved = selected.filter(it => it.key !== selectedItem.key)
-      setSelected(selectedWithItemRemoved)
-      onUnselect(selectedItem)
-    }
-  }
-}
-
-export function isItemSelected(
-  selected: ListItem[],
-  itemKey: string
-):
-  boolean {
-  const arrayOfKeys = selected.map(({ key }) => key)
-  const isFound = arrayOfKeys.includes(itemKey)
-  return isFound
 }

@@ -75,12 +75,14 @@ test("multi-select-input multiple selection works", async () => {
   }
   
   // Setup dummy data.
-  const items = [ "one", "two", "three" ].map(it => new ListItem(it, it))
+  const items = [ "one", "two", "three" ]
+    .map(it => ListItem.createImmutable(it, it))
   const keys = {
     upKey: Keypress.buildImmutable(KeyCreator.upKey),
     downKey: Keypress.buildImmutable(KeyCreator.downKey),
     returnKey: Keypress.buildImmutable(KeyCreator.returnKey),
     spaceKey: Keypress.buildImmutable(KeyCreator.spaceKey),
+    deleteKey: Keypress.buildImmutable(KeyCreator.deleteKey),
   }
   
   // Run the test.
@@ -105,11 +107,21 @@ test("multi-select-input multiple selection works", async () => {
   })
   
   await delay(100)
+  emitter.emit(eventName, keys.deleteKey)
+  await delay(100)
+  _callIfTruthy(ink.lastFrame(), it => {
+    expect(TextColor.builder.stripColors.build()(it)).not.toContain(figures.checkboxOn + " two")
+    expect(TextColor.builder.stripColors.build()(it)).not.toContain(figures.checkboxOn + " one")
+  })
+  
+  await delay(100)
+  emitter.emit(eventName, keys.spaceKey)
+  await delay(100)
   emitter.emit(eventName, keys.returnKey)
   await delay(100)
   
   expect(flagOnSubmit.isSet()).toBeTruthy()
-  expect(ink.lastFrame()).toContain("selection=[one, two]")
+  expect(ink.lastFrame()).toContain("selection=[two]")
   
   ink.unmount()
   emitter.removeAllListeners()
@@ -163,7 +175,8 @@ test("multi-select-input single selection works", async () => {
   }
   
   // Setup dummy data.
-  const items = [ "one", "two", "three" ].map(it => new ListItem(it, it))
+  const items = [ "one", "two", "three" ]
+    .map(it => ListItem.createImmutable(it, it))
   const keys = {
     upKey: Keypress.buildImmutable(KeyCreator.upKey),
     downKey: Keypress.buildImmutable(KeyCreator.downKey),

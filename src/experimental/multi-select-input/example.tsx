@@ -67,7 +67,11 @@ const Wrapper: FC = () => {
   )
   useKeyboardWithMapCached(createShortcutsFn)
   
-  const items = useMemo(() => [ "one", "two", "three" ].map(it => new ListItem(it, it)), [])
+  const items = useMemo(
+    () => [ "one", "two", "three" ]
+      .map(it => ListItem.createImmutable(it, it)),
+    []
+  )
   
   return (
     <UseKeyboardWrapper>
