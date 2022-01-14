@@ -26,22 +26,19 @@ const DEBUG = false
 export class SelectionModel {
   private selected: ListItem[]
   private readonly singleSelectionMode
-  
+
   // Mutator methods (all immutable).
   /** @immutable */
-  constructor(
-    initialSelected: ListItem[],
-    singleSelectionMode: boolean,
-  ) {
+  constructor(initialSelected: ListItem[], singleSelectionMode: boolean) {
     this.selected = _.cloneDeep(initialSelected) // Clone the initialSelected array.
     this.singleSelectionMode = singleSelectionMode
   }
-  
+
   /** @immutable */
   clearAllSelections = (): SelectionModel => {
     return new SelectionModel([], this.singleSelectionMode)
   }
-  
+
   /** @immutable */
   toggleSelectionFor = (
     selectedItem: ListItem,
@@ -49,26 +46,29 @@ export class SelectionModel {
     onUnselect: OperateOnOneItemFn
   ): SelectionModel => {
     const isSelected = this.isItemSelected(selectedItem)
-    
+
     _callIfTruthy(DEBUG, () => {
       const green = TextColor.builder.green.build()
       const red = TextColor.builder.red.build()
       console.log(
-        "| selectedItem.key:", selectedItem.key,
-        "| selectedItem.label:", selectedItem.label,
-        "| isSelected", isSelected ? green("true") : red("false")
+        "| selectedItem.key:",
+        selectedItem.key,
+        "| selectedItem.label:",
+        selectedItem.label,
+        "| isSelected",
+        isSelected ? green("true") : red("false")
       )
     })
-    
+
     const addToSelected = (arg: ListItem): void => {
       this.selected.push(arg)
     }
-    
+
     const removeFromSelected = (selectedItem: ListItem): void => {
       if (this.selected.includes(selectedItem))
-        this.selected = this.selected.filter(it => it.key !== selectedItem.key)
+        this.selected = this.selected.filter((it) => it.key !== selectedItem.key)
     }
-    
+
     const select = (selectedItem: ListItem): void => {
       if (this.singleSelectionMode && this.selected.length > 0) {
         this.clearAllSelections()
@@ -78,30 +78,27 @@ export class SelectionModel {
       }
       onSelect(selectedItem)
     }
-    
+
     const unselect = (selectedItem: ListItem): void => {
       removeFromSelected(selectedItem)
       onUnselect(selectedItem)
     }
-    
+
     isSelected ? unselect(selectedItem) : select(selectedItem)
-    
-    return new SelectionModel(
-      this.selected,
-      this.singleSelectionMode,
-    )
+
+    return new SelectionModel(this.selected, this.singleSelectionMode)
   }
-  
+
   // Read only methods.
   /** @immutable */
   getSelection = (): ListItem[] => _.cloneDeep(this.selected)
-  
+
   isItemSelected = (query: ListItem): boolean => {
     const { key: queryKey } = query
     const arrayOfKeys = this.selected.map(({ key }) => key)
     const isFound = arrayOfKeys.includes(queryKey)
     return isFound
   }
-  
+
   toString = (): string => this.selected?.map(({ label }) => label).join(", ")
 }
