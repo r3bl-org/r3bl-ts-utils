@@ -17,10 +17,10 @@
 
 import { Box, Text } from "ink"
 import { noop } from "lodash"
-import React, { FC, useEffect } from "react"
+import React, { FC } from "react"
 import {
-  _callIfTrue, _callIfTruthy, _callIfTruthyWithReturn, Keypress, TextColor, useKeyboard,
-  useStateSafely
+  _callIfTrue, _callIfTruthy, _callIfTruthyWithReturn, Keypress, TextColor, useEventEmitter,
+  useKeyboard, useStateSafely
 } from "../../index"
 import { CheckBox } from "./checkbox"
 import { Indicator } from "./indicator"
@@ -74,18 +74,7 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
     testing,
     // Testing mode.
     ({ emitter, eventName }) => {
-      // https://stackoverflow.com/questions/53898810/executing-async-code-on-update-of-state-with-react-hooks
-      // https://github.com/r3bl-org/r3bl-ts-utils/commit/a3248540ea325d3896ee56a84d003f15529169cd
-      // https://github.com/r3bl-org/r3bl-ts-utils/commit/1f3cbb2b4988f44c6ea48233db1730e10f18dc60
-      // http://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#custom-hooks
-      useEffect(
-        () => {
-          emitter.on(eventName, onKeypress)
-          return () => {emitter.removeListener(eventName, onKeypress)}
-        },
-        // Provide states that are affected by this effect, so they can update!
-        [ highlightedIndex, selectionModel ]
-      )
+      useEventEmitter(emitter, eventName, onKeypress, { isActive: hasFocus })
     },
     // Production mode.
     () => {

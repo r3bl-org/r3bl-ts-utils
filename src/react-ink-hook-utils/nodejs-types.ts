@@ -15,10 +15,5 @@
  *
  */
 
-export * from "./nodejs-types"
-export * from "./use-event-emitter"
-export * from "./testing"
-export * from "./use-tty-size"
-export * from "./use-clock"
-export * from "./use-state-safely"
-export * from "./ink-main-helper"
+export type NodeJsListenerFn = (...args: any) => void
+export type IsActive = { isActive: boolean }

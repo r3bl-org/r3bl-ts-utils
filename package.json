@@ -30,8 +30,8 @@
     "exp-textinput-ink-compat": "node -r tsm src/experimental/text-input/ink-compat.tsx",
     "exp-textinput-node-keypress": "node -r tsm src/experimental/text-input/node-keypress.tsx",
     "exp-confirminput-node-keypress": "node -r tsm src/experimental/confirm-input/node-keypress.tsx",
-    "exp-usekeyboard-node-keypress-suite": "npm run exp-node-readline-keypress-logger && npm run exp-usekeyboard-node-keypress && npm run exp-usekeyboard-ink-compat && npm run exp-textinput-node-keypress && npm run exp-confirminput-node-keypress",
-    "exp-multi-select-input": "node -r tsm src/experimental/multi-select-input/example.tsx"
+    "exp-multi-select-input": "node -r tsm src/experimental/multi-select-input/example.tsx",
+    "exp-usekeyboard-node-keypress-suite": "npm run exp-node-readline-keypress-logger && npm run exp-usekeyboard-node-keypress && npm run exp-usekeyboard-ink-compat && npm run exp-textinput-node-keypress && npm run exp-confirminput-node-keypress && npm run exp-multi-select-input"
   },
   "repository": {
     "type": "git",
