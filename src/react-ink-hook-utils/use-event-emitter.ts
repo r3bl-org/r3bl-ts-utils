@@ -45,20 +45,16 @@ export const useEventEmitter = (
   emitter: EventEmitter,
   eventName: string,
   eventHandler: NodeJsListenerFn,
-  options: IsActive,
+  options: IsActive
 ) => {
-  const [ event, setEvent ] = useStateSafely<any[] | undefined>(undefined).asArray()
-  
-  useEffect(
-    () => manageListenerForEmitterEffectFn(options, setEvent),
-    [ options.isActive ]
-  )
-  
-  useEffect(
-    () => {_callIfTruthy(event, eventHandler)},
-    [ event ]
-  )
-  
+  const [event, setEvent] = useStateSafely<any[] | undefined>(undefined).asArray()
+
+  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [options.isActive])
+
+  useEffect(() => {
+    _callIfTruthy(event, eventHandler)
+  }, [event])
+
   function manageListenerForEmitterEffectFn(
     options: IsActive,
     setEvent: SetState<any>
@@ -66,17 +62,22 @@ export const useEventEmitter = (
     const attachedListenerFn: NodeJsListenerFn | undefined = _callIfTrueWithReturn(
       options.isActive,
       () => {
-        const listener = (args: any[]) => {setEvent(args)}
+        const listener = (args: any[]) => {
+          setEvent(args)
+        }
         emitter.on(eventName, listener)
         return listener
-      }, () => {
+      },
+      () => {
         return undefined
       }
     )
     return _callIfTruthyWithReturn(
       attachedListenerFn,
       (listener) => {
-        return () => {emitter.removeListener(eventName, listener)}
+        return () => {
+          emitter.removeListener(eventName, listener)
+        }
       },
       () => {
         return undefined
