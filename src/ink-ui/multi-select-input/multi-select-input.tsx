@@ -79,7 +79,10 @@ export const MultiSelectInput: FC<MultiSelectInputProps> = ({
       // https://github.com/r3bl-org/r3bl-ts-utils/commit/1f3cbb2b4988f44c6ea48233db1730e10f18dc60
       // http://developerlife.com/2021/10/19/react-hooks-redux-typescript-handbook/#custom-hooks
       useEffect(
-        () => {emitter.on(eventName, onKeypress)},
+        () => {
+          emitter.on(eventName, onKeypress)
+          return () => {emitter.removeListener(eventName, onKeypress)}
+        },
         // Provide states that are affected by this effect, so they can update!
         [ highlightedIndex, selectionModel ]
       )
