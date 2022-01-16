@@ -41,28 +41,28 @@ export interface ColorConsoleIF {
 export class ColorConsole {
   private readonly myStyleFn: FormatFn
   private myText = ""
-  
+
   static create = (style: FormatFn): ColorConsoleIF => {
     const instance = new ColorConsole(style)
     return Object.assign((text: string) => instance.call(text), instance) as ColorConsoleIF
   }
-  
+
   constructor(style: FormatFn) {
     this.myStyleFn = style
   }
-  
+
   call = (text: string): ColorConsole => this.apply(text)
-  
+
   apply = (text: string): ColorConsole => {
     this.myText = text
     return this
   }
-  
+
   consoleLog = (prefixWithNewline = false): void => {
     prefixWithNewline ? console.log() : null
     console.log(this.toString())
   }
-  
+
   // https://gist.githubusercontent.com/narenaryan/a2f4f8a3559d49ee2380aa17e7dc1dea/raw/d777cf7fad282d6bf1b00a0ec474e6430151b07f/streams_copy_basic.js
   consoleLogInPlace = (printNewline = false): void => {
     process.stdout.clearLine(-1)
@@ -70,11 +70,11 @@ export class ColorConsole {
     process.stdout.write(Styles.Primary(this.toString()))
     printNewline ? process.stdout.write("\n") : null
   }
-  
+
   consoleError = (): void => {
     console.error(this.toString())
   }
-  
+
   toString = (): string => this.myStyleFn(this.myText)
 }
 

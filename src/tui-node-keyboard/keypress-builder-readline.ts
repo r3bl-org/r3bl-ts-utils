@@ -19,7 +19,10 @@ import { _also } from "../kotlin-lang-utils"
 import { _callIfTruthy, _callIfTruthyWithReturn } from "../misc-lang-utils"
 import { Keypress } from "./keypress"
 import {
-  KeyCreator, ModifierKey, modifierKeysPropertyNames, SpecialKey,
+  KeyCreator,
+  ModifierKey,
+  modifierKeysPropertyNames,
+  SpecialKey,
 } from "./keypress-constants"
 import { keyCodeMap, keyNameMap, keySequenceMap, ReadlineKey } from "./readline-config"
 
@@ -30,11 +33,11 @@ export const createFromKeypress = (
   // Is it a special key (w/ or w/out modifiers)?
   const specialKey = tryToFindSpecialKeyInMap(nullableKey)
   if (specialKey) return specialKey
-  
+
   // Is it a regular key w/ modifiers?
   const regularKeyWithModifiers = tryToCreateRegularKeyWithModifiers(nullableKey)
   if (regularKeyWithModifiers) return regularKeyWithModifiers
-  
+
   // Must be just a regular key.
   return createRegularKey(nullableKey, nullableInput)
 }
@@ -44,31 +47,31 @@ export const createFromKeypress = (
  */
 const tryToFindSpecialKeyInMap = (key: ReadlineKey | undefined): Readonly<Keypress> | undefined => {
   if (!key) return undefined
-  
+
   let nullableReturnValue: Keypress | undefined = undefined
-  
+
   // Check key.code first.
   if (key.code)
-    for (const [ partialSequence, keyPressFn ] of keyCodeMap.entries()) {
+    for (const [partialSequence, keyPressFn] of keyCodeMap.entries()) {
       if (key.code.includes(partialSequence)) {
         nullableReturnValue = keyPressFn()
         break
       }
     }
-  
+
   // Check key.name second (if key.code not matched).
   if (!nullableReturnValue && key.name)
     _callIfTruthy(keyNameMap.get(key.name), (fun) => (nullableReturnValue = fun()))
-  
+
   // Check key.sequence third (if key.code & key.name not matched).
   if (!nullableReturnValue && key.sequence)
-    for (const [ partialSequence, keyPressFn ] of keySequenceMap.entries()) {
+    for (const [partialSequence, keyPressFn] of keySequenceMap.entries()) {
       if (key.sequence.includes(partialSequence)) {
         nullableReturnValue = keyPressFn()
         break
       }
     }
-  
+
   // Check for modifiers to be set.
   return _callIfTruthyWithReturn(
     nullableReturnValue,
@@ -81,7 +84,7 @@ const tryToCreateRegularKeyWithModifiers = (
   key: ReadlineKey | undefined
 ): Readonly<Keypress> | undefined => {
   if (!key) return undefined
-  
+
   // Special handling for ctrl and meta -> "input" is undefined but "key.name" has the input.
   // No special handling needed for shift.
   if (key.ctrl || key.meta) return createRegularKey(key, key.name)

@@ -55,12 +55,12 @@ export const inkCLIAppMainFn = async (
   errExitMsg = ""
 ): Promise<void> => {
   const instance = runFn()
-  
+
   LifecycleHelper.addExitListener(() => {
     TimerRegistry.killAll()
     instance.unmount()
   })
-  
+
   try {
     await instance.waitUntilExit()
     if (okExitMsg) console.log(TextColor.builder.bgYellow.black.build()(okExitMsg))
@@ -76,13 +76,12 @@ type EventListener = (name: EventName) => void
 
 export class LifecycleHelper extends EventEmitter {
   static instance = new LifecycleHelper()
-  
+
   static addStartListener = (listener: EventListener) => this.instance.on("start", listener)
   static addExitListener = (listener: EventListener) => this.instance.on("exit", listener)
-  
+
   static fireExit = () => this.instance.emit("exit")
   static fireStart = () => this.instance.emit("start")
-  
+
   static removeAll = () => this.instance.removeAllListeners()
 }
-

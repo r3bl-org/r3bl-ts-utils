@@ -47,14 +47,14 @@ export const useEventEmitter = (
   eventHandler: NodeJsListenerFn,
   options: IsActive
 ) => {
-  const [ event, setEvent ] = useStateSafely<any[] | undefined>(undefined).asArray()
-  
-  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [ options.isActive ])
-  
+  const [event, setEvent] = useStateSafely<any[] | undefined>(undefined).asArray()
+
+  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [options.isActive])
+
   useEffect(() => {
     _callIfTruthy(event, eventHandler)
-  }, [ event ])
-  
+  }, [event])
+
   function manageListenerForEmitterEffectFn(
     options: IsActive,
     setEvent: SetState<any>

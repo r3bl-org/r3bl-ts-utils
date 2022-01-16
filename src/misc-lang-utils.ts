@@ -102,19 +102,19 @@ export class Data {
 export function anyToString(arg: any) {
   if (!arg || typeof arg === "function") return ""
   if (typeof arg === "string") return `"${arg}"`
-  
+
   const strings = new Array<string>()
-  
+
   if (arg instanceof Map) strings.push(mapToString(arg))
   else if (Array.isArray(arg)) strings.push(arrayToString(arg))
   else if (typeof arg === "object") strings.push(objectToString(arg as Record<string, unknown>))
-  
+
   return strings.join(", ")
 }
 
 function mapToString(map: Map<any, any>): string {
   const strings = new Array<string>()
-  for (const [ key, value ] of map.entries())
+  for (const [key, value] of map.entries())
     strings.push(`${anyToString(key)}:${anyToString(value)}`)
   return `{ ${strings.join(", ")} }`
 }
@@ -127,7 +127,7 @@ function arrayToString(array: Array<any>): string {
 
 function objectToString(object: Record<string, unknown>): string {
   const strings = new Array<string>()
-  for (const [ key, value ] of Object.entries(object)) {
+  for (const [key, value] of Object.entries(object)) {
     if (!value || typeof value === "function") continue // Skip functions & falsy values.
     strings.push(`${anyToString(key)}:${anyToString(value)}`)
   }
