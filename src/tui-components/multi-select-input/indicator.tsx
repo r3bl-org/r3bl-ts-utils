@@ -15,6 +15,15 @@
  *
  */
 
-export * from "./figures"
-export * from "./confirm-input"
-export * from "./multi-select-input"
+import { Box, Text } from "ink"
+import React, { FC } from "react"
+import { figures } from "../../tui-figures"
+import { IndicatorProps } from "./types"
+
+export const Indicator: FC<IndicatorProps> = ({ isHighlighted }) => (
+  <Box marginRight={1}>
+    <Text color={isHighlighted ? "blue" : undefined}>
+      {isHighlighted ? figures.triangleRight : " "}
+    </Text>
+  </Box>
+)

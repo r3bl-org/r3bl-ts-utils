@@ -17,7 +17,7 @@
 
 import { Key } from "ink"
 import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy } from "../misc-utils"
+import { _callIfTruthy } from "../misc-lang-utils"
 import { Keypress } from "./keypress"
 import { KeyCreator, ModifierKey, SpecialKey } from "./keypress-constants"
 

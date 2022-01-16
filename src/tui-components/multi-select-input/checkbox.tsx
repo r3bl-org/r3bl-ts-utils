@@ -15,19 +15,19 @@
  *
  */
 
-import { TextColor } from "../color-console-utils"
+import { Box, Text } from "ink"
+import React, { FC } from "react"
+import { figures } from "../../tui-figures"
+import { CheckBoxProps } from "./types"
 
-export function logTTYState(msg: string, em = false) {
-  console.log(
-    em
-      ? TextColor.builder.bgWhite.red.bold.build()(msg)
-      : TextColor.builder.red.underline.bold.build()(msg)
+export const CheckBox: FC<CheckBoxProps> = ({ isSelected, singleSelectionMode }) => {
+  const empty: string = singleSelectionMode ? figures.circle : figures.checkboxOff
+  const filled: string = singleSelectionMode ? figures.circleFilled : figures.checkboxOn
+  return (
+    
+    <Box marginRight={1}>
+      <Text color="green">{isSelected ? filled : empty}</Text>
+    </Box>
   )
-  // console.log("stdin.isRaw", process.stdin.isRaw)
-  // console.log("stdin.isTTY", process.stdin.isTTY)
-  console.log("isTTY()", isTTY())
-  console.log("isTTYinRawMode()", isTTYinRawMode())
 }
 
-export const isTTY = () => process?.stdin?.isTTY
-export const isTTYinRawMode = () => process?.stdin?.isTTY && process?.stdin?.isRaw

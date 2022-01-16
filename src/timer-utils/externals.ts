@@ -20,7 +20,7 @@
  *
  */
 
-import { Nullable } from "../misc-utils"
+import { Nullable } from "../misc-lang-utils"
 import { Counter } from "./counter"
 
 export interface State {

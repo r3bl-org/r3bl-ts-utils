@@ -15,7 +15,19 @@
  *
  */
 
-export * from "./color-console"
-export * from "./helpers"
-export * from "./colors"
-export * from "./style-builder"
+import { TextColor } from "../tui-colors"
+
+export function logTTYState(msg: string, em = false) {
+  console.log(
+    em
+      ? TextColor.builder.bgWhite.red.bold.build()(msg)
+      : TextColor.builder.red.underline.bold.build()(msg)
+  )
+  // console.log("stdin.isRaw", process.stdin.isRaw)
+  // console.log("stdin.isTTY", process.stdin.isTTY)
+  console.log("isTTY()", isTTY())
+  console.log("isTTYinRawMode()", isTTYinRawMode())
+}
+
+export const isTTY = () => process?.stdin?.isTTY
+export const isTTYinRawMode = () => process?.stdin?.isTTY && process?.stdin?.isRaw

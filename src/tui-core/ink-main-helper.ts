@@ -15,10 +15,10 @@
  *
  */
 
+import EventEmitter from "events"
 import { render } from "ink"
-import { TextColor } from "../color-console-utils"
-import { LifecycleHelper } from "../misc-utils"
 import { TimerRegistry } from "../timer-utils"
+import { TextColor } from "../tui-colors"
 
 /**
  * Launches a CLI app. This is the "bootloader" equivalent for a CLI app.
@@ -55,12 +55,12 @@ export const inkCLIAppMainFn = async (
   errExitMsg = ""
 ): Promise<void> => {
   const instance = runFn()
-
+  
   LifecycleHelper.addExitListener(() => {
     TimerRegistry.killAll()
     instance.unmount()
   })
-
+  
   try {
     await instance.waitUntilExit()
     if (okExitMsg) console.log(TextColor.builder.bgYellow.black.build()(okExitMsg))
@@ -68,3 +68,21 @@ export const inkCLIAppMainFn = async (
     if (errExitMsg) console.error(TextColor.builder.bgYellow.black.build()(errExitMsg))
   }
 }
+
+// LifecycleHelper.
+
+type EventName = "exit" | "start"
+type EventListener = (name: EventName) => void
+
+export class LifecycleHelper extends EventEmitter {
+  static instance = new LifecycleHelper()
+  
+  static addStartListener = (listener: EventListener) => this.instance.on("start", listener)
+  static addExitListener = (listener: EventListener) => this.instance.on("exit", listener)
+  
+  static fireExit = () => this.instance.emit("exit")
+  static fireStart = () => this.instance.emit("start")
+  
+  static removeAll = () => this.instance.removeAllListeners()
+}
+

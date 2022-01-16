@@ -15,15 +15,15 @@
  *
  */
 
-export * from "./color-console-utils"
 export * from "./cache-utils"
 export * from "./kotlin-lang-utils"
-export * from "./misc-utils"
-export * from "./node-keyboard"
-export * from "./react-hook-utils"
-export * from "./react-ink-hook-utils"
-export * from "./react-utils"
+export * from "./misc-lang-utils"
 export * from "./timer-utils"
-export * from "./ink-ui"
+export * from "./tui-colors"
+export * from "./tui-figures"
+export * from "./tui-color-console"
+export * from "./tui-node-keyboard"
+export * from "./tui-core"
+export * from "./tui-components"
 
 // Module re-exports: https://www.typescriptlang.org/docs/handbook/modules.html

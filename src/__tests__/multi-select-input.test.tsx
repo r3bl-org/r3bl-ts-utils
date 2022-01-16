@@ -21,11 +21,10 @@ import { Box, Text } from "ink"
 import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC } from "react"
-import { TextColor } from "../color-console-utils"
-import { figures, ListItem, MultiSelectInput } from "../ink-ui"
-import { _callIfTruthy } from "../misc-utils"
-import { KeyCreator, Keypress, UseKeyboardWrapper } from "../node-keyboard"
-import { useStateSafely } from "../react-ink-hook-utils"
+import {
+  _callIfTruthy, figures, KeyCreator, Keypress, ListItem, MultiSelectInput, TextColor,
+  UseKeyboardWrapper, useStateSafely
+} from "../index"
 import { Flag } from "./test-use-keyboard-helpers"
 
 test("multi-select-input multiple selection works", async () => {

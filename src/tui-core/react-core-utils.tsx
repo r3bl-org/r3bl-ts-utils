@@ -47,7 +47,7 @@ export type ReactRefReceiverFn<T> = (it: T) => void
  * @param receiverFn lambda that accepts `it`; only runs if `refObject.current` property is truthy
  * @return refObject return the refObject that is passed
  */
-export const _withRef = <T>(
+export const _withRef= <T,>(
   refObject: ReactRef<T>,
   receiverFn: ReactRefReceiverFn<T>
 ): ReactRef<T> => {
@@ -63,4 +63,17 @@ export const _withRef = <T>(
 export function useForceUpdateFn(): () => void {
   const [_, setValue]: StateHook<boolean> = React.useState<boolean>(false)
   return () => setValue((value) => !value)
+}
+
+export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
+export type RenderItemFn<T> = (input: T, index: number) => JSX.Element
+export const makeReactElementFromArray = <T, >(
+  inputsArray: T[],
+  itemRendererFn: RenderItemFn<T>
+): JSX.Element => {
+  const outputArray = emptyArray()
+  inputsArray.forEach(
+    (input: T, index: number) => outputArray.push(itemRendererFn(input, index))
+  )
+  return <>{outputArray}</>
 }

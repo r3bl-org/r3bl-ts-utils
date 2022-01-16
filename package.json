@@ -1,7 +1,7 @@
 {
   "name": "r3bl-ts-utils",
   "version": "2.0.1",
-  "description": "TypeScript language utilities inspired by Kotlin stdlib, color console, React hook helpers, timer helpers, and other misc utilities",
+  "description": "TypeScript language utilities inspired by Kotlin stdlib to write code as expressions rather than statements, colorized text, powerful Text User Interface (TUI) framework to build powerful CLI apps, cache, and timer utilities",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -38,6 +38,9 @@
     "url": "git+https://github.com/r3bl-org/r3bl-ts-utils.git"
   },
   "keywords": [
+    "CLI app framework",
+    "command line interface",
+    "Text User Interface (TUI) framework",
     "color console",
     "let",
     "with",

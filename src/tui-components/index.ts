@@ -15,15 +15,5 @@
  *
  */
 
-import { _callIfTruthy } from "../misc-utils"
-import { Keypress } from "./keypress"
-import { ShortcutToActionMap } from "./use-keyboard"
-
-// Not exported to external (via index.ts). Used in tests.
-
-export const tryToRunActionForShortcut = (
-  userInput: Readonly<Keypress>,
-  map: ShortcutToActionMap
-): void => {
-  _callIfTruthy(map.get(userInput.toString()), (actionFn) => actionFn())
-}
+export * from "./confirm-input"
+export * from "./multi-select-input"

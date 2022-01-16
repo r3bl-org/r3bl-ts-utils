@@ -17,8 +17,8 @@
 
 import { EffectCallback, useEffect, useRef, useState } from "react"
 import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy } from "../misc-utils"
-import { ReactRef, SetState, StateHolder } from "../react-hook-utils"
+import { _callIfTruthy } from "../misc-lang-utils"
+import { ReactRef, SetState, StateHolder } from "./react-core-utils"
 
 /**
  * Similar to [useState](https://reactjs.org/docs/hooks-reference.html#usestate) with some changes:
@@ -32,12 +32,12 @@ import { ReactRef, SetState, StateHolder } from "../react-hook-utils"
  */
 export const useStateSafely = <T>(initialValue: T): StateHolder<T> => {
   const isComponentMounted: ReactRef<boolean> = useIsComponentMounted()
-  const [state, setState] = useState<T>(initialValue)
-
+  const [ state, setState ] = useState<T>(initialValue)
+  
   // https://stackoverflow.com/a/41085908/2085356
   const setStateOverride = (value: T) =>
     _callIfTruthy(isComponentMounted.current, (_) => setState(value))
-
+  
   return new StateHolder(state, setStateOverride as SetState<T>)
 }
 

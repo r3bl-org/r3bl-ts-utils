@@ -15,21 +15,15 @@
  *
  */
 
-import React from "react"
+import { _callIfTruthy } from "../misc-lang-utils"
+import { Keypress } from "./keypress"
+import { ShortcutToActionMap } from "./use-keyboard"
 
-// Misc React helpers.
+// Not exported to external (via index.ts). Used in tests.
 
-export const emptyArray = (): JSX.Element[] => new Array<JSX.Element>()
-
-export type RenderItemFn<T> = (input: T, index: number) => JSX.Element
-
-export const makeReactElementFromArray = <T, >(
-  inputsArray: T[],
-  itemRendererFn: RenderItemFn<T>
-): JSX.Element => {
-  const outputArray = emptyArray()
-  inputsArray.forEach(
-    (input: T, index: number) => outputArray.push(itemRendererFn(input, index))
-  )
-  return <>{outputArray}</>
+export const tryToRunActionForShortcut = (
+  userInput: Readonly<Keypress>,
+  map: ShortcutToActionMap
+): void => {
+  _callIfTruthy(map.get(userInput.toString()), (actionFn) => actionFn())
 }

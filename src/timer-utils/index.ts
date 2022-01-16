@@ -16,7 +16,7 @@
  */
 
 import { _also } from "../kotlin-lang-utils"
-import { _callIfTrue } from "../misc-utils"
+import { _callIfTrue } from "../misc-lang-utils"
 import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"
@@ -68,10 +68,10 @@ export const createTimer = (
 
 export class TimerRegistry {
   private static readonly timers: Timer[] = []
-
+  
   static killAll = () => TimerRegistry.timers.forEach(TimerRegistry.killIfRunning)
-
+  
   private static killIfRunning = (timer: Timer) => _callIfTrue(timer.isRunning, timer.stopTicking)
-
+  
   static add = (timer: Timer) => TimerRegistry.timers.push(timer)
 }
