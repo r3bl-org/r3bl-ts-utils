@@ -2,5 +2,7 @@
   "jest.jestCommandLine": "npx jest --watchAll",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "copyrightInserter.holder": "R3BL LLC",
+  "copyrightInserter.license": "apache"
 }
