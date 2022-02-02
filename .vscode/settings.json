@@ -1,8 +1,8 @@
 {
+  // Jest plugin configuration - https://github.com/jest-community/vscode-jest/blob/master/README.md#how-to-trigger-the-test-run
   "jest.jestCommandLine": "npx jest --watchAll",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
+  "jest.autoRun": { "watch": true, "onStartup": ["all-tests"] },
+  // Copyright extension settings.
   "copyrightInserter.holder": "R3BL LLC",
   "copyrightInserter.license": "apache"
 }
