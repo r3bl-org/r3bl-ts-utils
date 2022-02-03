@@ -718,7 +718,7 @@ eviction policy it should use. You can also provide a function that generates a 
 key if it doesn't exist in the cache. Here's an example of how to use this class.
 
 ```tsx
-import { createCache, _repeat } from "../index"
+import { createCache, _repeat } from "r3bl-ts-utils"
 
 test("Cache eviction policy least-recently-used works", () => {
   let populateFn = (arg: string): string => arg + "_test"
@@ -746,6 +746,38 @@ test("Cache eviction policy least-frequently-used works", () => {
   expect(cache.contains("foo")).toBeTruthy()
   expect(cache.contains("bar")).toBeTruthy()
   expect(cache.contains("baz")).toBeFalsy()
+})
+```
+
+An async version of `ComputeValueForKeyFn` is also provided, aptly named
+`ComputeValueForKeyAsyncFn`. Here's an example of how to use this async form.
+
+```tsx
+import { createCache } from "r3bl-ts-utils"
+
+test("can getAndComputeIfAbsentAsync from Cache", async () => {
+  let executionCount = 0
+  const populateAsyncFn = (arg: string): Promise<string> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(arg + "_test")
+        executionCount++
+      }, 10)
+    })
+  }
+  const cache = createCache<string, string>("test", 2, "least-frequently-used")
+
+  // Cache miss for "foo" -> insert.
+  await expect(cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn)).resolves.toEqual(
+    "foo_test"
+  )
+
+  // Cache hit for "foo".
+  expect(cache.contains("foo")).toBeTruthy()
+  await expect(cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn)).resolves.toEqual(
+    "foo_test"
+  )
+  expect(executionCount).toBe(1)
 })
 ```
 

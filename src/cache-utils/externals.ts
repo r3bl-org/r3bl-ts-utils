@@ -22,6 +22,7 @@ export interface Cache<K, V> {
   evictionPolicy: EvictionPolicy
   get: (arg: K) => V | undefined
   getAndComputeIfAbsent: (arg: K, populateFn: ComputeValueForKeyFn<K, V>) => V
+  getAndComputeIfAbsentAsync: (arg: K, populateAsyncFn: ComputeValueForKeyAsyncFn<K, V>) => Promise<V>
   put: (arg: K, value: V) => void
   contains: (arg: K) => boolean
   clear: () => void
@@ -30,3 +31,5 @@ export interface Cache<K, V> {
 export type EvictionPolicy = "least-frequently-used" | "least-recently-used"
 
 export type ComputeValueForKeyFn<K, V> = (arg: K) => V
+
+export type ComputeValueForKeyAsyncFn<K, V> = (arg: K) => Promise<V>

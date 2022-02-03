@@ -15,7 +15,7 @@
  *
  */
 
-import { _repeat, createCache } from "../index"
+import { createCache, _repeat } from "../index"
 
 describe("Cache", () => {
   test("can createCache a Cache", () => {
@@ -62,6 +62,34 @@ describe("Cache", () => {
     expect(cache.getAndComputeIfAbsent("bar", populateFn)).toEqual("bar_test")
     expect(cache.size).toEqual(2)
     expect(cache.contains("bar")).toBeTruthy()
+  })
+
+  test("can getAndComputeIfAbsentAsync from Cache", async () => {
+    let executionCount = 0
+    const populateAsyncFn = (arg: string): Promise<string> => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(arg + "_test")
+          executionCount++
+        }, 10)
+      }
+      )
+    }
+    const cache = createCache<string, string>("test", 2, "least-frequently-used")
+
+    // Cache miss for "foo" -> insert.
+    await expect(
+      cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn))
+      .resolves
+      .toEqual("foo_test")
+
+    // Cache hit for "foo".
+    expect(cache.contains("foo")).toBeTruthy()
+    await expect(
+      cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn))
+      .resolves
+      .toEqual("foo_test")
+    expect(executionCount).toBe(1)
   })
 
   test("Cache eviction policy least-recently-used works", () => {
