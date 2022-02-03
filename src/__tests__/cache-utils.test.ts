@@ -72,23 +72,20 @@ describe("Cache", () => {
           resolve(arg + "_test")
           executionCount++
         }, 10)
-      }
-      )
+      })
     }
     const cache = createCache<string, string>("test", 2, "least-frequently-used")
 
     // Cache miss for "foo" -> insert.
-    await expect(
-      cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn))
-      .resolves
-      .toEqual("foo_test")
+    await expect(cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn)).resolves.toEqual(
+      "foo_test"
+    )
 
     // Cache hit for "foo".
     expect(cache.contains("foo")).toBeTruthy()
-    await expect(
-      cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn))
-      .resolves
-      .toEqual("foo_test")
+    await expect(cache.getAndComputeIfAbsentAsync("foo", populateAsyncFn)).resolves.toEqual(
+      "foo_test"
+    )
     expect(executionCount).toBe(1)
   })
 

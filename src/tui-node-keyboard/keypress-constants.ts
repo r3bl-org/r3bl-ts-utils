@@ -88,7 +88,7 @@ export const specialKeysPropertyNames: Array<keyof SpecialKey> = [
   "home",
   "end",
 ]
-export const modifierKeysPropertyNames: Array<keyof ModifierKey> = [ "shift", "ctrl", "meta" ]
+export const modifierKeysPropertyNames: Array<keyof ModifierKey> = ["shift", "ctrl", "meta"]
 
 /** Data class that holds information about modifiery and special key. */
 export class KeyData implements ModifierKey, SpecialKey {
@@ -109,7 +109,7 @@ export class KeyData implements ModifierKey, SpecialKey {
   public upArrow = false
   public home = false
   public end = false
-  
+
   // https://www.javascripttutorial.net/javascript-boolean/
   // It is recommended that you use the Boolean() function to convert a value of a different type to
   // a Boolean type, but you should never use the Boolean as a wrapper object of a primitive boolean
@@ -152,7 +152,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get homeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -174,7 +174,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get endKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -196,7 +196,7 @@ export class KeyCreator {
       end: true, // 👍
     })
   }
-  
+
   static get upKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -218,7 +218,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get downKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -240,7 +240,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get leftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -262,7 +262,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get rightKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -284,7 +284,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get pageUpKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -306,7 +306,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get pageDownKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -328,7 +328,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get escapeKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -350,7 +350,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get returnKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -372,7 +372,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get tabKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -394,7 +394,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get backspaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -416,7 +416,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get spaceKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: true, // 👍
@@ -438,7 +438,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get deleteKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -460,7 +460,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   // Modifier keys.
   static get ctrlKey(): SpecialKey & ModifierKey {
     return new KeyData({
@@ -483,7 +483,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get metaKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,
@@ -505,7 +505,7 @@ export class KeyCreator {
       end: false,
     })
   }
-  
+
   static get shiftKey(): SpecialKey & ModifierKey {
     return new KeyData({
       space: false,

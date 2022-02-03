@@ -28,7 +28,7 @@ export class CacheImpl<K, V> implements Cache<K, V> {
     readonly name: string,
     readonly maxSize: number,
     readonly evictionPolicy: EvictionPolicy
-  ) { }
+  ) {}
 
   clear = (): void => {
     const { _map: map } = this
@@ -42,31 +42,28 @@ export class CacheImpl<K, V> implements Cache<K, V> {
 
     return map.has(arg)
       ? _let(map.get(arg), (value) => {
-        // eslint-disable-next-line
-        if (!value) throw Error(`Value could not be found for key: ${arg}`)
-        return value
-      })
+          // eslint-disable-next-line
+          if (!value) throw Error(`Value could not be found for key: ${arg}`)
+          return value
+        })
       : undefined
   }
 
-  getAndComputeIfAbsent = (
-    arg: K,
-    keyNotFoundFn: ComputeValueForKeyFn<K, V>
-  ): V => {
+  getAndComputeIfAbsent = (arg: K, keyNotFoundFn: ComputeValueForKeyFn<K, V>): V => {
     const { _map: map, analytics, cleanUp } = this
 
     analytics.update(arg)
 
     return map.has(arg)
       ? _let(map.get(arg), (value) => {
-        // eslint-disable-next-line
-        if (!value) throw Error(`Value could not be found for key: ${arg}`)
-        return value
-      })
+          // eslint-disable-next-line
+          if (!value) throw Error(`Value could not be found for key: ${arg}`)
+          return value
+        })
       : _also(keyNotFoundFn(arg), (value) => {
-        map.set(arg, value)
-        cleanUp()
-      })
+          map.set(arg, value)
+          cleanUp()
+        })
   }
 
   getAndComputeIfAbsentAsync = (
@@ -79,22 +76,22 @@ export class CacheImpl<K, V> implements Cache<K, V> {
 
     return map.has(arg)
       ? new Promise((resolveFn) => {
-        resolveFn(map.get(arg)!)
-      })
+          resolveFn(map.get(arg)!)
+        })
       : new Promise((resolveFn, rejectFn) => {
-        keyNotFoundAsyncFn(arg).then(
-          (value) => {
-            map.set(arg, value)
-            cleanUp()
-            resolveFn(value)
-            DEBUG && console.log("⏰ keyNotFoundAsync resolved", value)
-          },
-          (error) => {
-            DEBUG && console.error(`Error while computing value for key: ${arg}`, error)
-            rejectFn(error)
-          }
-        )
-      })
+          keyNotFoundAsyncFn(arg).then(
+            (value) => {
+              map.set(arg, value)
+              cleanUp()
+              resolveFn(value)
+              DEBUG && console.log("⏰ keyNotFoundAsync resolved", value)
+            },
+            (error) => {
+              DEBUG && console.error(`Error while computing value for key: ${arg}`, error)
+              rejectFn(error)
+            }
+          )
+        })
   }
 
   cleanUp = () => {

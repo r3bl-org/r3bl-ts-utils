@@ -22,7 +22,10 @@ export interface Cache<K, V> {
   evictionPolicy: EvictionPolicy
   get: (arg: K) => V | undefined
   getAndComputeIfAbsent: (arg: K, populateFn: ComputeValueForKeyFn<K, V>) => V
-  getAndComputeIfAbsentAsync: (arg: K, populateAsyncFn: ComputeValueForKeyAsyncFn<K, V>) => Promise<V>
+  getAndComputeIfAbsentAsync: (
+    arg: K,
+    populateAsyncFn: ComputeValueForKeyAsyncFn<K, V>
+  ) => Promise<V>
   put: (arg: K, value: V) => void
   contains: (arg: K) => boolean
   clear: () => void
