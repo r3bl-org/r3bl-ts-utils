@@ -17,7 +17,7 @@
 
 import { Box, render, Text, useApp } from "ink"
 import React, { FC } from "react"
-import { _also } from "../../kotlin-lang-utils"
+import { _also } from "../../lang-utils/kotlin-lang-utils"
 import { ConfirmInput } from "../../tui-components"
 import { inkCLIAppMainFn, StateHolder, useStateSafely } from "../../tui-core"
 import {

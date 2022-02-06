@@ -17,7 +17,7 @@
 
 import EventEmitter from "events"
 import React, { useEffect } from "react"
-import { _callIfTrueWithReturn, _callIfTruthy, _callIfTruthyWithReturn } from "../misc-lang-utils"
+import { _callIfTrueWithReturn, _callIfTruthy, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
 import { IsActive, NodeJsListenerFn } from "./nodejs-types"
 import { SetState } from "./react-core-utils"
 import { useStateSafely } from "./use-state-safely"

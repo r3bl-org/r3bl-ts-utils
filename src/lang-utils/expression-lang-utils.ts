@@ -15,7 +15,7 @@
  *
  */
 
-import { v4 as uuidv4 } from "uuid"
+import { Optional } from "./core"
 
 /**
  * https://developer.mozilla.org/en-US/docs/Glossary/Truthy
@@ -24,17 +24,16 @@ import { v4 as uuidv4 } from "uuid"
  * @return ctxObject the first argument
  */
 export const _callIfTruthy = <T>(
-  ctxObject: Nullable<T>,
+  ctxObject: Optional<T>,
   receiverFn: TruthyReceiverFn<T>
-): Nullable<T> => {
+): Optional<T> => {
   if (ctxObject) receiverFn(ctxObject)
   return ctxObject
 }
-export type Nullable<T> = T | null | undefined
 export type TruthyReceiverFn<T> = (it: T) => void
 
 export const _callIfTruthyWithReturn = <T, R>(
-  ctxObject: Nullable<T>,
+  ctxObject: Optional<T>,
   onTrue: TruthyReceiverWithReturnValueFn<T, R>,
   onFalse: SimpleReceiverWithReturnValueFn<R>
 ): R => {
@@ -85,54 +84,4 @@ export const _callIfTrueWithReturn = <T>(
 }
 export type SimpleReceiverWithReturnValueFn<T> = () => T
 
-// Base data class.
 
-export class Data {
-  toString = (): string => {
-    const thisAsString = anyToString(this)
-    try {
-      const object: unknown = JSON.parse(thisAsString)
-      return JSON.stringify(object, null, 2)
-    } catch (e) {
-      return thisAsString
-    }
-  }
-}
-
-export function anyToString(arg: any) {
-  if (!arg || typeof arg === "function") return ""
-  if (typeof arg === "string") return `"${arg}"`
-
-  const strings = new Array<string>()
-
-  if (arg instanceof Map) strings.push(mapToString(arg))
-  else if (Array.isArray(arg)) strings.push(arrayToString(arg))
-  else if (typeof arg === "object") strings.push(objectToString(arg as Record<string, unknown>))
-
-  return strings.join(", ")
-}
-
-function mapToString(map: Map<any, any>): string {
-  const strings = new Array<string>()
-  for (const [key, value] of map.entries())
-    strings.push(`${anyToString(key)}:${anyToString(value)}`)
-  return `{ ${strings.join(", ")} }`
-}
-
-function arrayToString(array: Array<any>): string {
-  const strings = new Array<string>()
-  array.forEach((value) => strings.push(`${anyToString(value)}`))
-  return `[ ${strings.join(", ")} ]`
-}
-
-function objectToString(object: Record<string, unknown>): string {
-  const strings = new Array<string>()
-  for (const [key, value] of Object.entries(object)) {
-    if (!value || typeof value === "function") continue // Skip functions & falsy values.
-    strings.push(`${anyToString(key)}:${anyToString(value)}`)
-  }
-  return `{ ${strings.join(", ")} }`
-}
-
-// Generate UUID.
-export const generateUID = () => uuidv4()

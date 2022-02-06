@@ -155,18 +155,3 @@ export const _with = <T, R>(
   contextObject: T,
   objectContainingFnWithReboundThis: ImplicitReceiverObjectWithReturn<T, R>
 ): R => objectContainingFnWithReboundThis.fnWithReboundThis.bind(contextObject).call(contextObject)
-
-// https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
-export function isDefined<T>(value: T | undefined | null): value is T {
-  return value !== undefined && value !== null
-}
-
-export function isNotDefined<T>(value: T | undefined | null): value is null | undefined {
-  return value === undefined || value === null
-}
-
-export const notNil = <T>(condition: null | undefined | T, receiverFn: ReceiverFn<T>): void => {
-  isDefined(condition) ? receiverFn(condition) : null
-}
-
-export type Optional<T> = T | undefined | null

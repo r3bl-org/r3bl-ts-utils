@@ -17,7 +17,7 @@
 
 import { Box, render, Text } from "ink"
 import React, { FC, useMemo } from "react"
-import { _also } from "../../kotlin-lang-utils"
+import { _also } from "../../lang-utils/kotlin-lang-utils"
 import { TextColor } from "../../tui-colors"
 import { ListItem, MultiSelectInput } from "../../tui-components"
 import { inkCLIAppMainFn, LifecycleHelper, useStateSafely } from "../../tui-core"

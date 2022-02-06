@@ -20,7 +20,7 @@
  *
  */
 
-import { Nullable } from "../misc-lang-utils"
+import { Optional } from "../lang-utils/core"
 import { Counter } from "./counter"
 
 export interface State {
@@ -42,9 +42,9 @@ export interface Timer {
   readonly isCreatedAndNotStarted: boolean
   readonly state: State
   counter?: Counter
-  onStop: Nullable<TimerTickFn>
-  onStart: Nullable<TimerTickFn>
-  onTick: Nullable<TimerTickFn>
+  onStop: Optional<TimerTickFn>
+  onStart: Optional<TimerTickFn>
+  onTick: Optional<TimerTickFn>
   startTicking: () => this
   stopTicking: () => this
   toString: () => string

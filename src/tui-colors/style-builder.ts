@@ -16,7 +16,7 @@
  */
 
 import _ from "lodash"
-import { _also } from "../kotlin-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
 import { colors, FormatFn } from "./colors"
 
 export class TextColor {

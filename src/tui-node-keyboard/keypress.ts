@@ -15,7 +15,7 @@
  *
  */
 
-import { _let } from "../kotlin-lang-utils"
+import { _let } from "../lang-utils/kotlin-lang-utils"
 import { createMutableCopyOf } from "./keypress-builder-general"
 import {
   ModifierKey,

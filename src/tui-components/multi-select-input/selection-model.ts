@@ -16,7 +16,7 @@
  */
 
 import _ from "lodash"
-import { _callIfTruthy } from "../../misc-lang-utils"
+import { _callIfTruthy } from "../../lang-utils/expression-lang-utils"
 import { TextColor } from "../../tui-colors"
 import { ListItem, OperateOnOneItemFn } from "./types"
 

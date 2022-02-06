@@ -15,8 +15,9 @@
  *
  */
 
-import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy, Nullable } from "../misc-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
+import { Optional } from "../lang-utils/core"
+import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
 import { Counter } from "./counter"
 import { State, TimerTickFn } from "./externals"
 import { TimerInternal } from "./internals"
@@ -144,11 +145,11 @@ export class TimerImpl implements TimerInternal {
 
   // Getter and setter for onStop.
 
-  get onStop(): Nullable<TimerTickFn> {
+  get onStop(): Optional<TimerTickFn> {
     return this._stopFn
   }
 
-  set onStop(value: Nullable<TimerTickFn>) {
+  set onStop(value: Optional<TimerTickFn>) {
     _callIfTruthy(value, (it) => {
       this._stopFn = it
     })
@@ -156,11 +157,11 @@ export class TimerImpl implements TimerInternal {
 
   // Getter and setter for onStart.
 
-  get onStart(): Nullable<TimerTickFn> {
+  get onStart(): Optional<TimerTickFn> {
     return this._startFn
   }
 
-  set onStart(value: Nullable<TimerTickFn>) {
+  set onStart(value: Optional<TimerTickFn>) {
     _callIfTruthy(value, (it) => {
       this._startFn = it
     })
@@ -168,11 +169,11 @@ export class TimerImpl implements TimerInternal {
 
   // Getter and setter for onTick.
 
-  get onTick(): Nullable<TimerTickFn> {
+  get onTick(): Optional<TimerTickFn> {
     return this._tickFn
   }
 
-  set onTick(value: Nullable<TimerTickFn>) {
+  set onTick(value: Optional<TimerTickFn>) {
     _callIfTruthy(value, (it) => {
       this._tickFn = it
     })

@@ -15,7 +15,7 @@
  *
  */
 
-import { _also, _let } from "../kotlin-lang-utils"
+import { _also, _let } from "../lang-utils/kotlin-lang-utils"
 import { ColorConsole, Formatter, Styles } from "./color-console"
 import {
   defaultPostFix,

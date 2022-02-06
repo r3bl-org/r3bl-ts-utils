@@ -16,8 +16,8 @@
  */
 
 import { EffectCallback, useEffect, useRef, useState } from "react"
-import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy } from "../misc-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
+import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
 import { ReactRef, SetState, StateHolder } from "./react-core-utils"
 
 /**

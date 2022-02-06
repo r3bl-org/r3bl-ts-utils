@@ -15,7 +15,7 @@
  *
  */
 
-import { _let } from "../kotlin-lang-utils"
+import { _let } from "../lang-utils/kotlin-lang-utils"
 import { FormatFn, TextColor } from "../tui-colors"
 
 export const Formatter = _let(

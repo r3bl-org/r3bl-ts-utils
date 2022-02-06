@@ -17,7 +17,7 @@
 
 import { useStdin } from "ink"
 import { EffectCallback, useEffect } from "react"
-import { _also } from "../kotlin-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
 import { createTimer } from "../timer-utils"
 
 /**

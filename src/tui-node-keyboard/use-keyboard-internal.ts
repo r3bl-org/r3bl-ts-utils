@@ -15,7 +15,7 @@
  *
  */
 
-import { _callIfTruthy } from "../misc-lang-utils"
+import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
 import { Keypress } from "./keypress"
 import { ShortcutToActionMap } from "./use-keyboard"
 

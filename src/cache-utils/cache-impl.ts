@@ -15,7 +15,7 @@
  *
  */
 
-import { _also, _let } from "../kotlin-lang-utils"
+import { _also, _let } from "../lang-utils/kotlin-lang-utils"
 import { Analytics } from "./analytics"
 import { DEBUG } from "./debug"
 import { Cache, ComputeValueForKeyAsyncFn, ComputeValueForKeyFn, EvictionPolicy } from "./externals"

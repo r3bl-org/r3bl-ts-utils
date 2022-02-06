@@ -15,8 +15,8 @@
  *
  */
 
-import { _also } from "../kotlin-lang-utils"
-import { _callIfTruthy, _callIfTruthyWithReturn } from "../misc-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
+import { _callIfTruthy, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
 import { Keypress } from "./keypress"
 import {
   KeyCreator,
@@ -52,7 +52,7 @@ const tryToFindSpecialKeyInMap = (key: ReadlineKey | undefined): Readonly<Keypre
 
   // Check key.code first.
   if (key.code)
-    for (const [partialSequence, keyPressFn] of keyCodeMap.entries()) {
+    for (const [ partialSequence, keyPressFn ] of keyCodeMap.entries()) {
       if (key.code.includes(partialSequence)) {
         nullableReturnValue = keyPressFn()
         break
@@ -65,7 +65,7 @@ const tryToFindSpecialKeyInMap = (key: ReadlineKey | undefined): Readonly<Keypre
 
   // Check key.sequence third (if key.code & key.name not matched).
   if (!nullableReturnValue && key.sequence)
-    for (const [partialSequence, keyPressFn] of keySequenceMap.entries()) {
+    for (const [ partialSequence, keyPressFn ] of keySequenceMap.entries()) {
       if (key.sequence.includes(partialSequence)) {
         nullableReturnValue = keyPressFn()
         break
@@ -112,5 +112,5 @@ const applyModifierKeysTo = (
   target: (SpecialKey & ModifierKey) | undefined
 ): void => {
   for (const propertyName of modifierKeysPropertyNames)
-    if (source[propertyName] && target) target[propertyName] = Boolean(source[propertyName])
+    if (source[ propertyName ] && target) target[ propertyName ] = Boolean(source[ propertyName ])
 }

@@ -16,7 +16,8 @@
  */
 
 import * as React from "react"
-import { Data, generateUID } from "../../misc-lang-utils"
+import { Data } from "../../lang-utils/data-class"
+import { generateUID } from "../../lang-utils/uuid"
 import { NodeKeypressTesting } from "../../tui-node-keyboard"
 
 /** Props for custom indicator component. */

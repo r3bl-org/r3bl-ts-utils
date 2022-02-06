@@ -15,8 +15,8 @@
  *
  */
 
-import { _also } from "../kotlin-lang-utils"
-import { _callIfTrue } from "../misc-lang-utils"
+import { _callIfTrue } from "../lang-utils/expression-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
 import { Counter } from "./counter"
 import { Timer } from "./externals"
 import { TimerImpl } from "./timer-impl"

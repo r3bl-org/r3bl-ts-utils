@@ -20,8 +20,9 @@ import { useInput, useStdin } from "ink"
 import StdinContext from "ink/build/components/StdinContext"
 import { noop } from "lodash"
 import React, { FC, useMemo, useState } from "react"
-import { _let } from "../kotlin-lang-utils"
-import { _callIfTruthyWithReturn } from "../misc-lang-utils"
+import { _let } from "../lang-utils/kotlin-lang-utils"
+import { Optional, Pair, } from "../lang-utils/core"
+import { _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
 import { IsActive, StateHook, useEventEmitter } from "../tui-core"
 import { Keypress } from "./keypress"
 import { createFromInk } from "./keypress-builder-ink"
@@ -98,9 +99,9 @@ export type KeyboardInputHandlerFn = (input: Readonly<Keypress>) => void
 export const createNewShortcutToActionMap = (): ShortcutToActionMap => new Map()
 
 export class UseKeyboardReturnValue {
-  constructor(readonly keyPress: Readonly<Keypress> | undefined, readonly inRawMode: boolean) {}
-  
-  toArray() {
+  constructor(readonly keyPress: Readonly<Keypress> | undefined, readonly inRawMode: boolean) { }
+
+  toArray(): Pair<Optional<Readonly<Keypress>>, boolean> {
     return [ this.keyPress, this.inRawMode ]
   }
 }
@@ -159,7 +160,6 @@ export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturn
             config.testing
           )
       }
-      break
     }
     case "ink-compat": {
       switch (config.args.type) {
@@ -179,7 +179,6 @@ export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturn
             config.args.options,
           )
       }
-      break
     }
   }
 }
@@ -194,13 +193,13 @@ export const useKeyboard = (
   testing?: NodeKeypressTesting
 ): UseKeyboardReturnValue => {
   const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
-  
+
   const onKeypress: HandleNodeKeypressFn = (input: string, key: ReadlineKey) =>
     _let(createFromKeypress(key, input), keyPress => {
       setKeyPress(keyPress)
       processKeypressFn(keyPress)
     })
-  
+
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
   // @see multi-select-input.tsx
   return _callIfTruthyWithReturn(
@@ -258,16 +257,16 @@ export const useKeyboardCompatInk = (
 ): UseKeyboardReturnValue => {
   const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
   const { isRawModeSupported: inRawMode } = useStdin()
-  
+
   // Can only call useInput in raw mode.
   if (!inRawMode) return new UseKeyboardReturnValue(undefined, false)
-  
+
   useInput((input, key) => {
     const userInputKeyPress = createFromInk(key, input)
     setKeyPress(userInputKeyPress)
     fun(userInputKeyPress)
   }, options)
-  
+
   return new UseKeyboardReturnValue(keyPress, inRawMode)
 }
 

@@ -15,7 +15,7 @@
  *
  */
 
-import { _also } from "../kotlin-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
 import { CacheImpl } from "./cache-impl"
 import { DEBUG } from "./debug"
 

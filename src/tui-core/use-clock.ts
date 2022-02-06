@@ -16,12 +16,12 @@
  */
 
 import { EffectCallback, useEffect, useState } from "react"
-import { _also } from "../kotlin-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
 import { createTimer } from "../timer-utils"
 import { StateHook } from "./react-core-utils"
 
 export const useClock = (): number => {
-  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
+  const [ time, setTime ]: StateHook<number> = useState<number>(Date.now())
 
   const createTickingTimerToSetTimeEffectFn: EffectCallback = () => {
     const timer = _also(createTimer("useClock", 1000), (it) => {
@@ -46,7 +46,7 @@ export const useClock = (): number => {
 export const useClockWithLocalTimeFormat = (
   delayMs: number
 ): { localeTimeString: string; time: number } => {
-  const [time, setTime]: StateHook<number> = useState<number>(Date.now())
+  const [ time, setTime ]: StateHook<number> = useState<number>(Date.now())
 
   const createTickingTimerToSetTimeEffectFn: EffectCallback = () => {
     const timer = _also(createTimer("useClockWithLocalTimeFormat", delayMs), (it) => {

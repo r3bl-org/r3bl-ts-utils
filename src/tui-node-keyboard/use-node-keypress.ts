@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react"
 import readline from "readline"
-import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthyWithReturn } from "../misc-lang-utils"
+import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
 import { TextColor } from "../tui-colors"
 import { IsActive, NodeJsListenerFn, SetState, useStateSafely } from "../tui-core"
 import { ReadlineKey } from "./readline-config"
@@ -61,16 +61,16 @@ export const useNodeKeypress = (
     console.log(formatter("useNodeKeypress - run hook, isActive="), options.isActive)
   })
 
-  const [keypress, setKeypress] = useStateSafely<KeypressType | undefined>(undefined).asArray()
+  const [ keypress, setKeypress ] = useStateSafely<KeypressType | undefined>(undefined).asArray()
 
   useEffect(
     () => manageListenerForKeypressEffectFn(options, setKeypress),
-    [options.isActive] // Disable this hook if !isActive.
+    [ options.isActive ] // Disable this hook if !isActive.
   )
 
   useEffect(() => {
     if (keypress) fun(keypress.input, keypress.key)
-  }, [keypress]) // Provide state that is affected by this effect, so it can update!
+  }, [ keypress ]) // Provide state that is affected by this effect, so it can update!
 
   return keypress
 }

@@ -18,7 +18,7 @@
 import TextInput from "ink-text-input"
 import _ from "lodash"
 import React, { FC } from "react"
-import { _callIfTrue } from "../misc-lang-utils"
+import { _callIfTrue } from "../lang-utils/expression-lang-utils"
 import { StateHook, useStateSafely } from "../tui-core"
 import { KeyboardInputHandlerFn, Keypress, useKeyboard } from "../tui-node-keyboard"
 

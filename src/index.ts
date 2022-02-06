@@ -16,8 +16,7 @@
  */
 
 export * from "./cache-utils"
-export * from "./kotlin-lang-utils"
-export * from "./misc-lang-utils"
+export * from "./lang-utils"
 export * from "./timer-utils"
 export * from "./tui-colors"
 export * from "./tui-figures"
