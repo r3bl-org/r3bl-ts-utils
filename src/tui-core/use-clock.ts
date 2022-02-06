@@ -25,7 +25,7 @@ export const useClock = (): number => {
 
   const createTickingTimerToSetTimeEffectFn: EffectCallback = () => {
     const timer = _also(createTimer("useClock", 1000), (it) => {
-      it.onTick = () => setTime(Date.now())
+      it.setOnTickFn(() => setTime(Date.now()))
       it.startTicking()
     })
     // Clean up this hook.
@@ -50,7 +50,7 @@ export const useClockWithLocalTimeFormat = (
 
   const createTickingTimerToSetTimeEffectFn: EffectCallback = () => {
     const timer = _also(createTimer("useClockWithLocalTimeFormat", delayMs), (it) => {
-      it.onTick = () => setTime(Date.now())
+      it.setOnTickFn(() => setTime(Date.now()))
       it.startTicking()
     })
     // Clean up this hook.

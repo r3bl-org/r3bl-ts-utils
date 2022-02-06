@@ -20,7 +20,7 @@
  *
  */
 
-import { Optional } from "../lang-utils/core"
+import { Optional, Option } from "../lang-utils/core"
 import { Counter } from "./counter"
 
 export interface State {
@@ -42,11 +42,24 @@ export interface Timer {
   readonly isCreatedAndNotStarted: boolean
   readonly state: State
   counter?: Counter
-  onStop: Optional<TimerTickFn>
-  onStart: Optional<TimerTickFn>
-  onTick: Optional<TimerTickFn>
+
+  // onStopFn getter and setter.
+  getOnStopFn: () => Option<TimerTickFn>
+  setOnStopFn: (fn: Optional<TimerTickFn>) => void
+
+  // onStartFn getter and setter.
+  getOnStartFn: () => Option<TimerTickFn>
+  setOnStartFn: (fn: Optional<TimerTickFn>) => void
+
+  // onTickFn getter and setter.
+  getOnTickFn: () => Option<TimerTickFn>
+  setOnTickFn: (fn: Optional<TimerTickFn>) => void
+
+  // Timer control.
   startTicking: () => this
   stopTicking: () => this
+
+  // Debug.
   toString: () => string
 }
 

@@ -53,9 +53,9 @@ describe("Timer", () => {
     let onStopCalled = false
 
     const timer: Timer = _also(createTimer("test", 100), (it) => {
-      it.onTick = () => count++
-      it.onStart = () => (onStartCalled = true)
-      it.onStop = () => (onStopCalled = true)
+      it.setOnTickFn(() => count++) 
+      it.setOnStartFn(() => (onStartCalled = true))
+      it.setOnStopFn(() => (onStopCalled = true))
     })
     expect(onStartCalled).toBeFalsy()
     expect(onStopCalled).toBeFalsy()
@@ -78,7 +78,7 @@ describe("Timer", () => {
   test("Can't stop a stopped timer", () => {
     let count = 0
     const timer: Timer = _also(createTimer("test", 100), (it) => {
-      it.onTick = () => count++
+      it.setOnTickFn(() => count++)
     })
     expect(() => timer.stopTicking()).toThrow(TimerErrors.CantStop_NotStarted)
   })
@@ -86,7 +86,7 @@ describe("Timer", () => {
   test("Can't start a started timer", () => {
     let count = 0
     const timer: Timer = _also(createTimer("test", 100), (it) => {
-      it.onTick = () => count++
+      it.setOnTickFn(() => count++)
     })
     timer.startTicking()
     expect(() => timer.startTicking()).toThrow(TimerErrors.CantStart_AlreadyRunning)
@@ -96,7 +96,7 @@ describe("Timer", () => {
   test("Can't restart a stopped timer (they aren't reusable)", () => {
     let count = 0
     const timer: Timer = _also(createTimer("test", 100), (it) => {
-      it.onTick = () => count++
+      it.setOnTickFn(() => count++)
     })
     timer.startTicking()
     timer.stopTicking()
@@ -110,10 +110,10 @@ describe("Timer", () => {
     let count = 0
 
     const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (timer) => {
-      timer.onTick = () =>
-        _callIfTruthy(timer.counter, (counter) => {
-          counter.value < maxCount ? count++ : undefined
-        })
+      timer.setOnTickFn(() =>
+      _callIfTruthy(timer.counter, (counter) => {
+        counter.value < maxCount ? count++ : undefined
+      }))
     })
 
     _also(timer.startTicking(), (it) => expect(it).toBe(timer))
@@ -132,11 +132,11 @@ describe("Timer", () => {
     let stopped = false
 
     const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (it) => {
-      it.onTick = () =>
-        _callIfTruthy(it.counter, (counter) => {
-          counter.value < maxCount ? count++ : undefined
-        })
-      it.onStop = () => (stopped = true)
+      it.setOnTickFn(() =>
+      _callIfTruthy(it.counter, (counter) => {
+        counter.value < maxCount ? count++ : undefined
+      }))
+      it.setOnStopFn(() => (stopped = true))
     })
 
     timer.startTicking()
@@ -155,7 +155,7 @@ describe("Timer", () => {
     let count = 0
 
     const timer: Timer = _also(createTimer("test", delay, duration), (it) => {
-      it.onTick = () => count++
+      it.setOnTickFn(() => count++)
     })
 
     timer.startTicking()

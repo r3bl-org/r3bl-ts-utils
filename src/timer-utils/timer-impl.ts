@@ -16,8 +16,10 @@
  */
 
 import { _also } from "../lang-utils/kotlin-lang-utils"
-import { Optional } from "../lang-utils/core"
-import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
+import {
+  Optional, OptionValue, Option
+} from "../lang-utils/core"
+import { _callIfSome, _callIfTruthy } from "../lang-utils/expression-lang-utils"
 import { Counter } from "./counter"
 import { State, TimerTickFn } from "./externals"
 import { TimerInternal } from "./internals"
@@ -43,9 +45,9 @@ export class TimerImpl implements TimerInternal {
   // Properties (backing fields for getters, setters).
 
   private _state: State
-  private _tickFn?: TimerTickFn
-  private _stopFn?: TimerTickFn
-  private _startFn?: TimerTickFn
+  private _onTickFn: Option<TimerTickFn> = OptionValue.createNone()
+  private _onStopFn: Option<TimerTickFn> = OptionValue.createNone()
+  private _onStartFn: Option<TimerTickFn> = OptionValue.createNone()
 
   constructor(
     readonly name: string,
@@ -54,6 +56,30 @@ export class TimerImpl implements TimerInternal {
     readonly counter?: Counter
   ) {
     this._state = this.dispatch() // Initialize the state.
+  }
+
+  // Getter and setter for onStop.
+  getOnStopFn(): Option<TimerTickFn> {
+    return this._onStopFn
+  }
+  setOnStopFn(fn: Optional<TimerTickFn>) {
+    this._onStopFn = OptionValue.create(fn)
+  }
+
+  // Getter and setter for onStart.
+  getOnStartFn(): Option<TimerTickFn> {
+    return this._onStartFn
+  }
+  setOnStartFn(value: Optional<TimerTickFn>) {
+    this._onStartFn = OptionValue.create(value)
+  }
+
+  // Getter and setter for onTick.
+  getOnTickFn(): Option<TimerTickFn> {
+    return this._onTickFn
+  }
+  setOnTickFn(fn: Optional<TimerTickFn>) {
+    this._onTickFn = OptionValue.create(fn)
   }
 
   // State management delegated to TimerReducer.
@@ -107,14 +133,14 @@ export class TimerImpl implements TimerInternal {
       if (durationMs > 0 && Date.now() - state.startTime >= durationMs) {
         this.stopTicking()
       } else {
-        _callIfTruthy(this._tickFn, (it) => it(this))
+        _callIfSome(this._onTickFn, fn => fn(this))
         counter?.increment()
       }
     }
 
     this.timerHandle = setInterval(doTickAndAutoStopCheck, delayMs)
 
-    _callIfTruthy(this._startFn, (it) => it(this))
+    _callIfSome(this._onStartFn, fn => fn(this))
 
     DEBUG && console.log(name ?? "Timer", "started, timerHandle = ", this.timerHandle)
   }
@@ -129,7 +155,7 @@ export class TimerImpl implements TimerInternal {
       this.timerHandle = undefined
     }
 
-    _callIfTruthy(this._stopFn, (it) => it(this))
+    _callIfSome(this._onStopFn, fn => fn(this))
 
     DEBUG && console.log(name ?? "Timer", "stopped, timerHandle = ", this.timerHandle)
   }
@@ -138,44 +164,7 @@ export class TimerImpl implements TimerInternal {
 
   toString = (): string => {
     const { counter, delayMs, name, state, durationMs } = this
-    return `name: '${name}', delay: ${delayMs}ms, ${
-      durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
-    } counter:${counter ? counter.value : "n/a"}, state:${state.runtimeStatus}`
-  }
-
-  // Getter and setter for onStop.
-
-  get onStop(): Optional<TimerTickFn> {
-    return this._stopFn
-  }
-
-  set onStop(value: Optional<TimerTickFn>) {
-    _callIfTruthy(value, (it) => {
-      this._stopFn = it
-    })
-  }
-
-  // Getter and setter for onStart.
-
-  get onStart(): Optional<TimerTickFn> {
-    return this._startFn
-  }
-
-  set onStart(value: Optional<TimerTickFn>) {
-    _callIfTruthy(value, (it) => {
-      this._startFn = it
-    })
-  }
-
-  // Getter and setter for onTick.
-
-  get onTick(): Optional<TimerTickFn> {
-    return this._tickFn
-  }
-
-  set onTick(value: Optional<TimerTickFn>) {
-    _callIfTruthy(value, (it) => {
-      this._tickFn = it
-    })
+    return `name: '${name}', delay: ${delayMs}ms, ${durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
+      } counter:${counter ? counter.value : "n/a"}, state:${state.runtimeStatus}`
   }
 }
