@@ -14,11 +14,6 @@
  limitations under the License.
 */
 
-
-// Utility types.
-
-export type Pair<A, B> = [ A, B ]
-
 /**
  * https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
  */
@@ -30,25 +25,8 @@ export function isNotDefined<T>(value: T | undefined | null): value is null | un
   return value === undefined || value === null
 }
 
+// Utility types.
+
+export type Pair<A, B> = [ A, B ]
+
 export type Optional<T> = T | undefined | null
-
-// Expressing !undefined && !null in TS: https://stackoverflow.com/a/63046469/2085356
-export type Option<T extends {}> = Some<T> | None
-export type Some<T extends {}> = { kind: "some", value: T }
-export type None = { kind: "none" }
-
-export class OptionValue {
-  static createNone(): None {
-    return { kind: "none" }
-  }
-
-  static createSome<T extends {}>(arg: T): Some<T> {
-    return { kind: "some", value: arg }
-  }
-
-  static create<T>(arg: Optional<T>): Option<T> {
-    return arg === undefined || arg === null ?
-      OptionValue.createNone() :
-      OptionValue.createSome(arg)
-  }
-}

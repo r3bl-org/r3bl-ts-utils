@@ -15,7 +15,7 @@
  *
  */
 
-import { Optional, Option } from "./core"
+import { Optional } from "./core"
 
 /**
  * https://developer.mozilla.org/en-US/docs/Glossary/Truthy
@@ -84,20 +84,3 @@ export const _callIfTrueWithReturn = <T>(
 }
 export type SimpleReceiverWithReturnValueFn<T> = () => T
 
-// Working with Option.
-
-export const _callIfSome = <T>(
-  ctxObject: Option<T>,
-  receiverFn: TruthyReceiverFn<T>
-): Option<T> => {
-  if (ctxObject.kind === "some") receiverFn(ctxObject.value)
-  return ctxObject
-}
-
-export const _callIfNone = <T>(
-  ctxObject: Option<T>,
-  receiverFn: SimpleReceiverFn
-): Option<T> => {
-  if (ctxObject.kind === "none") receiverFn()
-  return ctxObject
-}

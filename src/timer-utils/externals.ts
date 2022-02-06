@@ -20,7 +20,8 @@
  *
  */
 
-import { Optional, Option } from "../lang-utils/core"
+import { Optional } from "../lang-utils/core"
+import { Option } from "../lang-utils/rust-lang-utils"
 import { Counter } from "./counter"
 
 export interface State {
