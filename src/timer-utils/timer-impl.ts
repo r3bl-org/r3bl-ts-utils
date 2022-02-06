@@ -15,13 +15,11 @@
  *
  */
 
-import { _also } from "../lang-utils/kotlin-lang-utils"
 import {
   Optional
 } from "../lang-utils/core"
-import {OptionValue, Option} from "../lang-utils/rust-lang-utils"
-import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
-import { _callIfSome } from "../lang-utils/rust-lang-utils"
+import { _also } from "../lang-utils/kotlin-lang-utils"
+import { Option, OptionValue, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { Counter } from "./counter"
 import { State, TimerTickFn } from "./externals"
 import { TimerInternal } from "./internals"

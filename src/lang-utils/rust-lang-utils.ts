@@ -15,7 +15,7 @@
 */
 
 import { Optional } from "./core"
-import { TruthyReceiverFn, SimpleReceiverFn } from "./expression-lang-utils"
+import { SimpleReceiverFn, TruthyReceiverFn } from "./expression-lang-utils"
 
 // Option is based on Rust's Option enum and it is intended to be used in place of null and
 // undefined. Expressing !undefined && !null in TS: https://stackoverflow.com/a/63046469/2085356
