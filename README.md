@@ -14,7 +14,7 @@
   - [`_letSafe`](#_letsafe)
   - [`_apply`](#_apply)
   - [`_with`](#_with)
-- [Misc language utils](#misc-language-utils)
+- [Misc language functions](#misc-language-functions)
   - [`Data` class and `anyToString()`](#data-class-and-anytostring)
   - [`_repeat()`](#_repeat)
   - [`_callIfTruthy()`](#_calliftruthy)
@@ -23,6 +23,7 @@
   - [`_callIfTrue()`](#_calliftrue)
   - [`_callIfFalse()`](#_calliffalse)
   - [`_callIfTrueWithReturn()`](#_calliftruewithreturn)
+- [Rust language functions](#rust-language-functions)
 - [Timer utils](#timer-utils)
 - [Cache utils](#cache-utils)
 - [Text User Interface (TUI)](#text-user-interface-tui)
@@ -652,6 +653,19 @@ import { Optional, TimerTickFn, Option, OptionType } from "r3bl-ts-utils"
 let _onStartFn: OptionType<TimerTickFn> = Option.none()
 function setOnStartFn(value: Optional<TimerTickFn>) {
   _onStartFn = Option.create(value) // same as Option.some(value)
+}
+```
+
+You can check to see whether an `Option` value is `Some` or `None` by using the `isSome` and
+`isNone` functions. Here's an example.
+
+```tsx
+{
+  keyPress.isSome ? (
+    <Text color="cyan">{keyPress.value.toString()}</Text>
+  ) : (
+    <Text color="red">!keyPress</Text>
+  )
 }
 ```
 
