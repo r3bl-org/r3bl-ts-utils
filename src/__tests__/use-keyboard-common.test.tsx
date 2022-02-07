@@ -16,7 +16,7 @@
  */
 
 import {
-  _also, _let, createMutableCopyOf, createNewShortcutToActionMap, KeyCreator, Keypress,
+  _also, _let, createMutableCopyOf, createNewShortcutToActionMap, KeyCreator, Keypress, Option
 } from "../index"
 import { tryToRunActionForShortcut } from "../tui-node-keyboard/use-keyboard-internal"
 
@@ -25,42 +25,42 @@ test("KeyPress works", () => {
     createMutableCopyOf(undefined, undefined),
     it => expect(it.toString()).toEqual("")
   )
-  
+
   _also(createMutableCopyOf(undefined, "a"), it => {
     expect(it.toString()).toEqual("a")
     expect(it.input).toEqual("a")
     expect(it.key).toEqual("")
     expect(it.matches("a")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(undefined, "q"), it => {
     expect(it.toString()).toEqual("q")
     expect(it.input).toEqual("q")
     expect(it.key).toEqual("")
     expect(it.matches("q")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.ctrlKey, "q"), it => {
     expect(it.toString()).toEqual("ctrl+q")
     expect(it.input).toEqual("q")
     expect(it.key).toEqual("ctrl")
     expect(it.matches("ctrl+q")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.ctrlKey, "a"), it => {
     expect(it.toString()).toEqual("ctrl+a")
     expect(it.input).toEqual("a")
     expect(it.key).toEqual("ctrl")
     expect(it.matches("ctrl+a")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.escapeKey, undefined), it => {
     expect(it.toString()).toEqual("escape")
     expect(it.input).toEqual("")
     expect(it.key).toEqual("escape")
     expect(it.matches("escape")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.tabKey, undefined), it => {
     const immutableCopy = it.setModifierKey("shift", true)
     expect(immutableCopy.toString()).toEqual("shift+tab")
@@ -68,7 +68,7 @@ test("KeyPress works", () => {
     expect(immutableCopy.key).toEqual("shift+tab")
     expect(immutableCopy.matches("shift+tab")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.tabKey, undefined), it => {
     const immutableCopy = it.setModifierKey("meta", true)
     expect(immutableCopy.toString()).toEqual("meta+tab")
@@ -76,7 +76,7 @@ test("KeyPress works", () => {
     expect(immutableCopy.key).toEqual("meta+tab")
     expect(immutableCopy.matches("meta+tab")).toBeTruthy()
   })
-  
+
   _also(createMutableCopyOf(KeyCreator.tabKey, undefined), it => {
     const immutableCopy = it.setModifierKey("ctrl", true)
     expect(immutableCopy.toString()).toEqual("ctrl+tab")
@@ -89,36 +89,36 @@ test("KeyPress works", () => {
 test("processKeyPress works", () => {
   let fun1Flag = false
   let fun2State = ""
-  
+
   function fun1() {
     fun1Flag = true
   }
-  
+
   function fun2(arg: string) {
     fun2State = arg
   }
-  
+
   const shortcutsToActionMap = _also(createNewShortcutToActionMap(), map => map
     .set("q", fun1)
     .set("ctrl+q", fun1)
     .set("!", fun2.bind(this, "1"))
     .set("@", fun2.bind(this, "2"))
     .set("#", fun2.bind(this, "3")))
-  
-  tryToRunActionForShortcut(createMutableCopyOf(undefined, "q"), shortcutsToActionMap)
+
+  tryToRunActionForShortcut(Option.some(createMutableCopyOf(undefined, "q")), shortcutsToActionMap)
   expect(fun1Flag).toBeTruthy()
-  
+
   fun1Flag = false
-  tryToRunActionForShortcut(createMutableCopyOf(KeyCreator.ctrlKey, "q"), shortcutsToActionMap)
+  tryToRunActionForShortcut(Option.some(createMutableCopyOf(KeyCreator.ctrlKey, "q")), shortcutsToActionMap)
   expect(fun1Flag).toBeTruthy()
-  
-  tryToRunActionForShortcut(createMutableCopyOf(undefined, "!"), shortcutsToActionMap)
+
+  tryToRunActionForShortcut(Option.some(createMutableCopyOf(undefined, "!")), shortcutsToActionMap)
   expect(fun2State).toEqual("1")
-  
-  tryToRunActionForShortcut(createMutableCopyOf(undefined, "@"), shortcutsToActionMap)
+
+  tryToRunActionForShortcut(Option.some(createMutableCopyOf(undefined, "@")), shortcutsToActionMap)
   expect(fun2State).toEqual("2")
-  
-  tryToRunActionForShortcut(createMutableCopyOf(undefined, "#"), shortcutsToActionMap)
+
+  tryToRunActionForShortcut(Option.some(createMutableCopyOf(undefined, "#")), shortcutsToActionMap)
   expect(fun2State).toEqual("3")
 })
 
@@ -128,7 +128,7 @@ test("KeyPress isSpecialKey works (and validate KeyCreator constants)", () => {
   //   "upArrow", "downArrow", "leftArrow", "rightArrow",
   //   "pageDown", "pageUp",
   //   "return", "escape", "tab", "backspace", "delete"
-  
+
   _let(
     [
       [ createMutableCopyOf(KeyCreator.upKey, undefined), "uparrow" ], /* Tuple */
@@ -153,7 +153,7 @@ test("KeyPress isSpecialKey works (and validate KeyCreator constants)", () => {
         expect(keyPress.toString()).toEqual(shortcut)
       })
   )
-  
+
   // These are not special keys: "ctrl", "meta", "shift".
   _let(
     [

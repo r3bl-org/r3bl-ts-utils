@@ -22,69 +22,75 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC } from "react"
 import {
-  _also, createNewShortcutToActionMap, IsActive, KeyboardInputHandlerFn, ReadlineKey,
-  ShortcutToActionMap, useKeyboardBuilder, UseKeyboardConfig
+  createFromKeypress,
+  createNewShortcutToActionMap, IsActive, KeyboardInputHandlerFn, ReadlineKey,
+  ShortcutToActionMap, useKeyboardBuilder, UseKeyboardConfig, _also
 } from "../index"
+import { _callIfSome } from "../lang-utils"
 import { Flag } from "./test-use-keyboard-helpers"
 
 test("useKeyboard node-keypress works", async () => {
   const flag = new Flag()
-  
+
   const Test: FC<{ options: UseKeyboardConfig, index: number }> = (
     { options, index }
   ) => {
     const { keyPress, inRawMode } = useKeyboardBuilder(options)
     return (<Box flexDirection="column">
-      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
+      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
       <Text>{index} - Your example goes here!</Text>
     </Box>)
   }
-  
+
   const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = (
     { keyPress, inRawMode }
   ) => inRawMode ?
-    <Text color="magenta">keyPress: {keyPress}</Text> :
-    <Text color="gray">keyb disabled</Text>
-  
+      <Text color="magenta">keyPress: {keyPress}</Text> :
+      <Text color="gray">keyb disabled</Text>
+
   const createShortcutsFn = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
     map => map.set("q", flag.set)
   )
   const matchKeypressFn: KeyboardInputHandlerFn = input => {
-    if (input.matches("q")) flag.set()
+    _callIfSome(input, input => {
+      if (input.matches("q")) flag.set()
+    })
   }
-  
+
   const options: IsActive = { isActive: true }
-  
+
   const configArray: UseKeyboardConfig[] =
     [
       { type: "node-keypress", args: { type: "fun", matchKeypressFn, options } },
       { type: "node-keypress", args: { type: "map", map: createShortcutsFn(), options } },
       { type: "node-keypress", args: { type: "map-cached", createShortcutsFn, options } },
     ]
-  
+
   for (const [ index, options ] of configArray.entries()) {
     flag.reset()
-    
+
     const emitter = new EventEmitter()
     const eventName = "testing-keypress"
     const input = "q"
     const key: ReadlineKey = { ctrl: false, meta: false, shift: false }
-    
+
     const optionsWithTesting = {
       ...options,
       testing: { emitter, eventName }
     }
-    
-    const ink = render(<Test index={index} options={optionsWithTesting}/>)
+
+    const ink = render(<Test index={index} options={optionsWithTesting} />)
     await delay(100)
-    emitter.emit(eventName, input, key)
+
+    const keypress = createFromKeypress(key, input)
+    emitter.emit(eventName, keypress)
     await delay(100)
     expect(flag.isSet()).toBeTruthy()
     expect(ink.lastFrame()).toContain("keyPress")
-    
+
     ink.unmount()
     emitter.removeAllListeners()
   }
-  
+
 })

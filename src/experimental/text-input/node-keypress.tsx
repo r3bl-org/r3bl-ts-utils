@@ -34,8 +34,8 @@ class TextInputState {
     readonly hasFocus: boolean = true,
     readonly isVisible: boolean = true,
     readonly text: string = ""
-  ) {}
-  
+  ) { }
+
   toString = () => JSON.stringify(this)
 }
 
@@ -56,7 +56,7 @@ export const runHooks = (): HookOutput => {
     map => map
       .set("ctrl+x", LifecycleHelper.fireExit)
   )
-  
+
   return {
     textInput1_StateHolder: useStateSafely(new TextInputState()),
     textInput2_StateHolder: useStateSafely(new TextInputState()),
@@ -75,25 +75,25 @@ const App: FC = () => {
   const { useKeyboard, textInput1_StateHolder, textInput2_StateHolder, uid } = ctx
   const [ textInput1_State ] = textInput1_StateHolder.asArray()
   const [ textInput2_State ] = textInput2_StateHolder.asArray()
-  
+
   // Debug.
   _callIfTrue(DEBUG, () => {
     useEffect(getDebugLogSideEffectFn(textInput1_State, useKeyboard, uid))
     useEffect(getDebugMountLoggerEffectFn(), [])
   })
-  
+
   DEBUG && logTTYState("App render")
-  
+
   return (
     <UseKeyboardWrapper>
       <Text color="gray">Press ctrl+x to exit</Text>
       <Box flexDirection="column">
-        <RowDebug ctx={ctx}/>
+        <RowDebug ctx={ctx} />
         {textInput1_State.isVisible ?
-          <TextInputComponentChangeVisible ctx={ctx}/> :
+          <TextInputComponentChangeVisible ctx={ctx} /> :
           <Text>{TextColor.builder.cyan.underline.bold.build()(textInput1_State.text)}</Text>}
         {textInput2_State.isVisible ?
-          <TextInputComponentChangeFocus ctx={ctx}/> :
+          <TextInputComponentChangeFocus ctx={ctx} /> :
           <Text>{TextColor.builder.cyan.underline.bold.build()(textInput1_State.text)}</Text>}
       </Box>
     </UseKeyboardWrapper>
@@ -102,50 +102,50 @@ const App: FC = () => {
 
 const TextInputComponentChangeVisible: FC<InternalProps> = ({ ctx }) => {
   const [ text, setText ] = useStateSafely("").asArray()
-  
+
   const [ myTextInputState, setMyTextInputState ] = ctx.textInput1_StateHolder.asArray()
   const onSubmit = () => {
     setMyTextInputState(new TextInputState(true, false, text))
     console.log(TextColor.builder.bold.black.bgYellow.build()(
       "TextInputComponentChangeVisible onSubmit called!"))
   }
-  
+
   return (
     <Box>
       <Box marginRight={1}>
         <Text>Enter your query:</Text>
       </Box>
-      
+
       <TextInput
         focus={myTextInputState.hasFocus}
         value={text}
         onChange={setText}
-        onSubmit={onSubmit}/>
+        onSubmit={onSubmit} />
     </Box>
   )
 }
 
 const TextInputComponentChangeFocus: FC<InternalProps> = ({ ctx }) => {
   const [ text, setText ] = useStateSafely("").asArray()
-  
+
   const [ myTextInputState, setMyTextInputState ] = ctx.textInput2_StateHolder.asArray()
   const onSubmit = () => {
     setMyTextInputState(new TextInputState(false, true, text))
     console.log(TextColor.builder.bold.black.bgYellow.build()(
       "TextInputComponentChangeFocus onSubmit called!"))
   }
-  
+
   return (
     <Box>
       <Box marginRight={1}>
         <Text>Enter your query:</Text>
       </Box>
-      
+
       <TextInput
         focus={myTextInputState.hasFocus}
         value={text}
         onChange={setText}
-        onSubmit={onSubmit}/>
+        onSubmit={onSubmit} />
     </Box>
   )
 }
@@ -155,13 +155,15 @@ const TextInputComponentChangeFocus: FC<InternalProps> = ({ ctx }) => {
 // Allows multiple App components to be added.
 const Wrapper: FC = () =>
   <>
-    <App/>
+    <App />
   </>
 
 const RowDebug: FC<InternalProps> = ({ ctx }) => {
   const { keyPress, inRawMode } = ctx.useKeyboard
   return inRawMode ?
-    <Text color="magenta">keyPress: {keyPress ? `${keyPress.toString()}` : "n/a"}</Text> :
+    <Text color="magenta">keyPress: {
+      keyPress.isSome ? `${keyPress.value.toString()}` : "n/a"
+    }</Text> :
     <Text color="gray">keyb disabled</Text>
 }
 
@@ -186,15 +188,15 @@ const getDebugLogSideEffectFn = (
 }
 
 // Main.
-_let(render(<Wrapper/>), instance => {
+_let(render(<Wrapper />), instance => {
   LifecycleHelper.addExitListener(() => {
     DEBUG && logTTYState("exitListener 1 -> stdin.isRaw")
-    
+
     TimerRegistry.killAll()
     instance.unmount()
-    
+
     DEBUG && logTTYState("exitListener 2 -> stdin.isRaw")
-    
+
     instance.waitUntilExit()
       .then(() => {
         console.log(TextColor.builder.bgYellow.black.build()("Exiting ink"))

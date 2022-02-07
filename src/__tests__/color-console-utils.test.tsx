@@ -15,10 +15,8 @@
  *
  */
 
-import { getLog } from "console-testing-library" // https://www.npmjs.com/package/console-testing-library
-import {
-  _also, ColorConsole, Formatter, printHeader, StyledColorConsole, Styles, TextColor
-} from "../index"
+import { getLog } from "console-testing-library"; // https://www.npmjs.com/package/console-testing-library
+import { ColorConsole, Formatter, printHeader, StyledColorConsole, Styles, TextColor, _also } from "../index"
 
 test("TextColor builder works", () => {
   {

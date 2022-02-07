@@ -18,7 +18,7 @@
 import React, { useEffect } from "react"
 import readline from "readline"
 import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
-import { Option, OptionBuilder, _callIfSome } from "../lang-utils/rust-lang-utils"
+import { Option, OptionType, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { TextColor } from "../tui-colors"
 import { IsActive, NodeJsListenerFn, SetState, StateHook, useStateSafely } from "../tui-core"
 import { ReadlineKey } from "./readline-config"
@@ -27,7 +27,7 @@ import { isTTY, logTTYState } from "./utils"
 const DEBUG = false
 
 export type KeypressType = { input: string; key: ReadlineKey }
-export type KeypressOptionType = Option<KeypressType>
+export type KeypressOptionType = OptionType<KeypressType>
 export type KeypressOptionSetterType = SetState<KeypressOptionType>
 
 /**
@@ -65,7 +65,7 @@ export const useNodeKeypress = (
   })
 
   const [ keypress, setKeypress ]: StateHook<KeypressOptionType> =
-    useStateSafely<KeypressOptionType>(OptionBuilder.createNone()).asArray()
+    useStateSafely<KeypressOptionType>(Option.none()).asArray()
 
   useEffect(
     () => manageListenerForKeypressEffectFn(options, setKeypress),
@@ -158,7 +158,7 @@ export const attachToReadlineKeypress = (
     stdin.setEncoding("utf-8")
 
     const listener: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {
-      if (setKeypress) setKeypress(OptionBuilder.createSome({ input, key }))
+      if (setKeypress) setKeypress(Option.some({ input, key }))
     }
     stdin.on("keypress", listener)
 

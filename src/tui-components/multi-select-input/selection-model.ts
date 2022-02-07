@@ -15,7 +15,6 @@
  *
  */
 
-import _ from "lodash"
 import { _callIfTruthy } from "../../lang-utils/expression-lang-utils"
 import { TextColor } from "../../tui-colors"
 import { ListItem, OperateOnOneItemFn } from "./types"
@@ -24,13 +23,13 @@ const DEBUG = false
 
 /** @immutable */
 export class SelectionModel {
-  private selected: ListItem[]
-  private readonly singleSelectionMode
+  private selected: Set<ListItem>
+  private readonly singleSelectionMode: boolean
 
   // Mutator methods (all immutable).
   /** @immutable */
   constructor(initialSelected: ListItem[], singleSelectionMode: boolean) {
-    this.selected = _.cloneDeep(initialSelected) // Clone the initialSelected array.
+    this.selected = new Set(initialSelected) // Make shallow copy.
     this.singleSelectionMode = singleSelectionMode
   }
 
@@ -61,16 +60,15 @@ export class SelectionModel {
     })
 
     const addToSelected = (arg: ListItem): void => {
-      this.selected.push(arg)
+      this.selected.add(arg)
     }
 
     const removeFromSelected = (selectedItem: ListItem): void => {
-      if (this.selected.includes(selectedItem))
-        this.selected = this.selected.filter((it) => it.key !== selectedItem.key)
+      this.selected.delete(selectedItem)
     }
 
     const select = (selectedItem: ListItem): void => {
-      if (this.singleSelectionMode && this.selected.length > 0) {
+      if (this.singleSelectionMode && this.selected.size > 0) {
         this.clearAllSelections()
         addToSelected(selectedItem)
       } else {
@@ -86,19 +84,21 @@ export class SelectionModel {
 
     isSelected ? unselect(selectedItem) : select(selectedItem)
 
-    return new SelectionModel(this.selected, this.singleSelectionMode)
+    return new SelectionModel(this.getSelection(), this.singleSelectionMode)
   }
 
   // Read only methods.
-  /** @immutable */
-  getSelection = (): ListItem[] => _.cloneDeep(this.selected)
+  /** 
+   * @immutable 
+   * https://stackoverflow.com/a/20070691/2085356
+  */
+  getSelection = (): ListItem[] => [ ...this.selected ] // Return shallow copy.
 
   isItemSelected = (query: ListItem): boolean => {
-    const { key: queryKey } = query
-    const arrayOfKeys = this.selected.map(({ key }) => key)
-    const isFound = arrayOfKeys.includes(queryKey)
-    return isFound
+    return this.selected.has(query)
   }
 
-  toString = (): string => this.selected?.map(({ label }) => label).join(", ")
+  toString = (): string => this.getSelection()
+    .map(({ label }) => label)
+    .join(", ")
 }

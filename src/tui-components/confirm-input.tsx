@@ -18,9 +18,10 @@
 import TextInput from "ink-text-input"
 import _ from "lodash"
 import React, { FC } from "react"
+import { _callIfSome } from "../lang-utils"
 import { _callIfTrue } from "../lang-utils/expression-lang-utils"
 import { StateHook, useStateSafely } from "../tui-core"
-import { KeyboardInputHandlerFn, Keypress, useKeyboard } from "../tui-node-keyboard"
+import { KeyboardInputHandlerFn, KeypressOption, useKeyboard } from "../tui-node-keyboard"
 
 const DEBUG = false
 
@@ -35,40 +36,44 @@ export const ConfirmInput: FC<Props> =
   ({ defaultValue, onSubmit, placeholderBeforeSubmit, placeholderAfterSubmit }) => {
     const [ value, setValue ]: StateHook<string> = useStateSafely("").asArray()
     const [ showCursor, setShowCursor ]: StateHook<boolean> = useStateSafely(true).asArray()
-    
+
     // Equivalent code via useInput:
     // const onKeyFn = (_input: string, key: Key) => {
     //   if (key.backspace || key.delete) setValue("")
     //   DEBUG && console.log("ConfirmInput ... keypress detected")
     // }
     // useInput(onKeyFn, { isActive: showCursor })
-    
+
     // Equivalent code via useKeypress:
-    const onKeypressFn: KeyboardInputHandlerFn = (input: Readonly<Keypress>) => _callIfTrue(
-      _.includes([ "backspace", "delete" ], input.toString()),
-      () => {
-        setValue("")
-        DEBUG && console.log("ConfirmInput ... keypress detected")
-      }
-    )
+    const onKeypressFn: KeyboardInputHandlerFn = (input: KeypressOption) => {
+      _callIfSome(input, input => {
+        _callIfTrue(
+          _.includes([ "backspace", "delete" ], input.toString()),
+          () => {
+            setValue("")
+            DEBUG && console.log("ConfirmInput ... keypress detected")
+          }
+        )
+      })
+    }
     useKeyboard(onKeypressFn, { isActive: showCursor })
-    
+
     // Equivalent code via useNodeKeypress:
     // const onNodeKeypressFn: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {
     //   onKeypressFn(createFromKeypress(key, input))
     // }
     // useNodeKeypress(onNodeKeypressFn, { isActive: showCursor })
-    
+
     const onSubmitHandler = (userInput: string) => {
       onSubmit(userInput ? userInput === "y" : defaultValue)
       setValue("")
       setShowCursor(false)
     }
-    
+
     const onChangeHandler = (userInput: string) => {
       if (userInput.toLowerCase() === "y" || userInput.toLowerCase() === "n") setValue(userInput)
     }
-    
+
     return (
       <TextInput
         focus={showCursor}

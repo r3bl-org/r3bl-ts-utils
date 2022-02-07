@@ -29,7 +29,8 @@ import {
 
 type HookInput = { name: string }
 type HookOutput = {
-  useKeyboard: UseKeyboardReturnValue, greeting: string
+  useKeyboard: UseKeyboardReturnValue,
+  greeting: string
 }
 type InternalProps = { ctx: HookOutput }
 
@@ -53,7 +54,7 @@ const App: FC = () => {
   const output = runHooks({ name: "Your example goes here!" })
   const { greeting } = output
   return (<Box flexDirection="column">
-    <Row_Debug ctx={output}/>
+    <Row_Debug ctx={output} />
     <Text>{greeting}</Text>
   </Box>)
 }
@@ -66,7 +67,7 @@ const Row_Debug: FC<InternalProps> = ({ ctx }) => {
 
 // Main.
 inkCLIAppMainFn(
-  () => render(<App/>),
+  () => render(<App />),
   "Exiting ink",
   "Problem w/ exiting ink"
 ).catch(console.error)

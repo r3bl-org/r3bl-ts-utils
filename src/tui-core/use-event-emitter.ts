@@ -17,10 +17,12 @@
 
 import EventEmitter from "events"
 import React, { useEffect } from "react"
-import { _callIfTrueWithReturn, _callIfTruthy, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
+import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthy, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
 import { IsActive, NodeJsListenerFn } from "./nodejs-types"
 import { SetState } from "./react-core-utils"
 import { useStateSafely } from "./use-state-safely"
+
+const DEBUG = false
 
 /**
  * In React, emitters can't invoke callback functions that are part of a function component.
@@ -47,13 +49,13 @@ export const useEventEmitter = (
   eventHandler: NodeJsListenerFn,
   options: IsActive
 ) => {
-  const [event, setEvent] = useStateSafely<any[] | undefined>(undefined).asArray()
+  const [ event, setEvent ] = useStateSafely<any[] | undefined>(undefined).asArray()
 
-  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [options.isActive])
+  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [ options.isActive ])
 
   useEffect(() => {
     _callIfTruthy(event, eventHandler)
-  }, [event])
+  }, [ event ])
 
   function manageListenerForEmitterEffectFn(
     options: IsActive,
@@ -62,8 +64,12 @@ export const useEventEmitter = (
     const attachedListenerFn: NodeJsListenerFn | undefined = _callIfTrueWithReturn(
       options.isActive,
       () => {
-        const listener = (args: any[]) => {
+        // https://www.damirscorner.com/blog/posts/20180216-VariableNumberOfArgumentsInTypescript.html
+        const listener = (...args: any[]) => {
           setEvent(args)
+          _callIfTrue(DEBUG, () => {
+            console.log("🅰️ event emitter:", eventName)
+          })
         }
         emitter.on(eventName, listener)
         return listener

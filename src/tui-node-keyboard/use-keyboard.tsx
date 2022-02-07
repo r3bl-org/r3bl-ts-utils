@@ -16,14 +16,15 @@
  */
 
 import EventEmitter from "events"
-import { useInput, useStdin } from "ink"
+import { Key, useInput, useStdin } from "ink"
 import StdinContext from "ink/build/components/StdinContext"
 import { noop } from "lodash"
-import React, { FC, useMemo, useState } from "react"
-import { Optional, Pair } from "../lang-utils/core"
+import React, { FC, useMemo } from "react"
+import { anyToString } from "../lang-utils"
+import { Pair } from "../lang-utils/core"
 import { _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
-import { _let } from "../lang-utils/kotlin-lang-utils"
-import { IsActive, StateHook, useEventEmitter } from "../tui-core"
+import { Option, OptionType } from "../lang-utils/rust-lang-utils"
+import { IsActive, StateHook, useEventEmitter, useStateSafely } from "../tui-core"
 import { Keypress } from "./keypress"
 import { createFromInk } from "./keypress-builder-ink"
 import { createFromKeypress } from "./keypress-builder-readline"
@@ -95,13 +96,16 @@ export const usePreventUseInputFromSettingRawModeToFalseAndExiting = () => useIn
 
 // Types.
 
-export type KeyboardInputHandlerFn = (input: Readonly<Keypress>) => void
+export type KeyboardInputHandlerFn = (input: KeypressOption) => void
 export const createNewShortcutToActionMap = (): ShortcutToActionMap => new Map()
 
 export class UseKeyboardReturnValue {
-  constructor(readonly keyPress: Readonly<Keypress> | undefined, readonly inRawMode: boolean) { }
+  constructor(
+    readonly keyPress: KeypressOption,
+    readonly inRawMode: boolean
+  ) { }
 
-  toArray(): Pair<Optional<Readonly<Keypress>>, boolean> {
+  toArray(): Pair<KeypressOption, boolean> {
     return [ this.keyPress, this.inRawMode ]
   }
 }
@@ -183,6 +187,8 @@ export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturn
   }
 }
 
+export type KeypressOption = OptionType<Readonly<Keypress>>
+
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
@@ -192,13 +198,13 @@ export const useKeyboard = (
   options: IsActive = { isActive: true },
   testing?: NodeKeypressTesting
 ): UseKeyboardReturnValue => {
-  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
+  const [ keyPress, setKeyPress ]: StateHook<KeypressOption> =
+    useStateSafely<KeypressOption>(Option.none()).asArray()
 
-  const onKeypress: HandleNodeKeypressFn = (input: string, key: ReadlineKey) =>
-    _let(createFromKeypress(key, input), keyPress => {
-      setKeyPress(keyPress)
-      processKeypressFn(keyPress)
-    })
+  const dispatchKeypressOption = (keypressOption: KeypressOption) => {
+    setKeyPress(keypressOption)
+    processKeypressFn(keypressOption)
+  }
 
   // Testing bypass process.stdin as the event emitter for "keypress" events (via readline).
   // @see multi-select-input.tsx
@@ -206,12 +212,28 @@ export const useKeyboard = (
     testing,
     // Testing mode.
     ({ emitter, eventName }) => {
-      useEventEmitter(emitter, eventName, onKeypress, options)
+      const eventListener = (args: any[]) => {
+        const arg = args[ 0 ]
+        const argIsKeypress = arg instanceof Keypress
+        if (argIsKeypress) {
+          const keypress = arg as Keypress
+          dispatchKeypressOption(Option.create(keypress))
+        } else {
+          const msg = anyToString(arg)
+          let error = new Error(`Expected keypress event, got ${msg}`)
+          console.error(error)
+        }
+      }
+      useEventEmitter(emitter, eventName, eventListener, options)
       return new UseKeyboardReturnValue(keyPress, true)
     },
     // Production mode.
     () => {
-      if (!isTTY()) return new UseKeyboardReturnValue(undefined, false)
+      if (!isTTY()) return new UseKeyboardReturnValue(Option.none(), false)
+      const onKeypress: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {
+        const keypressOption: KeypressOption = Option.create(createFromKeypress(key, input))
+        dispatchKeypressOption(keypressOption)
+      }
       useNodeKeypress(onKeypress, options)
       return new UseKeyboardReturnValue(keyPress, true)
     }
@@ -252,20 +274,23 @@ export const useKeyboardWithMapCached = (
  * terminal. keyPress is the key that the user pressed (eg: "ctrl+k", "backspace", "shift+A").
  */
 export const useKeyboardCompatInk = (
-  fun: KeyboardInputHandlerFn,
+  processKeypressFn: KeyboardInputHandlerFn,
   options: IsActive = { isActive: true },
 ): UseKeyboardReturnValue => {
-  const [ keyPress, setKeyPress ]: StateHook<Readonly<Keypress> | undefined> = useState()
+  const [ keyPress, setKeyPress ]: StateHook<KeypressOption> =
+    useStateSafely<KeypressOption>(Option.none()).asArray()
   const { isRawModeSupported: inRawMode } = useStdin()
 
   // Can only call useInput in raw mode.
-  if (!inRawMode) return new UseKeyboardReturnValue(undefined, false)
+  if (!inRawMode) return new UseKeyboardReturnValue(Option.none(), false)
 
-  useInput((input, key) => {
-    const userInputKeyPress = createFromInk(key, input)
-    setKeyPress(userInputKeyPress)
-    fun(userInputKeyPress)
-  }, options)
+  const onKeypress = (input: string, key: Key) => {
+    const userInputKeyPressOption: KeypressOption = Option.create(createFromInk(key, input))
+    setKeyPress(userInputKeyPressOption)
+    processKeypressFn(userInputKeyPressOption)
+  }
+
+  useInput(onKeypress, options)
 
   return new UseKeyboardReturnValue(keyPress, inRawMode)
 }

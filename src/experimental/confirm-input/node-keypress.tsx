@@ -40,7 +40,7 @@ const runHooks = (input: HookInput): HookOutput => {
   const { name } = input
   const app = useApp()
   const [ answer, setAnswer ] = useStateSafely<string>("").asArray()
-  
+
   const createShortcuts = (): ShortcutToActionMap => {
     return _also(
       createNewShortcutToActionMap(),
@@ -63,8 +63,8 @@ export const App: FC = () => {
   return (
     <UseKeyboardWrapper>
       <Box flexDirection="column">
-        <Row_Debug ctx={ctx}/>
-        <UnicornQuestion ctx={ctx}/>
+        <Row_Debug ctx={ctx} />
+        <UnicornQuestion ctx={ctx} />
         {text ? <Text color="green">{text}</Text> : undefined}
       </Box>
     </UseKeyboardWrapper>
@@ -75,18 +75,18 @@ const Row_Debug: FC<InternalProps> =
   ({ ctx }) => {
     const { keyPress: kp, inRawMode: mode } = ctx.useKeyboard
     return mode ?
-      <Text color="magenta">keyPress: {kp ? `${kp.toString()}` : "n/a"}</Text> :
+      <Text color="magenta">keyPress: {kp.isSome ? `${kp.value.toString()}` : "n/a"}</Text> :
       <Text color="gray">keyb disabled</Text>
   }
 
 const UnicornQuestion: FC<InternalProps> =
   ({ ctx }) => {
     const [ _, setText ] = ctx.answer.asArray()
-    
+
     const onSubmit = (answer: boolean) => {
       setText(answer ? "You like rainbows 🌈" : "You don't like rainbows 😥")
     }
-    
+
     return (
       <Box flexDirection="column">
         <Text>Do you like rainbows? (Y/n)</Text>
@@ -102,7 +102,7 @@ const UnicornQuestion: FC<InternalProps> =
 
 // Main.
 inkCLIAppMainFn(
-  () => render(<App/>),
+  () => render(<App />),
   "Exiting ink",
   "Problem w/ exiting ink"
 ).catch(console.error)

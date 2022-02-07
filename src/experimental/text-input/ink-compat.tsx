@@ -19,14 +19,14 @@ import { Box, render, Text } from "ink"
 import TextInput from "ink-text-input"
 import React, { EffectCallback, FC, useEffect } from "react"
 import {
-  _also, _callIfTrue, _callIfTruthyWithReturn, createNewShortcutToActionMap, inkCLIAppMainFn,
+  createNewShortcutToActionMap, inkCLIAppMainFn,
   LifecycleHelper, ShortcutToActionMap, StateHolder, TextColor, useKeyboardBuilder,
-  UseKeyboardReturnValue, useStateSafely,
+  UseKeyboardReturnValue, useStateSafely, _also, _callIfTrue, _callIfTruthyWithReturn
 } from "../../index"
 
 // Constants & types.
 
-const DEBUG = true
+const DEBUG = false
 let count = 0
 
 class TextInputState {
@@ -34,8 +34,8 @@ class TextInputState {
     readonly hasFocus: boolean = true,
     readonly isVisible: boolean = true,
     readonly text: string = ""
-  ) {}
-  
+  ) { }
+
   toString = () => JSON.stringify(this)
 }
 
@@ -55,7 +55,7 @@ export const runHooks = (): HookOutput => {
     map => map
       .set("ctrl+x", LifecycleHelper.fireExit)
   )
-  
+
   return {
     textInputStateHolder: useStateSafely(new TextInputState()),
     useKeyboard: useKeyboardBuilder({
@@ -73,18 +73,18 @@ const App: FC = () => {
   const ctx: HookOutput = runHooks()
   const { useKeyboard, textInputStateHolder, uid } = ctx
   const [ textInputState ] = textInputStateHolder.asArray()
-  
+
   // Debug.
   _callIfTrue(DEBUG, () => {
     useEffect(getDebugLogSideEffectFn(textInputState, useKeyboard, uid))
     useEffect(getDebugMountLoggerEffectFn(), [])
   })
-  
+
   return (
     <Box flexDirection="column">
-      <RowDebug ctx={ctx}/>
+      <RowDebug ctx={ctx} />
       {textInputState.isVisible ?
-        <TextInputComponent ctx={ctx}/> :
+        <TextInputComponent ctx={ctx} /> :
         <Text>{TextColor.builder.cyan.underline.bold.build()(textInputState.text)}</Text>}
     </Box>
   )
@@ -92,24 +92,24 @@ const App: FC = () => {
 
 const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
   const [ text, setText ] = useStateSafely("").asArray()
-  
+
   const [ myTextInputState, setMyTextInputState ] = ctx.textInputStateHolder.asArray()
   const onSubmit = () => {
     setMyTextInputState(new TextInputState(true, false, text))
     console.log(TextColor.builder.bold.black.bgYellow.build()("onSubmit called!"))
   }
-  
+
   return (
     <Box>
       <Box marginRight={1}>
         <Text>Enter your query:</Text>
       </Box>
-      
+
       <TextInput
         focus={myTextInputState.hasFocus}
         value={text}
         onChange={setText}
-        onSubmit={onSubmit}/>
+        onSubmit={onSubmit} />
     </Box>
   )
 }
@@ -120,13 +120,15 @@ const TextInputComponent: FC<InternalProps> = ({ ctx }) => {
 const Wrapper: FC = () =>
   <>
     <Text color="gray">Press ctrl+x to exit</Text>
-    <App/>
+    <App />
   </>
 
 const RowDebug: FC<InternalProps> = ({ ctx }) => {
   const { keyPress, inRawMode } = ctx.useKeyboard
   return inRawMode ?
-    <Text color="magenta">keyPress: {keyPress ? `${keyPress.toString()}` : "n/a"}</Text> :
+    <Text color="magenta">keyPress: {
+      keyPress.isSome ? `${keyPress.value.toString()}` : "n/a"
+    }</Text> :
     <Text color="gray">keyb disabled</Text>
 }
 
@@ -152,7 +154,7 @@ const getDebugLogSideEffectFn = (
 
 // Main.
 inkCLIAppMainFn(
-  () => render(<Wrapper/>),
+  () => render(<Wrapper />),
   "Exiting ink",
   "Problem w/ exiting ink"
 ).catch(console.error)

@@ -15,48 +15,67 @@
 */
 
 import { Optional } from "./core"
+import { anyToString } from "./data-class"
 import { SimpleReceiverFn, TruthyReceiverFn } from "./expression-lang-utils"
 
 // Option is based on Rust's Option enum and it is intended to be used in place of null and
 // undefined. Expressing !undefined && !null in TS: https://stackoverflow.com/a/63046469/2085356
 
-export type Option<T extends {}> = Some<T> | None
-export type Some<T extends {}> = { kind: "some", value: T }
-export type None = { kind: "none" }
+export type OptionType<T extends {}> = Some<T> | None
+export type Some<T extends {}> = {
+  kind: "some",
+  value: T,
+  toString: () => string,
+  isSome: true,
+  isNone: false,
+}
+export type None = {
+  kind: "none"
+  toString: () => string,
+  isSome: false,
+  isNone: true,
+}
 
 // Factory to create Option typed values.
-export namespace OptionBuilder {
-  export function createNone(): None {
-    return { kind: "none" }
+export namespace Option {
+  export function none(): None {
+    return Object.freeze({
+      kind: "none",
+      toString: () => "none",
+      isSome: false,
+      isNone: true,
+    })
   }
 
-  export function createSome<T extends {}>(arg: T): Some<T> {
-    return { kind: "some", value: arg }
+  export function some<T extends {}>(arg: T): Some<T> {
+    return Object.freeze({
+      kind: "some",
+      value: arg,
+      toString: () => anyToString(arg),
+      isSome: true,
+      isNone: false,
+    })
   }
 
-  export function create<T>(arg: Optional<T>): Option<T> {
+  export function create<T>(arg: Optional<T>): OptionType<T> {
     return arg === undefined || arg === null ?
-      OptionBuilder.createNone() :
-      OptionBuilder.createSome(arg)
+      Option.none() :
+      Option.some(arg)
   }
 }
 
 // Expressions that work w/ Option.
 
 export const _callIfSome = <T>(
-  ctxObject: Option<T>,
+  ctxObject: OptionType<T>,
   receiverFn: TruthyReceiverFn<T>
-): Option<T> => {
-  if (ctxObject.kind === "some")
-    receiverFn(ctxObject.value)
-  return ctxObject
+): void => {
+  if (ctxObject.kind === "some") receiverFn(ctxObject.value)
 }
 
 export const _callIfNone = <T>(
-  ctxObject: Option<T>,
+  ctxObject: OptionType<T>,
   receiverFn: SimpleReceiverFn
-): Option<T> => {
-  if (ctxObject.kind === "none")
-    receiverFn()
-  return ctxObject
+): void => {
+  if (ctxObject.kind === "none") receiverFn()
 }

@@ -21,28 +21,28 @@ import * as React from "react"
 import { FC } from "react"
 import {
   _also, createNewShortcutToActionMap, IsActive, KeyboardInputHandlerFn, ShortcutToActionMap,
-  useKeyboardBuilder, UseKeyboardConfig
+  useKeyboardBuilder, UseKeyboardConfig, _callIfSome
 } from "../index"
 import { delay, Flag } from "./test-use-keyboard-helpers"
 
 test("useKeyboard ink-compat works", async () => {
   const flag = new Flag()
-  
+
   const Test: FC<{ options: UseKeyboardConfig, index: number }> = ({ options, index }) => {
     const { keyPress, inRawMode } = useKeyboardBuilder(options)
     return (<Box flexDirection="column">
-      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()}/>}
+      {keyPress && <Row_Debug inRawMode={inRawMode} keyPress={keyPress.toString()} />}
       <Text>{index} - Your example goes here!</Text>
     </Box>)
   }
-  
+
   const Row_Debug: FC<{ inRawMode: boolean; keyPress: string | undefined }> = ({
     keyPress, inRawMode,
   }) =>
     inRawMode ?
       (<Text color="magenta">keyPress: {keyPress}</Text>) :
       (<Text color="gray">keyb disabled</Text>)
-  
+
   const createShortcutsFn = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
     map => map
@@ -52,25 +52,27 @@ test("useKeyboard ink-compat works", async () => {
       .set("ctrl+x", flag.set)
   )
   const matchKeypressFn: KeyboardInputHandlerFn = input => {
-    if (input.matches("q")) flag.set()
+    _callIfSome(input, input => {
+      if (input.matches("q")) flag.set()
+    })
   }
-  
+
   const options: IsActive = { isActive: true }
-  
+
   const configArray: UseKeyboardConfig[] = [
     { type: "ink-compat", args: { type: "fun", matchKeypressFn, options } },
     { type: "ink-compat", args: { type: "map", map: createShortcutsFn(), options } },
     { type: "ink-compat", args: { type: "map-cached", createShortcutsFn, options } },
   ]
-  
+
   for (const [ index, options ] of configArray.entries()) {
     flag.reset()
-    const ink = render(<Test index={index} options={options}/>)
+    const ink = render(<Test index={index} options={options} />)
     await delay(100)
     ink.stdin.emit("data", "q")
     await delay(100)
     expect(flag.isSet()).toBeTruthy()
     ink.unmount()
   }
-  
+
 })

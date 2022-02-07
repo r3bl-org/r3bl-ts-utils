@@ -22,8 +22,8 @@ import { render } from "ink-testing-library"
 import * as React from "react"
 import { FC } from "react"
 import {
-  _callIfTruthy, figures, KeyCreator, Keypress, ListItem, MultiSelectInput, TextColor,
-  UseKeyboardWrapper, useStateSafely
+  figures, KeyCreator, Keypress, ListItem, MultiSelectInput, TextColor,
+  UseKeyboardWrapper, useStateSafely, _callIfTruthy
 } from "../index"
 import { Flag } from "./test-use-keyboard-helpers"
 

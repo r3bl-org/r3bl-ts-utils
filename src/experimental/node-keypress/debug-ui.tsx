@@ -18,9 +18,9 @@
 import { Box, render, Text, useInput } from "ink"
 import React, { FC, useState } from "react"
 import {
-  _also, createNewShortcutToActionMap, inkCLIAppMainFn, Keypress, LifecycleHelper,
+  createNewShortcutToActionMap, inkCLIAppMainFn, KeypressOption, LifecycleHelper,
   ShortcutToActionMap, StateHook, TTYSize, useClockWithLocalTimeFormat, useKeyboardBuilder,
-  usePreventProcessExitDuringTesting, useTTYSize,
+  usePreventProcessExitDuringTesting, useTTYSize, _also
 } from "../../index"
 
 // Unique namespace ensures there will be no unintended collisions w/ other symbols of the codebase.
@@ -31,9 +31,9 @@ export namespace keyboard_debug_ui { // eslint-disable-line
     inRawMode: boolean
     formattedTime: string
     name: string
-    keyPress: Readonly<Keypress> | undefined
+    keyPress: KeypressOption
   }
-  
+
   const runHooks = (name: MainParams): RenderContext => {
     usePreventProcessExitDuringTesting() // For testing using `npm run start-dev-watch`.
     const ttySize: TTYSize = useTTYSize()
@@ -43,7 +43,7 @@ export namespace keyboard_debug_ui { // eslint-disable-line
         type: name,
         args: { type: "map-cached", createShortcutsFn, options: { isActive: true } }
       })
-    
+
     return {
       name,
       ttySize,
@@ -53,7 +53,7 @@ export namespace keyboard_debug_ui { // eslint-disable-line
     }
   }
   //#endregion
-  
+
   //#region handleKeyboard.
   const createShortcutsFn = (): ShortcutToActionMap => _also(
     createNewShortcutToActionMap(),
@@ -63,7 +63,7 @@ export namespace keyboard_debug_ui { // eslint-disable-line
       .set("escape", LifecycleHelper.fireExit)
   )
   //#endregion
-  
+
   //#region Function component.
   const App: FC<{ arg: MainParams }> = ({ arg }) => {
     const { keyPress, name, inRawMode, ttySize, formattedTime } = runHooks(arg)
@@ -85,12 +85,12 @@ export namespace keyboard_debug_ui { // eslint-disable-line
           time <Text color="magenta">{formattedTime}</Text>
         </Text>
         <Text>
-          {keyPress ?
-            <Text color="cyan">{keyPress.toString()}</Text> :
+          {keyPress.isSome ?
+            <Text color="cyan">{keyPress.value.toString()}</Text> :
             <Text color="red">!keyPress</Text>
           }
         </Text>
-        <UserInput/>
+        <UserInput />
       </Box>
     )
   }
@@ -99,14 +99,14 @@ export namespace keyboard_debug_ui { // eslint-disable-line
     useInput((input, _) => setInput(input))
     return <Text color="gray">useInput: {input}</Text>
   }
-  
+
   //#endregion
-  
+
   //#region main().
   type MainParams = "node-keypress" | "ink-compat"
   export const main = (arg: MainParams) => {
     inkCLIAppMainFn(
-      () => render(<App arg={arg}/>),
+      () => render(<App arg={arg} />),
       "Exiting ink",
       "Problem w/ exiting ink"
     ).catch(console.error)

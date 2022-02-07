@@ -16,14 +16,16 @@
  */
 
 import { _callIfTruthy } from "../lang-utils/expression-lang-utils"
-import { Keypress } from "./keypress"
-import { ShortcutToActionMap } from "./use-keyboard"
+import { _callIfSome } from "../lang-utils/rust-lang-utils"
+import { KeypressOption, ShortcutToActionMap } from "./use-keyboard"
 
 // Not exported to external (via index.ts). Used in tests.
 
 export const tryToRunActionForShortcut = (
-  userInput: Readonly<Keypress>,
+  keypressOption: KeypressOption,
   map: ShortcutToActionMap
 ): void => {
-  _callIfTruthy(map.get(userInput.toString()), (actionFn) => actionFn())
+  _callIfSome(keypressOption, keypress => {
+    _callIfTruthy(map.get(keypress.toString()), (actionFn) => actionFn())
+  })
 }

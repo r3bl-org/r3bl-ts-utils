@@ -16,15 +16,15 @@
  */
 
 import {
-  _also, _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTrueWithReturn, _callIfTruthy,
-  _callIfTruthyWithReturn, _repeat, Data
+  Data, _also, _callIfFalse, _callIfFalsy, _callIfTrue, _callIfTrueWithReturn, _callIfTruthy,
+  _callIfTruthyWithReturn, _repeat
 } from "../index"
 
 describe("misc-utils", () => {
   test("_callIfTruthy(condition, fun)", () => {
     type CtxObjType = { foo: number }
     const contextObject: CtxObjType | undefined = { foo: 1 }
-    
+
     let executed = false
     const returnValue = _callIfTruthy(contextObject, (it: CtxObjType) => {
       expect(it).toBeDefined()
@@ -35,28 +35,28 @@ describe("misc-utils", () => {
     expect(returnValue).toBe(contextObject)
     expect(executed).toBeTruthy()
   })
-  
+
   test("_callIfFalsy(condition, fun)", () => {
     let executedIfNull = false
     let executedIfUndefined = false
-    
+
     _callIfFalsy(undefined, () => {
       executedIfUndefined = true
     })
     _callIfFalsy(null, () => {
       executedIfNull = true
     })
-    
+
     expect(executedIfUndefined).toBeTruthy()
     expect(executedIfNull).toBeTruthy()
   })
-  
+
   test("_repeat(count, fun)", () => {
     let count = 0
     _repeat(5, () => count++)
     expect(count).toEqual(5)
   })
-  
+
   test("_callIfTrue(condition, fun)", () => {
     let flag = false
     const fun = () => {
@@ -67,12 +67,12 @@ describe("misc-utils", () => {
     _callIfTrue(true, fun)
     expect(flag).toBeTruthy()
   })
-  
+
   test("_callIfTrue(condition, onTrueFun, onFalseFun)", () => {
     type Flags = { onTrueFlag: boolean; onFalseFlag: boolean }
     const onTrueFn = (flags: Flags) => flags.onTrueFlag = true
     const onFalseFn = (flags: Flags) => flags.onFalseFlag = true
-    
+
     _also({
       onTrueFlag: false,
       onFalseFlag: false
@@ -81,7 +81,7 @@ describe("misc-utils", () => {
       expect(it.onTrueFlag).toBeFalsy()
       expect(it.onFalseFlag).toBeTruthy()
     })
-    
+
     _also({
       onTrueFlag: false,
       onFalseFlag: false
@@ -91,7 +91,7 @@ describe("misc-utils", () => {
       expect(it.onFalseFlag).toBeTruthy()
     })
   })
-  
+
   test("_callIfFalse(condition, onTrueFun, onFalseFun)", () => {
     let flag = true
     const fun = () => {
@@ -102,7 +102,7 @@ describe("misc-utils", () => {
     _callIfFalse(false, fun)
     expect(flag).toBeFalsy()
   })
-  
+
   test("_callIfTruthyWithReturn(condition, onTrueFunWithReturn, onFalseFunWithReturn)", () => {
     // Condition is truthy.
     _also({
@@ -125,7 +125,7 @@ describe("misc-utils", () => {
       expect(flags.onTrueFlag).toBeTruthy()
       expect(flags.onFalseFlag).toBeFalsy()
     })
-    
+
     // Condition is falsy.
     _also({
       onTrueFlag: false,
@@ -148,7 +148,7 @@ describe("misc-utils", () => {
       expect(flags.onFalseFlag).toBeTruthy()
     })
   })
-  
+
   test("_callIfTrueWithReturn(condition, onTrueFunWithReturn, onFalseFunWithReturn)", () => {
     // Condition is true.
     _also({
@@ -170,7 +170,7 @@ describe("misc-utils", () => {
       expect(flags.onTrueFlag).toBeTruthy()
       expect(flags.onFalseFlag).toBeFalsy()
     })
-    
+
     // Condition is false.
     _also({
       onTrueFlag: false,
@@ -205,22 +205,9 @@ test("Data class works", () => {
       super()
     }
   }
-  
+
   const mapData = new MapData()
   const toString = mapData.toString()
-  
-  expect(toString).toEqual(
-    "{\n" +
-    "  \"name\": \"MapData contains properties: string, string, Map, Array\",\n" +
-    "  \"type\": \"string\",\n" +
-    "  \"map\": {\n" +
-    "    \"foo\": \"1\",\n" +
-    "    \"bar\": \"2\"\n" +
-    "  },\n" +
-    "  \"array\": [\n" +
-    "    \"one\",\n" +
-    "    \"two\",\n" +
-    "    \"three\"\n" +
-    "  ]\n" +
-    "}")
+  const matchString = "{\n  \"name\": \"MapData contains properties: string, string, Map, Array\",\n  \"type\": \"string\",\n  \"map\": {\n    \"foo\": \"1\",\n    \"bar\": \"2\"\n  },\n  \"array\": [\n    \"one\",\n    \"two\",\n    \"three\"\n  ]\n}"
+  expect(toString).toEqual(matchString)
 })
