@@ -72,14 +72,16 @@ package.
 1. [Scope functions](#scope-functions) inspired by [Kotlin stdlib scope functions][o-4] (`_also`,
    `_let`, `_apply`, `_with`, etc.). These allow you to write code that is more expression based
    rather than statement based.
-2. [Misc language utilities](#misc-language-utils), that allow you to write conditional code that is
-   more expression based (like in Kotlin and Rust) rather than statement based (in JavaScript). Also
-   provides some core classes that make it easy to work w/ data classes.
-3. [Timer utilities](#timer-utils) that are easier and more robust to work w/ than `setInterval()`.
+2. [Misc language functions](#misc-language-functions), that allow you to write conditional code
+   that is more expression based (like in Kotlin and Rust) rather than statement based (in
+   JavaScript). Also provides some core classes that make it easy to work w/ data classes.
+3. [Rust inspired language functions](#rust-language-functions), that allow you to avoid using
+   `null` or `undefined` in your code. This is inspired by Rust's `Option` and `Result` types.
+4. [Timer utilities](#timer-utils) that are easier and more robust to work w/ than `setInterval()`.
    These can be used to perform any recurring tasks that are on a fixed interval timer.
-4. [Cache utilities](#cache-utils) that provide a cache that you can use that provides multiple
+5. [Cache utilities](#cache-utils) that provide a cache that you can use that provides multiple
    eviction policies.
-5. [Text User Interface (TUI) library](#text-user-interface-tui) is built on top of React and Ink
+6. [Text User Interface (TUI) library](#text-user-interface-tui) is built on top of React and Ink
    and provides a comprehensive set of UI components, helper functions, types, and classes, and a
    full TUI application framework. You can use this to build very powerful feature rich TUI apps,
    which are command line interface apps that run in the terminal, that are keyboard driven, and
@@ -372,7 +374,7 @@ expect(returnValue).toEqual(hardcodedReceiverReturnValue)
 > ⚠ Please note that the `fnWithReboundThis` can't be an arrow function, since it would not allow
 > `this` to be rebound.
 
-## Misc language utils
+## Misc language functions
 
 ### `Data` class and `anyToString()`
 
@@ -609,6 +611,50 @@ _also(
 )
 ```
 
+## Rust language functions
+
+Avoid using `null` or `undefined` in your code by using `Option` and `None` and `Some`. This is
+similar to what you get in Rust. However, it is implemented using TypeScript discriminated unions. A
+lot of the code in this library itself has been rewritten using this pattern to avoid `null` or
+`undefined` resulting in much easier to reason about code.
+
+Here's an example.
+
+```tsx
+import { KeypressOption, _callIfSome } from "r3bl-ts-utils"
+
+const onKeypress = (keypress: KeypressOption) => {
+  _callIfSome(keypress, (keypress) => {
+    if (keypress.matches("return")) returnPressed()
+    if (keypress.matches("downarrow")) downarrowPressed()
+    if (keypress.matches("uparrow")) uparrowPressed()
+    if (keypress.matches("space")) spacePressed()
+    if (keypress.matches("delete")) deletePressed()
+    if (keypress.matches("backspace")) deletePressed()
+  })
+}
+```
+
+Here's an example of using a `None` value in a `useStateSafely` hook.
+
+```tsx
+import { useStateSafely, Option } from "r3bl-ts-utils"
+
+type KeypressOption = OptionType<Readonly<Keypress>>
+const [keypress, setKeypress] = useStateSafely<KeypressOption>(Option.none()).asArray()
+```
+
+Here's an eample of using a `Some` value in a `useStateSafely` hook.
+
+```tsx
+import { Optional, TimerTickFn, Option, OptionType } from "r3bl-ts-utils"
+
+let _onStartFn: OptionType<TimerTickFn> = Option.none()
+function setOnStartFn(value: Optional<TimerTickFn>) {
+  _onStartFn = Option.create(value) // same as Option.some(value)
+}
+```
+
 ## Timer utils
 
 ![](https://mermaid.ink/img/eyJjb2RlIjoic2VxdWVuY2VEaWFncmFtXG4gIGF1dG9udW1iZXJcbiAgcGFydGljaXBhbnQgY3JlYXRlZF9ub3RfcnVubmluZ1xuICBjcmVhdGVkX25vdF9ydW5uaW5nIC0-PiBydW5uaW5nOiBzdGFydFRpY2tpbmcoKVxuICBhY3RpdmF0ZSBydW5uaW5nXG4gIHBhcnRpY2lwYW50IHJ1bm5pbmdcbiAgcmVjdCByZ2IoODMsIDgyLCAxMDEsIDAuMjUpXG4gICAgbG9vcCB0aWNraW5nXG4gICAgICBydW5uaW5nIC0-PiBydW5uaW5nOiBvblRpY2soKVxuICAgIGVuZFxuICBlbmRcbiAgcnVubmluZyAtPj4gc3RvcHBlZDogc3RvcFRpY2tpbmcoKVxuICBhbHQgZHVyYXRpb24gaXMgc2V0XG4gICAgcnVubmluZyAtPj4gc3RvcHBlZDogZHVyYXRpb24gaGFzIHBhc3NlZFxuICBlbmRcbiAgZGVhY3RpdmF0ZSBydW5uaW5nIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRhcmsifSwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ?bgColor=!black)
@@ -641,9 +687,9 @@ generate a CLI interface using [ink](https://github.com/vadimdemedes/ink).
 
 ```tsx
 import React, { FC } from "react"
-import { Timer, createTimer } from "./timer-utils"
-import { _also } from "./kotlin-lang-utils"
-import { _withRef, StateHook, useForceUpdateFn } from "./react-hook-utils"
+import { Timer, createTimer } from "r3bl-ts-utils"
+import { _also } from "r3bl-ts-utils"
+import { _withRef, StateHook, useForceUpdateFn } from "r3bl-ts-utils"
 import { Text } from "ink"
 
 export const ComponentUsingTimer: FC = () => {
@@ -935,7 +981,7 @@ The `StateHook<T>` utility type makes it easy to describe the array returned by
 `React.useState<T>()`. Here's an example.
 
 ```tsx
-import { StateHook } from "./react-hook-utils"
+import { StateHook } from "r3bl-ts-utils"
 
 export const MyFunctionalComponent: FC = () => {
   const [count, setCount]: StateHook<number> = React.useState<number>(0)
@@ -949,7 +995,7 @@ The `useForceUpdateFn()` is a custom hook that makes it easy for you to force a 
 component (when there are no props or state changes to trigger them). Here's an example.
 
 ```tsx
-import { useForceUpdateFn } from "./react-hook-utils"
+import { useForceUpdateFn } from "r3bl-ts-utils"
 
 export const MyFunctionalComponent: FC = () => {
   const forceUpdateFn = useForceUpdateFn()
@@ -985,7 +1031,7 @@ The following code snippet is an example of a lambda that operates on the `curre
 `myTimerRef`, which holds a `Timer` object.
 
 ```tsx
-import { ReactRefReceiverFn, ReactRef, _withRef, useForceUpdateFn } from "./react-hook-utils"
+import { ReactRefReceiverFn, ReactRef, _withRef, useForceUpdateFn } from "r3bl-ts-utils"
 import * as React from "react"
 
 const myTimerRef: ReactRef<Timer> = React.useRef<Timer>()
@@ -1237,7 +1283,7 @@ interface) apps where a component could be unmounted (eg, via a keyboard shortcu
 different tab or even exit the app). Here's an example of how to use it.
 
 ```tsx
-import { _let } from "./kotlin-lang-utils"
+import { _let } from "r3bl-ts-utils"
 
 const UseTextInput: FC = () => _let(useStateSafely(""), createComponent)
 // To get an array, call `useStateSafely("").toArray()`.
