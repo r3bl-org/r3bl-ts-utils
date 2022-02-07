@@ -15,9 +15,7 @@
  *
  */
 
-import {
-  Optional
-} from "../lang-utils/core"
+import { Optional } from "../lang-utils/core"
 import { _also } from "../lang-utils/kotlin-lang-utils"
 import { Option, OptionType, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { Counter } from "./counter"
@@ -133,14 +131,14 @@ export class TimerImpl implements TimerInternal {
       if (durationMs > 0 && Date.now() - state.startTime >= durationMs) {
         this.stopTicking()
       } else {
-        _callIfSome(this._onTickFn, fn => fn(this))
+        _callIfSome(this._onTickFn, (fn) => fn(this))
         counter?.increment()
       }
     }
 
     this.timerHandle = setInterval(doTickAndAutoStopCheck, delayMs)
 
-    _callIfSome(this._onStartFn, fn => fn(this))
+    _callIfSome(this._onStartFn, (fn) => fn(this))
 
     DEBUG && console.log(name ?? "Timer", "started, timerHandle = ", this.timerHandle)
   }
@@ -155,7 +153,7 @@ export class TimerImpl implements TimerInternal {
       this.timerHandle = undefined
     }
 
-    _callIfSome(this._onStopFn, fn => fn(this))
+    _callIfSome(this._onStopFn, (fn) => fn(this))
 
     DEBUG && console.log(name ?? "Timer", "stopped, timerHandle = ", this.timerHandle)
   }
@@ -164,7 +162,8 @@ export class TimerImpl implements TimerInternal {
 
   toString = (): string => {
     const { counter, delayMs, name, state, durationMs } = this
-    return `name: '${name}', delay: ${delayMs}ms, ${durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
-      } counter:${counter ? counter.value : "n/a"}, state:${state.runtimeStatus}`
+    return `name: '${name}', delay: ${delayMs}ms, ${
+      durationMs !== NoDuration ? `duration:${durationMs}ms` : ""
+    } counter:${counter ? counter.value : "n/a"}, state:${state.runtimeStatus}`
   }
 }

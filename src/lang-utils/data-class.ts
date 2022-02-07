@@ -25,7 +25,7 @@ export class Data {
     } catch (e) {
       return thisAsString
     }
-  };
+  }
 }
 
 export function anyToString(arg: any) {
@@ -42,7 +42,7 @@ export function anyToString(arg: any) {
   const stringArray = new Array<string>()
 
   if (arg instanceof Map) stringArray.push(mapToString(arg))
-  else if (arg instanceof Set) stringArray.push(arrayToString([ ...arg ]))
+  else if (arg instanceof Set) stringArray.push(arrayToString([...arg]))
   else if (Array.isArray(arg)) stringArray.push(arrayToString(arg))
   else if (typeof arg === "object") stringArray.push(objectToString(arg as Record<string, unknown>))
 
@@ -51,7 +51,7 @@ export function anyToString(arg: any) {
 
 function mapToString(map: Map<any, any>): string {
   const strings = new Array<string>()
-  for (const [ key, value ] of map.entries())
+  for (const [key, value] of map.entries())
     strings.push(`${anyToString(key)}:${anyToString(value)}`)
   return `{ ${strings.join(", ")} }`
 }
@@ -64,7 +64,7 @@ function arrayToString(array: Array<any>): string {
 
 function objectToString(object: Record<string, unknown>): string {
   const strings = new Array<string>()
-  for (const [ key, value ] of Object.entries(object)) {
+  for (const [key, value] of Object.entries(object)) {
     // Skip functions & undefined keys & values.
     if (typeof value === "function") continue
     strings.push(`${anyToString(key)}:${anyToString(value)}`)

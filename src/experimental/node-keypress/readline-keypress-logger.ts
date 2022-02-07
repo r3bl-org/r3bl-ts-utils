@@ -21,7 +21,13 @@ import {
   createFromKeypress,
   detachFromReadlineKeypress,
   HandleNodeKeypressFn,
-  Keypress, KeypressOptionSetterType, KeypressOptionType, ReadlineKey, TextColor, _callIfSome, _callIfTruthy
+  Keypress,
+  KeypressOptionSetterType,
+  KeypressOptionType,
+  ReadlineKey,
+  TextColor,
+  _callIfSome,
+  _callIfTruthy,
 } from "../../index"
 
 // eslint-disable-next-line

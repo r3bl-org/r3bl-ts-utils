@@ -29,7 +29,7 @@ export const useTTYSize = (): TTYSize => {
   const { stdout } = useStdout()
 
   // Initial size of the TTY window.
-  const [ dimensions, setDimensions ]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
+  const [dimensions, setDimensions]: StateHook<TTYSize> = useState(TTYSize.getInstance(stdout))
 
   // Handle TTY resize events.
   const attachResizeListenerOnMountAndDetachOnUnmountEffectFn: EffectCallback = () => {
@@ -43,7 +43,7 @@ export const useTTYSize = (): TTYSize => {
     stdout.on("resize", _resizeHandler)
     return removeEffectFn
   }
-  useEffect(attachResizeListenerOnMountAndDetachOnUnmountEffectFn, [ stdout ])
+  useEffect(attachResizeListenerOnMountAndDetachOnUnmountEffectFn, [stdout])
 
   return dimensions
 }

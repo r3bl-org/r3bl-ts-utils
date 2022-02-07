@@ -17,7 +17,11 @@
 
 import React, { useEffect } from "react"
 import readline from "readline"
-import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
+import {
+  _callIfTrue,
+  _callIfTrueWithReturn,
+  _callIfTruthyWithReturn,
+} from "../lang-utils/expression-lang-utils"
 import { Option, OptionType, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { TextColor } from "../tui-colors"
 import { IsActive, NodeJsListenerFn, SetState, StateHook, useStateSafely } from "../tui-core"
@@ -64,17 +68,22 @@ export const useNodeKeypress = (
     console.log(formatter("useNodeKeypress - run hook, isActive="), options.isActive)
   })
 
-  const [ keypress, setKeypress ]: StateHook<KeypressOptionType> =
-    useStateSafely<KeypressOptionType>(Option.none()).asArray()
+  const [keypress, setKeypress]: StateHook<KeypressOptionType> = useStateSafely<KeypressOptionType>(
+    Option.none()
+  ).asArray()
 
   useEffect(
     () => manageListenerForKeypressEffectFn(options, setKeypress),
-    [ options.isActive ] // Disable this hook if !isActive.
+    [options.isActive] // Disable this hook if !isActive.
   )
 
   useEffect(
-    () => { _callIfSome(keypress, it => { fun(it.input, it.key) }) },
-    [ keypress ] // Provide state that is affected by this effect, so it can update!
+    () => {
+      _callIfSome(keypress, (it) => {
+        fun(it.input, it.key)
+      })
+    },
+    [keypress] // Provide state that is affected by this effect, so it can update!
   )
 
   return keypress

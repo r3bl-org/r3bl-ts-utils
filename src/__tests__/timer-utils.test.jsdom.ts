@@ -53,7 +53,7 @@ describe("Timer", () => {
     let onStopCalled = false
 
     const timer: Timer = _also(createTimer("test", 100), (it) => {
-      it.setOnTickFn(() => count++) 
+      it.setOnTickFn(() => count++)
       it.setOnStartFn(() => (onStartCalled = true))
       it.setOnStopFn(() => (onStopCalled = true))
     })
@@ -111,9 +111,10 @@ describe("Timer", () => {
 
     const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (timer) => {
       timer.setOnTickFn(() =>
-      _callIfTruthy(timer.counter, (counter) => {
-        counter.value < maxCount ? count++ : undefined
-      }))
+        _callIfTruthy(timer.counter, (counter) => {
+          counter.value < maxCount ? count++ : undefined
+        })
+      )
     })
 
     _also(timer.startTicking(), (it) => expect(it).toBe(timer))
@@ -133,9 +134,10 @@ describe("Timer", () => {
 
     const timer: Timer = _also(createTimer("test", delay, NoDuration, new Counter()), (it) => {
       it.setOnTickFn(() =>
-      _callIfTruthy(it.counter, (counter) => {
-        counter.value < maxCount ? count++ : undefined
-      }))
+        _callIfTruthy(it.counter, (counter) => {
+          counter.value < maxCount ? count++ : undefined
+        })
+      )
       it.setOnStopFn(() => (stopped = true))
     })
 

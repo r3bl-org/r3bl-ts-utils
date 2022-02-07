@@ -83,4 +83,3 @@ export const _callIfTrueWithReturn = <T>(
   return onFalseReceiverFn()
 }
 export type SimpleReceiverWithReturnValueFn<T> = () => T
-

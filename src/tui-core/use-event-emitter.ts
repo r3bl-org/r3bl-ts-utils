@@ -17,7 +17,12 @@
 
 import EventEmitter from "events"
 import React, { useEffect } from "react"
-import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthy, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
+import {
+  _callIfTrue,
+  _callIfTrueWithReturn,
+  _callIfTruthy,
+  _callIfTruthyWithReturn,
+} from "../lang-utils/expression-lang-utils"
 import { IsActive, NodeJsListenerFn } from "./nodejs-types"
 import { SetState } from "./react-core-utils"
 import { useStateSafely } from "./use-state-safely"
@@ -49,13 +54,13 @@ export const useEventEmitter = (
   eventHandler: NodeJsListenerFn,
   options: IsActive
 ) => {
-  const [ event, setEvent ] = useStateSafely<any[] | undefined>(undefined).asArray()
+  const [event, setEvent] = useStateSafely<any[] | undefined>(undefined).asArray()
 
-  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [ options.isActive ])
+  useEffect(() => manageListenerForEmitterEffectFn(options, setEvent), [options.isActive])
 
   useEffect(() => {
     _callIfTruthy(event, eventHandler)
-  }, [ event ])
+  }, [event])
 
   function manageListenerForEmitterEffectFn(
     options: IsActive,

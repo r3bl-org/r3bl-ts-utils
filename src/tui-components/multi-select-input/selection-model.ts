@@ -88,17 +88,18 @@ export class SelectionModel {
   }
 
   // Read only methods.
-  /** 
-   * @immutable 
+  /**
+   * @immutable
    * https://stackoverflow.com/a/20070691/2085356
-  */
-  getSelection = (): ListItem[] => [ ...this.selected ] // Return shallow copy.
+   */
+  getSelection = (): ListItem[] => [...this.selected] // Return shallow copy.
 
   isItemSelected = (query: ListItem): boolean => {
     return this.selected.has(query)
   }
 
-  toString = (): string => this.getSelection()
-    .map(({ label }) => label)
-    .join(", ")
+  toString = (): string =>
+    this.getSelection()
+      .map(({ label }) => label)
+      .join(", ")
 }

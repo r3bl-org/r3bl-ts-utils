@@ -27,6 +27,6 @@ export function isNotDefined<T>(value: T | undefined | null): value is null | un
 
 // Utility types.
 
-export type Pair<A, B> = [ A, B ]
+export type Pair<A, B> = [A, B]
 
 export type Optional<T> = T | undefined | null

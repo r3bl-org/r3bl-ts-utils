@@ -25,7 +25,7 @@ export const tryToRunActionForShortcut = (
   keypressOption: KeypressOption,
   map: ShortcutToActionMap
 ): void => {
-  _callIfSome(keypressOption, keypress => {
+  _callIfSome(keypressOption, (keypress) => {
     _callIfTruthy(map.get(keypress.toString()), (actionFn) => actionFn())
   })
 }

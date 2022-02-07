@@ -23,17 +23,17 @@ import { SimpleReceiverFn, TruthyReceiverFn } from "./expression-lang-utils"
 
 export type OptionType<T extends {}> = Some<T> | None
 export type Some<T extends {}> = {
-  kind: "some",
-  value: T,
-  toString: () => string,
-  isSome: true,
-  isNone: false,
+  kind: "some"
+  value: T
+  toString: () => string
+  isSome: true
+  isNone: false
 }
 export type None = {
   kind: "none"
-  toString: () => string,
-  isSome: false,
-  isNone: true,
+  toString: () => string
+  isSome: false
+  isNone: true
 }
 
 // Factory to create Option typed values.
@@ -58,24 +58,16 @@ export namespace Option {
   }
 
   export function create<T>(arg: Optional<T>): OptionType<T> {
-    return arg === undefined || arg === null ?
-      Option.none() :
-      Option.some(arg)
+    return arg === undefined || arg === null ? Option.none() : Option.some(arg)
   }
 }
 
 // Expressions that work w/ Option.
 
-export const _callIfSome = <T>(
-  ctxObject: OptionType<T>,
-  receiverFn: TruthyReceiverFn<T>
-): void => {
+export const _callIfSome = <T>(ctxObject: OptionType<T>, receiverFn: TruthyReceiverFn<T>): void => {
   if (ctxObject.kind === "some") receiverFn(ctxObject.value)
 }
 
-export const _callIfNone = <T>(
-  ctxObject: OptionType<T>,
-  receiverFn: SimpleReceiverFn
-): void => {
+export const _callIfNone = <T>(ctxObject: OptionType<T>, receiverFn: SimpleReceiverFn): void => {
   if (ctxObject.kind === "none") receiverFn()
 }
