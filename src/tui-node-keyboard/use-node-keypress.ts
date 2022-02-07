@@ -18,14 +18,17 @@
 import React, { useEffect } from "react"
 import readline from "readline"
 import { _callIfTrue, _callIfTrueWithReturn, _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
+import { Option, OptionBuilder, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { TextColor } from "../tui-colors"
-import { IsActive, NodeJsListenerFn, SetState, useStateSafely } from "../tui-core"
+import { IsActive, NodeJsListenerFn, SetState, StateHook, useStateSafely } from "../tui-core"
 import { ReadlineKey } from "./readline-config"
 import { isTTY, logTTYState } from "./utils"
 
 const DEBUG = false
 
 export type KeypressType = { input: string; key: ReadlineKey }
+export type KeypressOptionType = Option<KeypressType>
+export type KeypressOptionSetterType = SetState<KeypressOptionType>
 
 /**
  * This hook provides access to Node.js readline keypress events. If Node.js is running in a
@@ -53,7 +56,7 @@ export type KeypressType = { input: string; key: ReadlineKey }
 export const useNodeKeypress = (
   fun: HandleNodeKeypressFn,
   options: IsActive = { isActive: true }
-): KeypressType | undefined => {
+): KeypressOptionType => {
   _callIfTrue(DEBUG, () => {
     const formatter = options.isActive
       ? TextColor.builder.bgGreen.black.build()
@@ -61,23 +64,25 @@ export const useNodeKeypress = (
     console.log(formatter("useNodeKeypress - run hook, isActive="), options.isActive)
   })
 
-  const [ keypress, setKeypress ] = useStateSafely<KeypressType | undefined>(undefined).asArray()
+  const [ keypress, setKeypress ]: StateHook<KeypressOptionType> =
+    useStateSafely<KeypressOptionType>(OptionBuilder.createNone()).asArray()
 
   useEffect(
     () => manageListenerForKeypressEffectFn(options, setKeypress),
     [ options.isActive ] // Disable this hook if !isActive.
   )
 
-  useEffect(() => {
-    if (keypress) fun(keypress.input, keypress.key)
-  }, [ keypress ]) // Provide state that is affected by this effect, so it can update!
+  useEffect(
+    () => { _callIfSome(keypress, it => { fun(it.input, it.key) }) },
+    [ keypress ] // Provide state that is affected by this effect, so it can update!
+  )
 
   return keypress
 }
 
 const manageListenerForKeypressEffectFn = (
   options: IsActive,
-  setKeypress?: SetState<KeypressType | undefined>
+  setKeypress: KeypressOptionSetterType
 ): ReturnType<React.EffectCallback> => {
   DEBUG &&
     console.log(
@@ -139,7 +144,7 @@ export type HandleNodeKeypressFn = (input: string, key: ReadlineKey) => void
  * and raw mode was switched on.
  */
 export const attachToReadlineKeypress = (
-  setKeypress?: SetState<KeypressType | undefined>
+  setKeypress?: KeypressOptionSetterType
 ): NodeJsListenerFn | undefined => {
   DEBUG && logTTYState("before attach")
 
@@ -153,7 +158,7 @@ export const attachToReadlineKeypress = (
     stdin.setEncoding("utf-8")
 
     const listener: HandleNodeKeypressFn = (input: string, key: ReadlineKey) => {
-      if (setKeypress) setKeypress({ input, key })
+      if (setKeypress) setKeypress(OptionBuilder.createSome({ input, key }))
     }
     stdin.on("keypress", listener)
 

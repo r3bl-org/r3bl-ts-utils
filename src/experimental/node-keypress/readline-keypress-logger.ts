@@ -17,16 +17,11 @@
 
 import { Dispatch } from "react"
 import {
-  _callIfTruthy,
   attachToReadlineKeypress,
   createFromKeypress,
   detachFromReadlineKeypress,
   HandleNodeKeypressFn,
-  Keypress,
-  KeypressType,
-  ReadlineKey,
-  SetState,
-  TextColor,
+  Keypress, KeypressOptionSetterType, KeypressOptionType, ReadlineKey, TextColor, _callIfSome, _callIfTruthy
 } from "../../index"
 
 // eslint-disable-next-line
@@ -38,14 +33,14 @@ namespace node_readline_keypress {
   export const main = () => {
     printInstructions()
 
-    const setKeypress: Dispatch<KeypressType | undefined> = (value: KeypressType | undefined) => {
-      _callIfTruthy(value, (value) => {
+    const setKeypress: Dispatch<KeypressOptionType> = (value: KeypressOptionType) => {
+      _callIfSome(value, (value) => {
         const { input, key } = value
         onKeypress(input, key)
       })
     }
 
-    isAttached = !!attachToReadlineKeypress(setKeypress as SetState<KeypressType | undefined>)
+    isAttached = !!attachToReadlineKeypress(setKeypress as KeypressOptionSetterType)
     console.log(
       isAttached
         ? TextColor.builder.bold.green.build()("raw mode & listener attached")

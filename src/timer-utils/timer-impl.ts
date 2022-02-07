@@ -19,7 +19,7 @@ import {
   Optional
 } from "../lang-utils/core"
 import { _also } from "../lang-utils/kotlin-lang-utils"
-import { Option, OptionValue, _callIfSome } from "../lang-utils/rust-lang-utils"
+import { Option, OptionBuilder, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { Counter } from "./counter"
 import { State, TimerTickFn } from "./externals"
 import { TimerInternal } from "./internals"
@@ -45,9 +45,9 @@ export class TimerImpl implements TimerInternal {
   // Properties (backing fields for getters, setters).
 
   private _state: State
-  private _onTickFn: Option<TimerTickFn> = OptionValue.createNone()
-  private _onStopFn: Option<TimerTickFn> = OptionValue.createNone()
-  private _onStartFn: Option<TimerTickFn> = OptionValue.createNone()
+  private _onTickFn: Option<TimerTickFn> = OptionBuilder.createNone()
+  private _onStopFn: Option<TimerTickFn> = OptionBuilder.createNone()
+  private _onStartFn: Option<TimerTickFn> = OptionBuilder.createNone()
 
   constructor(
     readonly name: string,
@@ -63,7 +63,7 @@ export class TimerImpl implements TimerInternal {
     return this._onStopFn
   }
   setOnStopFn(fn: Optional<TimerTickFn>) {
-    this._onStopFn = OptionValue.create(fn)
+    this._onStopFn = OptionBuilder.create(fn)
   }
 
   // Getter and setter for onStart.
@@ -71,7 +71,7 @@ export class TimerImpl implements TimerInternal {
     return this._onStartFn
   }
   setOnStartFn(value: Optional<TimerTickFn>) {
-    this._onStartFn = OptionValue.create(value)
+    this._onStartFn = OptionBuilder.create(value)
   }
 
   // Getter and setter for onTick.
@@ -79,7 +79,7 @@ export class TimerImpl implements TimerInternal {
     return this._onTickFn
   }
   setOnTickFn(fn: Optional<TimerTickFn>) {
-    this._onTickFn = OptionValue.create(fn)
+    this._onTickFn = OptionBuilder.create(fn)
   }
 
   // State management delegated to TimerReducer.

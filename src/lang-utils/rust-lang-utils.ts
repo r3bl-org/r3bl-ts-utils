@@ -25,19 +25,19 @@ export type Some<T extends {}> = { kind: "some", value: T }
 export type None = { kind: "none" }
 
 // Factory to create Option typed values.
-export class OptionValue {
-  static createNone(): None {
+export namespace OptionBuilder {
+  export function createNone(): None {
     return { kind: "none" }
   }
 
-  static createSome<T extends {}>(arg: T): Some<T> {
+  export function createSome<T extends {}>(arg: T): Some<T> {
     return { kind: "some", value: arg }
   }
 
-  static create<T>(arg: Optional<T>): Option<T> {
+  export function create<T>(arg: Optional<T>): Option<T> {
     return arg === undefined || arg === null ?
-      OptionValue.createNone() :
-      OptionValue.createSome(arg)
+      OptionBuilder.createNone() :
+      OptionBuilder.createSome(arg)
   }
 }
 
