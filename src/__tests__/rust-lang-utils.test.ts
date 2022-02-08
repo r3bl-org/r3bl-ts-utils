@@ -55,7 +55,7 @@ test("callIfSome works", () => {
 
   _callIfSome(Option.some("some_value"), flag.set)
   expect(flag.isSet()).toBe(true)
-  expect(flag.args).toEqual([ "some_value" ])
+  expect(flag.args).toEqual(["some_value"])
 })
 
 test("callIfNone works", () => {

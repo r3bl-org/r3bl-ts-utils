@@ -44,11 +44,9 @@ export abstract class Option<T> {
 
   abstract toString(): string
 
-  static none = <T>(): None<T> =>
-    Object.freeze(new None<T>())
+  static none = <T>(): None<T> => Object.freeze(new None<T>())
 
-  static some = <T extends {}>(arg: T): Some<T> =>
-    Object.freeze(new Some<T>(arg))
+  static some = <T extends {}>(arg: T): Some<T> => Object.freeze(new Some<T>(arg))
 
   static create = <T>(arg: Optional<T>): Option<T> =>
     arg === undefined || arg === null ? Option.none() : Option.some(arg)
@@ -83,16 +81,10 @@ export class Some<T extends {}> extends Option<T> {
 
 // Expressions that work w/ Option.
 
-export const _callIfSome = <T>(
-  context: Option<T>,
-  receiver: TruthyReceiverFn<T>
-): void => {
+export const _callIfSome = <T>(context: Option<T>, receiver: TruthyReceiverFn<T>): void => {
   if (context instanceof Some) receiver(context.value)
 }
 
-export const _callIfNone = <T>(
-  context: Option<T>,
-  receiver: SimpleReceiverFn
-): void => {
+export const _callIfNone = <T>(context: Option<T>, receiver: SimpleReceiverFn): void => {
   if (context instanceof None) receiver()
 }

@@ -20,7 +20,7 @@ import readline from "readline"
 import {
   _callIfTrue,
   _callIfTrueWithReturn,
-  _callIfTruthyWithReturn
+  _callIfTruthyWithReturn,
 } from "../lang-utils/expression-lang-utils"
 import { Option, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { TextColor } from "../tui-colors"
