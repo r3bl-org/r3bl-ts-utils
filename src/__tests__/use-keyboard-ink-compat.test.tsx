@@ -23,7 +23,7 @@ import {
   _also, createNewShortcutToActionMap, IsActive, KeyboardInputHandlerFn, ShortcutToActionMap,
   useKeyboardBuilder, UseKeyboardConfig, _callIfSome
 } from "../index"
-import { delay, Flag } from "./test-use-keyboard-helpers"
+import { delay, Flag } from "./test-helpers"
 
 test("useKeyboard ink-compat works", async () => {
   const flag = new Flag()

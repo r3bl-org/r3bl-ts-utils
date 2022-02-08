@@ -15,15 +15,24 @@
  *
  */
 
-export const delay = (timeMs: number) => new Promise<void>((resolveFn) => {
-  setTimeout(() => {
-    resolveFn()
-  }, timeMs)
-})
+export const delay = (timeMs: number) =>
+  new Promise<void>((resolveFn) => {
+    setTimeout(() => {
+      resolveFn()
+    }, timeMs)
+  })
 
 export class Flag {
   flag = false
+  args: any[] = []
+
   isSet = () => this.flag
-  set = () => this.flag = true
-  reset = () => this.flag = false
+  set = (...args: unknown[]) => {
+    this.flag = true
+    this.args = args
+  }
+  reset = () => {
+    this.flag = false
+    this.args = []
+  }
 }

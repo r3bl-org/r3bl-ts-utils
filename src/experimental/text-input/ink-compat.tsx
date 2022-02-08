@@ -127,7 +127,7 @@ const RowDebug: FC<InternalProps> = ({ ctx }) => {
   const { keyPress, inRawMode } = ctx.useKeyboard
   return inRawMode ?
     <Text color="magenta">keyPress: {
-      keyPress.isSome ? `${keyPress.value.toString()}` : "n/a"
+      keyPress.isSome() ? `${keyPress.value.toString()}` : "n/a"
     }</Text> :
     <Text color="gray">keyb disabled</Text>
 }

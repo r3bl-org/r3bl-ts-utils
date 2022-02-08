@@ -23,7 +23,7 @@ import React, { FC, useMemo } from "react"
 import { anyToString } from "../lang-utils"
 import { Pair } from "../lang-utils/core"
 import { _callIfTruthyWithReturn } from "../lang-utils/expression-lang-utils"
-import { Option, OptionValue } from "../lang-utils/rust-lang-utils"
+import { Option } from "../lang-utils/rust-lang-utils"
 import { IsActive, StateHook, useEventEmitter, useStateSafely } from "../tui-core"
 import { Keypress } from "./keypress"
 import { createFromInk } from "./keypress-builder-ink"
@@ -187,7 +187,7 @@ export const useKeyboardBuilder = (config: UseKeyboardConfig): UseKeyboardReturn
   }
 }
 
-export type KeypressOption = OptionValue<Readonly<Keypress>>
+export type KeypressOption = Option<Readonly<Keypress>>
 
 /**
  * @return [keyPress, inRawMode] - inRawMode is false means keyboard input is disabled in

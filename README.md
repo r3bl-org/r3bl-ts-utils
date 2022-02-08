@@ -641,16 +641,16 @@ Here's an example of using a `None` value in a `useStateSafely` hook.
 ```tsx
 import { useStateSafely, Option } from "r3bl-ts-utils"
 
-type KeypressOption = OptionType<Readonly<Keypress>>
+type KeypressOption = Option<Readonly<Keypress>>
 const [keypress, setKeypress] = useStateSafely<KeypressOption>(Option.none()).asArray()
 ```
 
 Here's an eample of using a `Some` value in a `useStateSafely` hook.
 
 ```tsx
-import { Optional, TimerTickFn, Option, OptionType } from "r3bl-ts-utils"
+import { Optional, TimerTickFn, Option } from "r3bl-ts-utils"
 
-let _onStartFn: OptionType<TimerTickFn> = Option.none()
+let _onStartFn: Option<TimerTickFn> = Option.none()
 function setOnStartFn(value: Optional<TimerTickFn>) {
   _onStartFn = Option.create(value) // same as Option.some(value)
 }
@@ -661,7 +661,7 @@ You can check to see whether an `Option` value is `Some` or `None` by using the 
 
 ```tsx
 {
-  keyPress.isSome ? (
+  keyPress.isSome() ? (
     <Text color="cyan">{keyPress.value.toString()}</Text>
   ) : (
     <Text color="red">!keyPress</Text>

@@ -27,7 +27,7 @@ import {
   ShortcutToActionMap, useKeyboardBuilder, UseKeyboardConfig, _also
 } from "../index"
 import { _callIfSome } from "../lang-utils"
-import { Flag } from "./test-use-keyboard-helpers"
+import { Flag } from "./test-helpers"
 
 test("useKeyboard node-keypress works", async () => {
   const flag = new Flag()

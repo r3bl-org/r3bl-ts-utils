@@ -85,7 +85,7 @@ export namespace keyboard_debug_ui { // eslint-disable-line
           time <Text color="magenta">{formattedTime}</Text>
         </Text>
         <Text>
-          {keyPress.isSome ?
+          {keyPress.isSome() ?
             <Text color="cyan">{keyPress.value.toString()}</Text> :
             <Text color="red">!keyPress</Text>
           }

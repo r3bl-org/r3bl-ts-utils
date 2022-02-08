@@ -25,7 +25,7 @@ import {
   figures, KeyCreator, Keypress, ListItem, MultiSelectInput, TextColor,
   UseKeyboardWrapper, useStateSafely, _callIfTruthy
 } from "../index"
-import { Flag } from "./test-use-keyboard-helpers"
+import { Flag } from "./test-helpers"
 
 test("multi-select-input multiple selection works", async () => {
   // Setup testing emitter.

@@ -21,7 +21,7 @@
  */
 
 import { Optional } from "../lang-utils/core"
-import { OptionValue } from "../lang-utils/rust-lang-utils"
+import { Option } from "../lang-utils/rust-lang-utils"
 import { Counter } from "./counter"
 
 export interface State {
@@ -45,15 +45,15 @@ export interface Timer {
   counter?: Counter
 
   // onStopFn getter and setter.
-  getOnStopFn: () => OptionValue<TimerTickFn>
+  getOnStopFn: () => Option<TimerTickFn>
   setOnStopFn: (fn: Optional<TimerTickFn>) => void
 
   // onStartFn getter and setter.
-  getOnStartFn: () => OptionValue<TimerTickFn>
+  getOnStartFn: () => Option<TimerTickFn>
   setOnStartFn: (fn: Optional<TimerTickFn>) => void
 
   // onTickFn getter and setter.
-  getOnTickFn: () => OptionValue<TimerTickFn>
+  getOnTickFn: () => Option<TimerTickFn>
   setOnTickFn: (fn: Optional<TimerTickFn>) => void
 
   // Timer control.

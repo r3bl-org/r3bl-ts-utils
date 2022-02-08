@@ -21,53 +21,78 @@ import { SimpleReceiverFn, TruthyReceiverFn } from "./expression-lang-utils"
 // Option is based on Rust's Option enum and it is intended to be used in place of null and
 // undefined. Expressing !undefined && !null in TS: https://stackoverflow.com/a/63046469/2085356
 
-export type OptionValue<T> = Some<T> | None
+export abstract class Option<T> {
+  readonly _isSome: boolean
 
-export class Some<T extends {}>  {
-  readonly kind = "some"
-  readonly value: T
-  toString = () => { return `Some(${anyToString(this.value)})` }
-  isSome: true
-  isNone: false
+  constructor(value: T | undefined | null) {
+    if (value === undefined || value === null) {
+      this._isSome = false
+    } else {
+      this._isSome = true
+    }
+  }
 
-  constructor(value: T) {
-    this.value = value
-    this.isSome = true
-    this.isNone = false
+  // https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+  isSome(): this is Some<T> {
+    return this._isSome
+  }
+
+  // https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+  isNone(): this is None<T> {
+    return !this._isSome
+  }
+
+  abstract toString(): string
+
+  static none = <T>(): None<T> =>
+    Object.freeze(new None<T>())
+
+  static some = <T extends {}>(arg: T): Some<T> =>
+    Object.freeze(new Some<T>(arg))
+
+  static create = <T>(arg: Optional<T>): Option<T> =>
+    arg === undefined || arg === null ? Option.none() : Option.some(arg)
+}
+
+export class None<T> extends Option<T> {
+  constructor() {
+    super(undefined)
+  }
+
+  public toString(): string {
+    return `None`
   }
 }
 
-export class None {
-  readonly kind = "none"
-  toString = () => "None"
-  readonly isSome = false
-  readonly isNone = true
-}
+export class Some<T extends {}> extends Option<T> {
+  readonly _value: T
 
-// Factory to create Option typed values.
-export class Option {
-  static none = (): None =>
-    Object.freeze(new None())
+  constructor(value: T) {
+    super(value)
+    this._value = value
+  }
 
-  static some = <T extends {}>(arg: T): Some<T> =>
-    Object.freeze(new Some(arg))
+  public toString(): string {
+    return `Some(${anyToString(this.value)})`
+  }
 
-  static create = <T>(arg: Optional<T>): OptionValue<T> =>
-    arg === undefined || arg === null ? Option.none() : Option.some(arg)
+  public get value(): T {
+    return this._value
+  }
 }
 
 // Expressions that work w/ Option.
 
 export const _callIfSome = <T>(
-  ctxObject: OptionValue<T>,
-  receiverFn: TruthyReceiverFn<T>
+  context: Option<T>,
+  receiver: TruthyReceiverFn<T>
 ): void => {
-  if (ctxObject.kind === "some") receiverFn(ctxObject.value)
+  if (context instanceof Some) receiver(context.value)
 }
 
 export const _callIfNone = <T>(
-  ctxObject: OptionValue<T>,
-  receiverFn: SimpleReceiverFn
+  context: Option<T>,
+  receiver: SimpleReceiverFn
 ): void => {
-  if (ctxObject.kind === "none") receiverFn()
+  if (context instanceof None) receiver()
 }
