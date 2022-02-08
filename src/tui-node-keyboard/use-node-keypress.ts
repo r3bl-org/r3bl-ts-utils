@@ -22,7 +22,7 @@ import {
   _callIfTrueWithReturn,
   _callIfTruthyWithReturn,
 } from "../lang-utils/expression-lang-utils"
-import { Option, OptionType, _callIfSome } from "../lang-utils/rust-lang-utils"
+import { Option, OptionValue, _callIfSome } from "../lang-utils/rust-lang-utils"
 import { TextColor } from "../tui-colors"
 import { IsActive, NodeJsListenerFn, SetState, StateHook, useStateSafely } from "../tui-core"
 import { ReadlineKey } from "./readline-config"
@@ -31,7 +31,7 @@ import { isTTY, logTTYState } from "./utils"
 const DEBUG = false
 
 export type KeypressType = { input: string; key: ReadlineKey }
-export type KeypressOptionType = OptionType<KeypressType>
+export type KeypressOptionType = OptionValue<KeypressType>
 export type KeypressOptionSetterType = SetState<KeypressOptionType>
 
 /**
