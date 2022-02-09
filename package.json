@@ -1,6 +1,6 @@
 {
   "name": "r3bl-ts-utils",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "TypeScript language utilities inspired by Kotlin stdlib to write code as expressions rather than statements, colorized text, powerful Text User Interface (TUI) framework to build powerful CLI apps, cache, and timer utilities",
   "main": "build/index.js",
   "types": "build/index.d.ts",

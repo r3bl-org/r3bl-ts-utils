@@ -94,12 +94,10 @@ export const _callIfNone = <T>(context: Option<T>, receiver: SimpleReceiverFn): 
 
 export const DebugStyle = Object.freeze({
   msgStyle: TextColor.builder.cyan.build(),
-  argStyle: TextColor.builder.green.build()
+  argStyle: TextColor.builder.green.build(),
 })
 
 export function debug(msg: string, obj: any) {
-  console.log(
-    DebugStyle.msgStyle(msg),
-    DebugStyle.argStyle(anyToString(obj)))
+  console.log(DebugStyle.msgStyle(msg), DebugStyle.argStyle(anyToString(obj)))
   return obj
 }
