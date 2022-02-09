@@ -24,6 +24,8 @@
   - [`_callIfFalse()`](#_calliffalse)
   - [`_callIfTrueWithReturn()`](#_calliftruewithreturn)
 - [Rust language functions](#rust-language-functions)
+  - [`Option`, `Some`, `None`, `_callIfSome()`, and `_callIfNone()`](#option-some-none-_callifsome-and-_callifnone)
+  - [`debug()`](#debug)
 - [Timer utils](#timer-utils)
 - [Cache utils](#cache-utils)
 - [Text User Interface (TUI)](#text-user-interface-tui)
@@ -614,10 +616,12 @@ _also(
 
 ## Rust language functions
 
+### `Option`, `Some`, `None`, `_callIfSome()`, and `_callIfNone()`
+
 Avoid using `null` or `undefined` in your code by using `Option` and `None` and `Some`. This is
-similar to what you get in Rust. However, it is implemented using TypeScript discriminated unions. A
-lot of the code in this library itself has been rewritten using this pattern to avoid `null` or
-`undefined` resulting in much easier to reason about code.
+similar to what you get in Rust. However, it is implemented using TypeScript discriminated unions
+and an abstract class. A lot of the code in this library itself has been rewritten using this
+pattern to avoid `null` or `undefined` resulting in much easier to reason about code.
 
 Here's an example.
 
@@ -657,7 +661,10 @@ function setOnStartFn(value: Optional<TimerTickFn>) {
 ```
 
 You can check to see whether an `Option` value is `Some` or `None` by using the `isSome` and
-`isNone` functions. Here's an example.
+`isNone` functions. These functions also act as user defined type guards
+([via type predicate](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates))
+and will narrow the type of the `Option` to `None` / `Some` when used in an `if` statement. Here's
+an example.
 
 ```tsx
 {
@@ -667,6 +674,19 @@ You can check to see whether an `Option` value is `Some` or `None` by using the 
     <Text color="red">!keyPress</Text>
   )
 }
+```
+
+### `debug()`
+
+This function is simply based on the `debug!` macro in the Rust standard library. It is used to
+pretty print the argument passed to it, along w/ a message. The argument passed is simply returned
+by the function. Here's an example.
+
+```tsx
+import { debug } from "r3bl-ts-utils"
+
+const value = "some_value"
+expect(debug("message", value)).toBe("some_value")
 ```
 
 ## Timer utils

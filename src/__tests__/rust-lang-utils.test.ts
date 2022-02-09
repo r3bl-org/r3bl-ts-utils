@@ -1,5 +1,6 @@
+import { getLog } from "console-testing-library" // https://www.npmjs.com/package/console-testing-library
 import { None, Option, Some } from "../index"
-import { _callIfNone, _callIfSome } from "../lang-utils"
+import { debug, DebugStyle, _callIfNone, _callIfSome } from "../lang-utils"
 import { Flag } from "./test-helpers"
 
 test("How it is used by a consumer of the library, ergonomics check", () => {
@@ -55,7 +56,7 @@ test("callIfSome works", () => {
 
   _callIfSome(Option.some("some_value"), flag.set)
   expect(flag.isSet()).toBe(true)
-  expect(flag.args).toEqual(["some_value"])
+  expect(flag.args).toEqual([ "some_value" ])
 })
 
 test("callIfNone works", () => {
@@ -64,3 +65,13 @@ test("callIfNone works", () => {
   _callIfNone(Option.none(), flag.set)
   expect(flag.isSet()).toBe(true)
 })
+
+test("debug! macro inspired function works", () => {
+  const value = "some_value"
+  expect(debug("msg", value)).toBe("some_value")
+  expect(getLog().log).toEqual(
+    DebugStyle.msgStyle("msg") + " " +
+    DebugStyle.argStyle("\"some_value\"")
+  )
+})
+

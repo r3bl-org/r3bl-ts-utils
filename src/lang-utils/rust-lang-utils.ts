@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+import { TextColor } from "../tui-colors/style-builder"
 import { Optional } from "./core"
 import { anyToString } from "./data-class"
 import { SimpleReceiverFn, TruthyReceiverFn } from "./expression-lang-utils"
@@ -79,7 +80,7 @@ export class Some<T extends {}> extends Option<T> {
   }
 }
 
-// Expressions that work w/ Option.
+// Expressions that work w/ `Option`.
 
 export const _callIfSome = <T>(context: Option<T>, receiver: TruthyReceiverFn<T>): void => {
   if (context instanceof Some) receiver(context.value)
@@ -87,4 +88,18 @@ export const _callIfSome = <T>(context: Option<T>, receiver: TruthyReceiverFn<T>
 
 export const _callIfNone = <T>(context: Option<T>, receiver: SimpleReceiverFn): void => {
   if (context instanceof None) receiver()
+}
+
+// Similar to `debug!` macro in Rust.
+
+export const DebugStyle = Object.freeze({
+  msgStyle: TextColor.builder.cyan.build(),
+  argStyle: TextColor.builder.green.build()
+})
+
+export function debug(msg: string, obj: any) {
+  console.log(
+    DebugStyle.msgStyle(msg),
+    DebugStyle.argStyle(anyToString(obj)))
+  return obj
 }
