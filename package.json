@@ -1,6 +1,6 @@
 {
   "name": "r3bl-ts-utils",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "The `r3bl-ts-utils` package is a set of useful TypeScript functions and classes that can be used in Node.js and browser environments. They are inspired by Kotlin stdlib, and Rust to write code as expressions rather than statements, colorized text, powerful Text User Interface (TUI) framework to build powerful CLI apps, cache, and timer utilities.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
