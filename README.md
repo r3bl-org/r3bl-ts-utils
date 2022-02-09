@@ -1,76 +1,11 @@
 # r3bl-ts-utils npm package
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Overview](#overview)
-- [Scope functions](#scope-functions)
-  - [`_also`](#_also)
-  - [`_alsoAsync`](#_alsoasync)
-  - [`_alsoSafe`](#_alsosafe)
-  - [`_alsoSafeAsync`](#_alsosafeasync)
-  - [`_then`](#_then)
-  - [`_let`](#_let)
-  - [`_letSafe`](#_letsafe)
-  - [`_apply`](#_apply)
-  - [`_with`](#_with)
-- [Misc language functions](#misc-language-functions)
-  - [`Data` class and `anyToString()`](#data-class-and-anytostring)
-  - [`_repeat()`](#_repeat)
-  - [`_callIfTruthy()`](#_calliftruthy)
-  - [`_callIfTruthyWithReturn()`](#_calliftruthywithreturn)
-  - [`_callIfFalsy()`](#_calliffalsy)
-  - [`_callIfTrue()`](#_calliftrue)
-  - [`_callIfFalse()`](#_calliffalse)
-  - [`_callIfTrueWithReturn()`](#_calliftruewithreturn)
-- [Rust language functions](#rust-language-functions)
-  - [`Option`, `Some`, `None`, `_callIfSome()`, and `_callIfNone()`](#option-some-none-_callifsome-and-_callifnone)
-  - [`debug()`](#debug)
-- [Timer utils](#timer-utils)
-- [Cache utils](#cache-utils)
-- [Text User Interface (TUI)](#text-user-interface-tui)
-  - [Colorized text (tui-colors)](#colorized-text-tui-colors)
-  - [Fancy Unicode characters for terminal based apps (tui-figures)](#fancy-unicode-characters-for-terminal-based-apps-tui-figures)
-  - [Colorized console (tui-color-console)](#colorized-console-tui-color-console)
-    - [Simple usage](#simple-usage)
-    - [Advanced usage](#advanced-usage)
-    - [`sleep()`](#sleep)
-  - [Core (React) hooks, types, functions, and classes (tui-core)](#core-react-hooks-types-functions-and-classes-tui-core)
-    - [`StateHook<T>`](#statehookt)
-    - [`useForceUpdateFn()`](#useforceupdatefn)
-    - [`_withRef()`](#_withref)
-    - [`makeReactElementFromArray()`](#makereactelementfromarray)
-    - [`useEventEmitter()`](#useeventemitter)
-    - [`inkCLIAppMainFn()`](#inkcliappmainfn)
-    - [`LifecycleHelper`](#lifecyclehelper)
-    - [`useClock()`](#useclock)
-    - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
-    - [`useTTYSize()`](#usettysize)
-    - [`useStateSafely()`](#usestatesafely)
-  - [Keyboard input handling for Node.js (tui-node-keyboard)](#keyboard-input-handling-for-nodejs-tui-node-keyboard)
-    - [`useNodeKeypress()`](#usenodekeypress)
-    - [`useKeyboard()`](#usekeyboard)
-    - [`useKeyboardWithMap()`](#usekeyboardwithmap)
-    - [`useKeyboardWithMapCached()`](#usekeyboardwithmapcached)
-    - [`useKeyboardBuilder()`](#usekeyboardbuilder)
-  - [Text User Interface components (tui-components)](#text-user-interface-components-tui-components)
-    - [`ConfirmInput`](#confirminput)
-    - [`MultiSelectInput`](#multiselectinput)
-- [Build, test, and publish this package](#build-test-and-publish-this-package)
-  - [Build, format, test](#build-format-test)
-  - [Publish to npm](#publish-to-npm)
-  - [Bump a package version (patch)](#bump-a-package-version-patch)
-- [IDEA configuration](#idea-configuration)
-- [VSCode settings](#vscode-settings)
-- [References](#references)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Overview
-
 The `r3bl-ts-utils` package is a set of useful TypeScript functions and classes that can be used in
-Node.js and browser environments. The following groups of functionality are provided in this
-package.
+Node.js and browser environments. They are inspired by Kotlin stdlib, and Rust to write code as
+expressions rather than statements, colorized text, powerful Text User Interface (TUI) framework to
+build powerful CLI apps, cache, and timer utilities.
+
+The following groups of functionality are provided in this package.
 
 1. [Scope functions](#scope-functions) inspired by [Kotlin stdlib scope functions][o-4] (`_also`,
    `_let`, `_apply`, `_with`, etc.). These allow you to write code that is more expression based
@@ -136,6 +71,71 @@ Here are some important links for this package.
 
 [o-5]: https://developerlife.com/2021/07/02/nodejs-typescript-handbook/
 <!-- prettier-ignore-end -->
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Scope functions](#scope-functions)
+  - [`_also`](#_also)
+  - [`_alsoAsync`](#_alsoasync)
+  - [`_alsoSafe`](#_alsosafe)
+  - [`_alsoSafeAsync`](#_alsosafeasync)
+  - [`_then`](#_then)
+  - [`_let`](#_let)
+  - [`_letSafe`](#_letsafe)
+  - [`_apply`](#_apply)
+  - [`_with`](#_with)
+- [Misc language functions](#misc-language-functions)
+  - [`Data` class and `anyToString()`](#data-class-and-anytostring)
+  - [`_repeat()`](#_repeat)
+  - [`_callIfTruthy()`](#_calliftruthy)
+  - [`_callIfTruthyWithReturn()`](#_calliftruthywithreturn)
+  - [`_callIfFalsy()`](#_calliffalsy)
+  - [`_callIfTrue()`](#_calliftrue)
+  - [`_callIfFalse()`](#_calliffalse)
+  - [`_callIfTrueWithReturn()`](#_calliftruewithreturn)
+- [Rust language functions](#rust-language-functions)
+  - [`Option`, `Some`, `None`, `_callIfSome()`, and `_callIfNone()`](#option-some-none-_callifsome-and-_callifnone)
+  - [`debug()`](#debug)
+- [Timer utils](#timer-utils)
+- [Cache utils](#cache-utils)
+- [Text User Interface (TUI)](#text-user-interface-tui)
+  - [Colorized text (tui-colors)](#colorized-text-tui-colors)
+  - [Fancy Unicode characters for terminal based apps (tui-figures)](#fancy-unicode-characters-for-terminal-based-apps-tui-figures)
+  - [Colorized console (tui-color-console)](#colorized-console-tui-color-console)
+    - [Simple usage](#simple-usage)
+    - [Advanced usage](#advanced-usage)
+    - [`sleep()`](#sleep)
+  - [Core (React) hooks, types, functions, and classes (tui-core)](#core-react-hooks-types-functions-and-classes-tui-core)
+    - [`StateHook<T>`](#statehookt)
+    - [`useForceUpdateFn()`](#useforceupdatefn)
+    - [`_withRef()`](#_withref)
+    - [`makeReactElementFromArray()`](#makereactelementfromarray)
+    - [`useEventEmitter()`](#useeventemitter)
+    - [`inkCLIAppMainFn()`](#inkcliappmainfn)
+    - [`LifecycleHelper`](#lifecyclehelper)
+    - [`useClock()`](#useclock)
+    - [`useClockWithLocalTimeFormat()`](#useclockwithlocaltimeformat)
+    - [`useTTYSize()`](#usettysize)
+    - [`useStateSafely()`](#usestatesafely)
+  - [Keyboard input handling for Node.js (tui-node-keyboard)](#keyboard-input-handling-for-nodejs-tui-node-keyboard)
+    - [`useNodeKeypress()`](#usenodekeypress)
+    - [`useKeyboard()`](#usekeyboard)
+    - [`useKeyboardWithMap()`](#usekeyboardwithmap)
+    - [`useKeyboardWithMapCached()`](#usekeyboardwithmapcached)
+    - [`useKeyboardBuilder()`](#usekeyboardbuilder)
+  - [Text User Interface components (tui-components)](#text-user-interface-components-tui-components)
+    - [`ConfirmInput`](#confirminput)
+    - [`MultiSelectInput`](#multiselectinput)
+- [Build, test, and publish this package](#build-test-and-publish-this-package)
+  - [Build, format, test](#build-format-test)
+  - [Publish to npm](#publish-to-npm)
+  - [Bump a package version (patch)](#bump-a-package-version-patch)
+- [IDEA configuration](#idea-configuration)
+- [VSCode settings](#vscode-settings)
+- [References](#references)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Scope functions
 
