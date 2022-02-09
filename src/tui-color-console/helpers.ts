@@ -16,7 +16,7 @@
  */
 
 import { _also, _let } from "../lang-utils/kotlin-lang-utils"
-import { ColorConsole, Formatter, Styles } from "./color-console"
+import { Formatter, StyledColorConsole } from "./color-console"
 import {
   defaultPostFix,
   defaultRepeatChar,
@@ -25,7 +25,7 @@ import {
   maxWidth,
   padding,
   regExForDefaultRepeatChar,
-  spaceChar,
+  spaceChar
 } from "./internal-constants"
 
 export const printHeader = (message: string, postFix = defaultPostFix) => {
@@ -44,9 +44,9 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
       headerRight = Formatter.headerFn(getHeaderLine(message, defaultShortRightRepeatChar))
     }
 
-    spans[0] = headerLeft
-    spans[1] = Formatter.headerMessageFn(`${spaceChar}${message}${spaceChar}`)
-    spans[2] = headerRight
+    spans[ 0 ] = headerLeft
+    spans[ 1 ] = Formatter.headerMessageFn(`${spaceChar}${message}${spaceChar}`)
+    spans[ 2 ] = headerRight
   })
 
   const output = spans.join(isTooWideChar ? "\n" : "")
@@ -57,13 +57,13 @@ export const printHeader = (message: string, postFix = defaultPostFix) => {
 const getHeaderLine = (message: string, repeatChar: string): string =>
   _let(message.length, (count) => repeatChar.repeat(count + padding))
 
-export const sleep = (ms = 500) => {
-  const sprites = ["-", "\\", "-", "/"]
+export const sleep = (time_ms = 500): Promise<void> => {
+  const sprites = [ "-", "\\", "-", "/" ]
 
   let count = 0
   const printDotsInterval = setInterval(() => {
-    const sprite: string = sprites[count++ % sprites.length]?.toString() ?? ""
-    ColorConsole.create(Styles.Primary)("Sleep " + sprite).consoleLogInPlace()
+    const sprite: string = sprites[ count++ % sprites.length ]?.toString() ?? ""
+    StyledColorConsole.Primary("Sleep " + sprite).consoleLogInPlace()
   }, 100)
 
   return new Promise<void>((resolveFn) => {
@@ -71,6 +71,6 @@ export const sleep = (ms = 500) => {
       clearInterval(printDotsInterval)
       console.log()
       resolveFn()
-    }, ms)
+    }, time_ms)
   })
 }

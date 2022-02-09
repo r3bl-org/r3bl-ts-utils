@@ -67,7 +67,7 @@ export class ColorConsole {
   consoleLogInPlace = (printNewline = false): void => {
     process.stdout.clearLine(-1)
     process.stdout.cursorTo(0)
-    process.stdout.write(Styles.Primary(this.toString()))
+    process.stdout.write(this.myStyleFn(this.toString()))
     printNewline ? process.stdout.write("\n") : null
   }
 
