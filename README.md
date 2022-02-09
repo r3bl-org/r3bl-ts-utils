@@ -75,6 +75,8 @@ Here are some important links for this package.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+## Documentation
+
 - [Scope functions](#scope-functions)
   - [`_also`](#_also)
   - [`_alsoAsync`](#_alsoasync)
